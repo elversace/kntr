@@ -1,0 +1,2731 @@
+{
+  "verification": "Actual Chromium frontend; ALL API responses MOCKED",
+  "limitations": "No payment-provider, backend money movement, deployed service or Android/iOS runtime proof; native copies only tested as browser HTML.",
+  "network": "Mock localhost page/API routes fulfilled in Playwright; every external request aborted; no external network.",
+  "timestamp_utc": "2026-10-11T18:39:09.548696+00:00",
+  "sources": [
+    {
+      "path": "/workspace/kntr-fixed/kntr-package/frontend/kntr-app.html",
+      "sha256": "c7335e9967e84cee963d7d10ddfde22df71eed0744fad48b63b5324352880f30"
+    },
+    {
+      "path": "/workspace/kntr-fixed/kntr-mobile/www/index.html",
+      "sha256": "a681484b9a529aefeab94869122c0f8e3dd1847d4764fbe1f82203b3b0df7c7d"
+    },
+    {
+      "path": "/workspace/kntr-fixed/kntr-mobile/android/app/src/main/assets/public/index.html",
+      "sha256": "a681484b9a529aefeab94869122c0f8e3dd1847d4764fbe1f82203b3b0df7c7d"
+    },
+    {
+      "path": "/workspace/kntr-fixed/kntr-mobile/ios/App/App/public/index.html",
+      "sha256": "a681484b9a529aefeab94869122c0f8e3dd1847d4764fbe1f82203b3b0df7c7d"
+    }
+  ],
+  "checks": [
+    {
+      "source": "/workspace/kntr-fixed/kntr-package/frontend/kntr-app.html",
+      "name": "Inline JavaScript syntax",
+      "status": "passed",
+      "evidence": {
+        "script_count": 1
+      }
+    },
+    {
+      "source": "/workspace/kntr-fixed/kntr-package/frontend/kntr-app.html",
+      "name": "Cash default sends cash without wallet debit",
+      "evidence": {
+        "default_cash_sent": true,
+        "wallet_balance_unchanged": true,
+        "available_methods": [
+          "cash",
+          "wallet"
+        ]
+      },
+      "status": "passed",
+      "mock_api_requests": [
+        {
+          "method": "POST",
+          "path": "/auth/login",
+          "body": {
+            "email": "owner@example.ly",
+            "password": "MockPassw0rd123"
+          },
+          "authorization": null
+        },
+        {
+          "method": "GET",
+          "path": "/auth/me",
+          "body": null,
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        },
+        {
+          "method": "GET",
+          "path": "/orders/estimate",
+          "body": null,
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        },
+        {
+          "method": "POST",
+          "path": "/orders",
+          "body": {
+            "pickup": {
+              "address": "طرابلس - سوق الجمعة",
+              "lat": 32.8872,
+              "lng": 13.1913
+            },
+            "dropoff": {
+              "address": "طرابلس - باب بن غشير",
+              "lat": 32.85,
+              "lng": 13.2
+            },
+            "vehicle_type": "motorcycle",
+            "priority": "standard",
+            "payment_method": "cash"
+          },
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        },
+        {
+          "method": "GET",
+          "path": "/auth/me",
+          "body": null,
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        }
+      ],
+      "blocked_external_urls": [
+        "https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap"
+      ],
+      "page_errors": [],
+      "dialogs": [],
+      "mock_created_orders": [
+        {
+          "id": "ORD-00001",
+          "payment_method": "cash"
+        }
+      ]
+    },
+    {
+      "source": "/workspace/kntr-fixed/kntr-package/frontend/kntr-app.html",
+      "name": "Wallet selection sends wallet and refreshes server balance",
+      "evidence": {
+        "wallet_sent": true,
+        "displayed_balance": 84.5,
+        "server_charge": 15.5,
+        "authoritative_wallet_refresh": true
+      },
+      "status": "passed",
+      "mock_api_requests": [
+        {
+          "method": "POST",
+          "path": "/auth/login",
+          "body": {
+            "email": "owner@example.ly",
+            "password": "MockPassw0rd123"
+          },
+          "authorization": null
+        },
+        {
+          "method": "GET",
+          "path": "/auth/me",
+          "body": null,
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        },
+        {
+          "method": "GET",
+          "path": "/orders/estimate",
+          "body": null,
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        },
+        {
+          "method": "POST",
+          "path": "/orders",
+          "body": {
+            "pickup": {
+              "address": "طرابلس - سوق الجمعة",
+              "lat": 32.8872,
+              "lng": 13.1913
+            },
+            "dropoff": {
+              "address": "طرابلس - باب بن غشير",
+              "lat": 32.85,
+              "lng": 13.2
+            },
+            "vehicle_type": "motorcycle",
+            "priority": "standard",
+            "payment_method": "wallet"
+          },
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        },
+        {
+          "method": "GET",
+          "path": "/auth/me",
+          "body": null,
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        }
+      ],
+      "blocked_external_urls": [
+        "https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap"
+      ],
+      "page_errors": [],
+      "dialogs": [],
+      "mock_created_orders": [
+        {
+          "id": "ORD-00001",
+          "payment_method": "wallet"
+        }
+      ]
+    },
+    {
+      "source": "/workspace/kntr-fixed/kntr-package/frontend/kntr-app.html",
+      "name": "Insufficient wallet server error creates no fake order",
+      "evidence": {
+        "server_error_visible": true,
+        "no_fake_order_created": true,
+        "button_reenabled": true
+      },
+      "status": "passed",
+      "mock_api_requests": [
+        {
+          "method": "POST",
+          "path": "/auth/login",
+          "body": {
+            "email": "owner@example.ly",
+            "password": "MockPassw0rd123"
+          },
+          "authorization": null
+        },
+        {
+          "method": "GET",
+          "path": "/auth/me",
+          "body": null,
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        },
+        {
+          "method": "GET",
+          "path": "/orders/estimate",
+          "body": null,
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        },
+        {
+          "method": "POST",
+          "path": "/orders",
+          "body": {
+            "pickup": {
+              "address": "طرابلس - سوق الجمعة",
+              "lat": 32.8872,
+              "lng": 13.1913
+            },
+            "dropoff": {
+              "address": "طرابلس - باب بن غشير",
+              "lat": 32.85,
+              "lng": 13.2
+            },
+            "vehicle_type": "motorcycle",
+            "priority": "standard",
+            "payment_method": "wallet"
+          },
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        }
+      ],
+      "blocked_external_urls": [
+        "https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap"
+      ],
+      "page_errors": [],
+      "dialogs": [],
+      "mock_created_orders": []
+    },
+    {
+      "source": "/workspace/kntr-fixed/kntr-package/frontend/kntr-app.html",
+      "name": "Duplicate submit while request pending sends one POST",
+      "evidence": {
+        "pending_submit_attempts": 3,
+        "order_posts": 1,
+        "button_disabled_while_pending": true,
+        "one_order_after_release": true
+      },
+      "status": "passed",
+      "mock_api_requests": [
+        {
+          "method": "POST",
+          "path": "/auth/login",
+          "body": {
+            "email": "owner@example.ly",
+            "password": "MockPassw0rd123"
+          },
+          "authorization": null
+        },
+        {
+          "method": "GET",
+          "path": "/auth/me",
+          "body": null,
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        },
+        {
+          "method": "GET",
+          "path": "/orders/estimate",
+          "body": null,
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        },
+        {
+          "method": "POST",
+          "path": "/orders",
+          "body": {
+            "pickup": {
+              "address": "طرابلس - سوق الجمعة",
+              "lat": 32.8872,
+              "lng": 13.1913
+            },
+            "dropoff": {
+              "address": "طرابلس - باب بن غشير",
+              "lat": 32.85,
+              "lng": 13.2
+            },
+            "vehicle_type": "motorcycle",
+            "priority": "standard",
+            "payment_method": "wallet"
+          },
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        },
+        {
+          "method": "GET",
+          "path": "/auth/me",
+          "body": null,
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        }
+      ],
+      "blocked_external_urls": [
+        "https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap"
+      ],
+      "page_errors": [],
+      "dialogs": [],
+      "mock_created_orders": [
+        {
+          "id": "ORD-00001",
+          "payment_method": "wallet"
+        }
+      ]
+    },
+    {
+      "source": "/workspace/kntr-fixed/kntr-package/frontend/kntr-app.html",
+      "name": "Network exception clears busy state and permits retry",
+      "evidence": {
+        "network_error_visible": "تعذّر الاتصال. تحقق من طلباتك قبل إعادة المحاولة",
+        "busy_state_cleared": true,
+        "retry_created_one_order": true
+      },
+      "status": "passed",
+      "mock_api_requests": [
+        {
+          "method": "POST",
+          "path": "/auth/login",
+          "body": {
+            "email": "owner@example.ly",
+            "password": "MockPassw0rd123"
+          },
+          "authorization": null
+        },
+        {
+          "method": "GET",
+          "path": "/auth/me",
+          "body": null,
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        },
+        {
+          "method": "GET",
+          "path": "/orders/estimate",
+          "body": null,
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        },
+        {
+          "method": "POST",
+          "path": "/orders",
+          "body": {
+            "pickup": {
+              "address": "طرابلس - سوق الجمعة",
+              "lat": 32.8872,
+              "lng": 13.1913
+            },
+            "dropoff": {
+              "address": "طرابلس - باب بن غشير",
+              "lat": 32.85,
+              "lng": 13.2
+            },
+            "vehicle_type": "motorcycle",
+            "priority": "standard",
+            "payment_method": "cash"
+          },
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        },
+        {
+          "method": "POST",
+          "path": "/orders",
+          "body": {
+            "pickup": {
+              "address": "طرابلس - سوق الجمعة",
+              "lat": 32.8872,
+              "lng": 13.1913
+            },
+            "dropoff": {
+              "address": "طرابلس - باب بن غشير",
+              "lat": 32.85,
+              "lng": 13.2
+            },
+            "vehicle_type": "motorcycle",
+            "priority": "standard",
+            "payment_method": "cash"
+          },
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        },
+        {
+          "method": "GET",
+          "path": "/auth/me",
+          "body": null,
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        }
+      ],
+      "blocked_external_urls": [
+        "https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap"
+      ],
+      "page_errors": [],
+      "dialogs": [],
+      "mock_created_orders": [
+        {
+          "id": "ORD-00001",
+          "payment_method": "cash"
+        }
+      ]
+    },
+    {
+      "source": "/workspace/kntr-fixed/kntr-package/frontend/kntr-app.html",
+      "name": "Driver displays accrued earnings rather than wallet balance",
+      "evidence": {
+        "accrued_earnings_displayed": "123.45",
+        "distinct_wallet_balance": "7.00"
+      },
+      "status": "passed",
+      "mock_api_requests": [
+        {
+          "method": "POST",
+          "path": "/auth/login",
+          "body": {
+            "email": "driver@example.ly",
+            "password": "MockPassw0rd123"
+          },
+          "authorization": null
+        },
+        {
+          "method": "GET",
+          "path": "/auth/me",
+          "body": null,
+          "authorization": "Bearer MOCK-TOKEN-MOCK-DRIVER-A"
+        },
+        {
+          "method": "GET",
+          "path": "/drivers/orders",
+          "body": null,
+          "authorization": "Bearer MOCK-TOKEN-MOCK-DRIVER-A"
+        }
+      ],
+      "blocked_external_urls": [
+        "https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap"
+      ],
+      "page_errors": [],
+      "dialogs": [],
+      "mock_created_orders": []
+    },
+    {
+      "source": "/workspace/kntr-fixed/kntr-package/frontend/kntr-app.html",
+      "name": "Logout posts captured token and clears private order and wallet state",
+      "evidence": {
+        "server_logout_called": true,
+        "authorization_preserved": true,
+        "private_state_and_dom_cleared": true,
+        "failure_mode": null,
+        "warning": ""
+      },
+      "status": "passed",
+      "mock_api_requests": [
+        {
+          "method": "POST",
+          "path": "/auth/login",
+          "body": {
+            "email": "owner@example.ly",
+            "password": "MockPassw0rd123"
+          },
+          "authorization": null
+        },
+        {
+          "method": "GET",
+          "path": "/auth/me",
+          "body": null,
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        },
+        {
+          "method": "GET",
+          "path": "/orders/estimate",
+          "body": null,
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        },
+        {
+          "method": "GET",
+          "path": "/auth/me",
+          "body": null,
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        },
+        {
+          "method": "GET",
+          "path": "/orders",
+          "body": null,
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        },
+        {
+          "method": "GET",
+          "path": "/orders/ORD-00001",
+          "body": null,
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        },
+        {
+          "method": "POST",
+          "path": "/auth/logout",
+          "body": {},
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        }
+      ],
+      "blocked_external_urls": [
+        "https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap"
+      ],
+      "page_errors": [],
+      "dialogs": [],
+      "mock_created_orders": []
+    },
+    {
+      "source": "/workspace/kntr-fixed/kntr-package/frontend/kntr-app.html",
+      "name": "Server logout failure still clears private state and shows warning",
+      "evidence": {
+        "server_logout_called": true,
+        "authorization_preserved": true,
+        "private_state_and_dom_cleared": true,
+        "failure_mode": "server",
+        "warning": "تم الخروج محليًا؛ تعذّر إلغاء الجلسة على الخادم"
+      },
+      "status": "passed",
+      "mock_api_requests": [
+        {
+          "method": "POST",
+          "path": "/auth/login",
+          "body": {
+            "email": "owner@example.ly",
+            "password": "MockPassw0rd123"
+          },
+          "authorization": null
+        },
+        {
+          "method": "GET",
+          "path": "/auth/me",
+          "body": null,
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        },
+        {
+          "method": "GET",
+          "path": "/orders/estimate",
+          "body": null,
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        },
+        {
+          "method": "GET",
+          "path": "/auth/me",
+          "body": null,
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        },
+        {
+          "method": "GET",
+          "path": "/orders",
+          "body": null,
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        },
+        {
+          "method": "GET",
+          "path": "/orders/ORD-00001",
+          "body": null,
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        },
+        {
+          "method": "POST",
+          "path": "/auth/logout",
+          "body": {},
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        }
+      ],
+      "blocked_external_urls": [
+        "https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap"
+      ],
+      "page_errors": [],
+      "dialogs": [],
+      "mock_created_orders": []
+    },
+    {
+      "source": "/workspace/kntr-fixed/kntr-package/frontend/kntr-app.html",
+      "name": "Network logout failure still clears private state and shows warning",
+      "evidence": {
+        "server_logout_called": true,
+        "authorization_preserved": true,
+        "private_state_and_dom_cleared": true,
+        "failure_mode": "network",
+        "warning": "تم الخروج محليًا؛ تعذّر إلغاء الجلسة على الخادم"
+      },
+      "status": "passed",
+      "mock_api_requests": [
+        {
+          "method": "POST",
+          "path": "/auth/login",
+          "body": {
+            "email": "owner@example.ly",
+            "password": "MockPassw0rd123"
+          },
+          "authorization": null
+        },
+        {
+          "method": "GET",
+          "path": "/auth/me",
+          "body": null,
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        },
+        {
+          "method": "GET",
+          "path": "/orders/estimate",
+          "body": null,
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        },
+        {
+          "method": "GET",
+          "path": "/auth/me",
+          "body": null,
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        },
+        {
+          "method": "GET",
+          "path": "/orders",
+          "body": null,
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        },
+        {
+          "method": "GET",
+          "path": "/orders/ORD-00001",
+          "body": null,
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        },
+        {
+          "method": "POST",
+          "path": "/auth/logout",
+          "body": {},
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        }
+      ],
+      "blocked_external_urls": [
+        "https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap"
+      ],
+      "page_errors": [],
+      "dialogs": [],
+      "mock_created_orders": []
+    },
+    {
+      "source": "/workspace/kntr-fixed/kntr-package/frontend/kntr-app.html",
+      "name": "Late create response cannot restore private UI after logout",
+      "evidence": {
+        "late_create_callback_did_not_restore_private_ui": true,
+        "login_remained_visible": true
+      },
+      "status": "passed",
+      "mock_api_requests": [
+        {
+          "method": "POST",
+          "path": "/auth/login",
+          "body": {
+            "email": "owner@example.ly",
+            "password": "MockPassw0rd123"
+          },
+          "authorization": null
+        },
+        {
+          "method": "GET",
+          "path": "/auth/me",
+          "body": null,
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        },
+        {
+          "method": "GET",
+          "path": "/orders/estimate",
+          "body": null,
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        },
+        {
+          "method": "POST",
+          "path": "/orders",
+          "body": {
+            "pickup": {
+              "address": "طرابلس - سوق الجمعة",
+              "lat": 32.8872,
+              "lng": 13.1913
+            },
+            "dropoff": {
+              "address": "طرابلس - باب بن غشير",
+              "lat": 32.85,
+              "lng": 13.2
+            },
+            "vehicle_type": "motorcycle",
+            "priority": "standard",
+            "payment_method": "wallet"
+          },
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        },
+        {
+          "method": "POST",
+          "path": "/auth/logout",
+          "body": {},
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        }
+      ],
+      "blocked_external_urls": [
+        "https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap"
+      ],
+      "page_errors": [],
+      "dialogs": [],
+      "mock_created_orders": [
+        {
+          "id": "ORD-00001",
+          "payment_method": "wallet"
+        }
+      ]
+    },
+    {
+      "source": "/workspace/kntr-fixed/kntr-mobile/www/index.html",
+      "name": "Inline JavaScript syntax",
+      "status": "passed",
+      "evidence": {
+        "script_count": 1
+      }
+    },
+    {
+      "source": "/workspace/kntr-fixed/kntr-mobile/www/index.html",
+      "name": "Cash default sends cash without wallet debit",
+      "evidence": {
+        "default_cash_sent": true,
+        "wallet_balance_unchanged": true,
+        "available_methods": [
+          "cash",
+          "wallet"
+        ]
+      },
+      "status": "passed",
+      "mock_api_requests": [
+        {
+          "method": "POST",
+          "path": "/auth/login",
+          "body": {
+            "email": "owner@example.ly",
+            "password": "MockPassw0rd123"
+          },
+          "authorization": null
+        },
+        {
+          "method": "GET",
+          "path": "/auth/me",
+          "body": null,
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        },
+        {
+          "method": "GET",
+          "path": "/orders/estimate",
+          "body": null,
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        },
+        {
+          "method": "POST",
+          "path": "/orders",
+          "body": {
+            "pickup": {
+              "address": "طرابلس - سوق الجمعة",
+              "lat": 32.8872,
+              "lng": 13.1913
+            },
+            "dropoff": {
+              "address": "طرابلس - باب بن غشير",
+              "lat": 32.85,
+              "lng": 13.2
+            },
+            "vehicle_type": "motorcycle",
+            "priority": "standard",
+            "payment_method": "cash"
+          },
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        },
+        {
+          "method": "GET",
+          "path": "/auth/me",
+          "body": null,
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        }
+      ],
+      "blocked_external_urls": [
+        "https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap"
+      ],
+      "page_errors": [],
+      "dialogs": [],
+      "mock_created_orders": [
+        {
+          "id": "ORD-00001",
+          "payment_method": "cash"
+        }
+      ]
+    },
+    {
+      "source": "/workspace/kntr-fixed/kntr-mobile/www/index.html",
+      "name": "Wallet selection sends wallet and refreshes server balance",
+      "evidence": {
+        "wallet_sent": true,
+        "displayed_balance": 84.5,
+        "server_charge": 15.5,
+        "authoritative_wallet_refresh": true
+      },
+      "status": "passed",
+      "mock_api_requests": [
+        {
+          "method": "POST",
+          "path": "/auth/login",
+          "body": {
+            "email": "owner@example.ly",
+            "password": "MockPassw0rd123"
+          },
+          "authorization": null
+        },
+        {
+          "method": "GET",
+          "path": "/auth/me",
+          "body": null,
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        },
+        {
+          "method": "GET",
+          "path": "/orders/estimate",
+          "body": null,
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        },
+        {
+          "method": "POST",
+          "path": "/orders",
+          "body": {
+            "pickup": {
+              "address": "طرابلس - سوق الجمعة",
+              "lat": 32.8872,
+              "lng": 13.1913
+            },
+            "dropoff": {
+              "address": "طرابلس - باب بن غشير",
+              "lat": 32.85,
+              "lng": 13.2
+            },
+            "vehicle_type": "motorcycle",
+            "priority": "standard",
+            "payment_method": "wallet"
+          },
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        },
+        {
+          "method": "GET",
+          "path": "/auth/me",
+          "body": null,
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        }
+      ],
+      "blocked_external_urls": [
+        "https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap"
+      ],
+      "page_errors": [],
+      "dialogs": [],
+      "mock_created_orders": [
+        {
+          "id": "ORD-00001",
+          "payment_method": "wallet"
+        }
+      ]
+    },
+    {
+      "source": "/workspace/kntr-fixed/kntr-mobile/www/index.html",
+      "name": "Insufficient wallet server error creates no fake order",
+      "evidence": {
+        "server_error_visible": true,
+        "no_fake_order_created": true,
+        "button_reenabled": true
+      },
+      "status": "passed",
+      "mock_api_requests": [
+        {
+          "method": "POST",
+          "path": "/auth/login",
+          "body": {
+            "email": "owner@example.ly",
+            "password": "MockPassw0rd123"
+          },
+          "authorization": null
+        },
+        {
+          "method": "GET",
+          "path": "/auth/me",
+          "body": null,
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        },
+        {
+          "method": "GET",
+          "path": "/orders/estimate",
+          "body": null,
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        },
+        {
+          "method": "POST",
+          "path": "/orders",
+          "body": {
+            "pickup": {
+              "address": "طرابلس - سوق الجمعة",
+              "lat": 32.8872,
+              "lng": 13.1913
+            },
+            "dropoff": {
+              "address": "طرابلس - باب بن غشير",
+              "lat": 32.85,
+              "lng": 13.2
+            },
+            "vehicle_type": "motorcycle",
+            "priority": "standard",
+            "payment_method": "wallet"
+          },
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        }
+      ],
+      "blocked_external_urls": [
+        "https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap"
+      ],
+      "page_errors": [],
+      "dialogs": [],
+      "mock_created_orders": []
+    },
+    {
+      "source": "/workspace/kntr-fixed/kntr-mobile/www/index.html",
+      "name": "Duplicate submit while request pending sends one POST",
+      "evidence": {
+        "pending_submit_attempts": 3,
+        "order_posts": 1,
+        "button_disabled_while_pending": true,
+        "one_order_after_release": true
+      },
+      "status": "passed",
+      "mock_api_requests": [
+        {
+          "method": "POST",
+          "path": "/auth/login",
+          "body": {
+            "email": "owner@example.ly",
+            "password": "MockPassw0rd123"
+          },
+          "authorization": null
+        },
+        {
+          "method": "GET",
+          "path": "/auth/me",
+          "body": null,
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        },
+        {
+          "method": "GET",
+          "path": "/orders/estimate",
+          "body": null,
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        },
+        {
+          "method": "POST",
+          "path": "/orders",
+          "body": {
+            "pickup": {
+              "address": "طرابلس - سوق الجمعة",
+              "lat": 32.8872,
+              "lng": 13.1913
+            },
+            "dropoff": {
+              "address": "طرابلس - باب بن غشير",
+              "lat": 32.85,
+              "lng": 13.2
+            },
+            "vehicle_type": "motorcycle",
+            "priority": "standard",
+            "payment_method": "wallet"
+          },
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        },
+        {
+          "method": "GET",
+          "path": "/auth/me",
+          "body": null,
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        }
+      ],
+      "blocked_external_urls": [
+        "https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap"
+      ],
+      "page_errors": [],
+      "dialogs": [],
+      "mock_created_orders": [
+        {
+          "id": "ORD-00001",
+          "payment_method": "wallet"
+        }
+      ]
+    },
+    {
+      "source": "/workspace/kntr-fixed/kntr-mobile/www/index.html",
+      "name": "Network exception clears busy state and permits retry",
+      "evidence": {
+        "network_error_visible": "تعذّر الاتصال. تحقق من طلباتك قبل إعادة المحاولة",
+        "busy_state_cleared": true,
+        "retry_created_one_order": true
+      },
+      "status": "passed",
+      "mock_api_requests": [
+        {
+          "method": "POST",
+          "path": "/auth/login",
+          "body": {
+            "email": "owner@example.ly",
+            "password": "MockPassw0rd123"
+          },
+          "authorization": null
+        },
+        {
+          "method": "GET",
+          "path": "/auth/me",
+          "body": null,
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        },
+        {
+          "method": "GET",
+          "path": "/orders/estimate",
+          "body": null,
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        },
+        {
+          "method": "POST",
+          "path": "/orders",
+          "body": {
+            "pickup": {
+              "address": "طرابلس - سوق الجمعة",
+              "lat": 32.8872,
+              "lng": 13.1913
+            },
+            "dropoff": {
+              "address": "طرابلس - باب بن غشير",
+              "lat": 32.85,
+              "lng": 13.2
+            },
+            "vehicle_type": "motorcycle",
+            "priority": "standard",
+            "payment_method": "cash"
+          },
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        },
+        {
+          "method": "POST",
+          "path": "/orders",
+          "body": {
+            "pickup": {
+              "address": "طرابلس - سوق الجمعة",
+              "lat": 32.8872,
+              "lng": 13.1913
+            },
+            "dropoff": {
+              "address": "طرابلس - باب بن غشير",
+              "lat": 32.85,
+              "lng": 13.2
+            },
+            "vehicle_type": "motorcycle",
+            "priority": "standard",
+            "payment_method": "cash"
+          },
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        },
+        {
+          "method": "GET",
+          "path": "/auth/me",
+          "body": null,
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        }
+      ],
+      "blocked_external_urls": [
+        "https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap"
+      ],
+      "page_errors": [],
+      "dialogs": [],
+      "mock_created_orders": [
+        {
+          "id": "ORD-00001",
+          "payment_method": "cash"
+        }
+      ]
+    },
+    {
+      "source": "/workspace/kntr-fixed/kntr-mobile/www/index.html",
+      "name": "Driver displays accrued earnings rather than wallet balance",
+      "evidence": {
+        "accrued_earnings_displayed": "123.45",
+        "distinct_wallet_balance": "7.00"
+      },
+      "status": "passed",
+      "mock_api_requests": [
+        {
+          "method": "POST",
+          "path": "/auth/login",
+          "body": {
+            "email": "driver@example.ly",
+            "password": "MockPassw0rd123"
+          },
+          "authorization": null
+        },
+        {
+          "method": "GET",
+          "path": "/auth/me",
+          "body": null,
+          "authorization": "Bearer MOCK-TOKEN-MOCK-DRIVER-A"
+        },
+        {
+          "method": "GET",
+          "path": "/drivers/orders",
+          "body": null,
+          "authorization": "Bearer MOCK-TOKEN-MOCK-DRIVER-A"
+        }
+      ],
+      "blocked_external_urls": [
+        "https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap"
+      ],
+      "page_errors": [],
+      "dialogs": [],
+      "mock_created_orders": []
+    },
+    {
+      "source": "/workspace/kntr-fixed/kntr-mobile/www/index.html",
+      "name": "Logout posts captured token and clears private order and wallet state",
+      "evidence": {
+        "server_logout_called": true,
+        "authorization_preserved": true,
+        "private_state_and_dom_cleared": true,
+        "failure_mode": null,
+        "warning": ""
+      },
+      "status": "passed",
+      "mock_api_requests": [
+        {
+          "method": "POST",
+          "path": "/auth/login",
+          "body": {
+            "email": "owner@example.ly",
+            "password": "MockPassw0rd123"
+          },
+          "authorization": null
+        },
+        {
+          "method": "GET",
+          "path": "/auth/me",
+          "body": null,
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        },
+        {
+          "method": "GET",
+          "path": "/orders/estimate",
+          "body": null,
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        },
+        {
+          "method": "GET",
+          "path": "/auth/me",
+          "body": null,
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        },
+        {
+          "method": "GET",
+          "path": "/orders",
+          "body": null,
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        },
+        {
+          "method": "GET",
+          "path": "/orders/ORD-00001",
+          "body": null,
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        },
+        {
+          "method": "POST",
+          "path": "/auth/logout",
+          "body": {},
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        }
+      ],
+      "blocked_external_urls": [
+        "https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap"
+      ],
+      "page_errors": [],
+      "dialogs": [],
+      "mock_created_orders": []
+    },
+    {
+      "source": "/workspace/kntr-fixed/kntr-mobile/www/index.html",
+      "name": "Server logout failure still clears private state and shows warning",
+      "evidence": {
+        "server_logout_called": true,
+        "authorization_preserved": true,
+        "private_state_and_dom_cleared": true,
+        "failure_mode": "server",
+        "warning": "تم الخروج محليًا؛ تعذّر إلغاء الجلسة على الخادم"
+      },
+      "status": "passed",
+      "mock_api_requests": [
+        {
+          "method": "POST",
+          "path": "/auth/login",
+          "body": {
+            "email": "owner@example.ly",
+            "password": "MockPassw0rd123"
+          },
+          "authorization": null
+        },
+        {
+          "method": "GET",
+          "path": "/auth/me",
+          "body": null,
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        },
+        {
+          "method": "GET",
+          "path": "/orders/estimate",
+          "body": null,
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        },
+        {
+          "method": "GET",
+          "path": "/auth/me",
+          "body": null,
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        },
+        {
+          "method": "GET",
+          "path": "/orders",
+          "body": null,
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        },
+        {
+          "method": "GET",
+          "path": "/orders/ORD-00001",
+          "body": null,
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        },
+        {
+          "method": "POST",
+          "path": "/auth/logout",
+          "body": {},
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        }
+      ],
+      "blocked_external_urls": [
+        "https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap"
+      ],
+      "page_errors": [],
+      "dialogs": [],
+      "mock_created_orders": []
+    },
+    {
+      "source": "/workspace/kntr-fixed/kntr-mobile/www/index.html",
+      "name": "Network logout failure still clears private state and shows warning",
+      "evidence": {
+        "server_logout_called": true,
+        "authorization_preserved": true,
+        "private_state_and_dom_cleared": true,
+        "failure_mode": "network",
+        "warning": "تم الخروج محليًا؛ تعذّر إلغاء الجلسة على الخادم"
+      },
+      "status": "passed",
+      "mock_api_requests": [
+        {
+          "method": "POST",
+          "path": "/auth/login",
+          "body": {
+            "email": "owner@example.ly",
+            "password": "MockPassw0rd123"
+          },
+          "authorization": null
+        },
+        {
+          "method": "GET",
+          "path": "/auth/me",
+          "body": null,
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        },
+        {
+          "method": "GET",
+          "path": "/orders/estimate",
+          "body": null,
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        },
+        {
+          "method": "GET",
+          "path": "/auth/me",
+          "body": null,
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        },
+        {
+          "method": "GET",
+          "path": "/orders",
+          "body": null,
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        },
+        {
+          "method": "GET",
+          "path": "/orders/ORD-00001",
+          "body": null,
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        },
+        {
+          "method": "POST",
+          "path": "/auth/logout",
+          "body": {},
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        }
+      ],
+      "blocked_external_urls": [
+        "https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap"
+      ],
+      "page_errors": [],
+      "dialogs": [],
+      "mock_created_orders": []
+    },
+    {
+      "source": "/workspace/kntr-fixed/kntr-mobile/www/index.html",
+      "name": "Late create response cannot restore private UI after logout",
+      "evidence": {
+        "late_create_callback_did_not_restore_private_ui": true,
+        "login_remained_visible": true
+      },
+      "status": "passed",
+      "mock_api_requests": [
+        {
+          "method": "POST",
+          "path": "/auth/login",
+          "body": {
+            "email": "owner@example.ly",
+            "password": "MockPassw0rd123"
+          },
+          "authorization": null
+        },
+        {
+          "method": "GET",
+          "path": "/auth/me",
+          "body": null,
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        },
+        {
+          "method": "GET",
+          "path": "/orders/estimate",
+          "body": null,
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        },
+        {
+          "method": "POST",
+          "path": "/orders",
+          "body": {
+            "pickup": {
+              "address": "طرابلس - سوق الجمعة",
+              "lat": 32.8872,
+              "lng": 13.1913
+            },
+            "dropoff": {
+              "address": "طرابلس - باب بن غشير",
+              "lat": 32.85,
+              "lng": 13.2
+            },
+            "vehicle_type": "motorcycle",
+            "priority": "standard",
+            "payment_method": "wallet"
+          },
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        },
+        {
+          "method": "POST",
+          "path": "/auth/logout",
+          "body": {},
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        }
+      ],
+      "blocked_external_urls": [
+        "https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap"
+      ],
+      "page_errors": [],
+      "dialogs": [],
+      "mock_created_orders": [
+        {
+          "id": "ORD-00001",
+          "payment_method": "wallet"
+        }
+      ]
+    },
+    {
+      "source": "/workspace/kntr-fixed/kntr-mobile/android/app/src/main/assets/public/index.html",
+      "name": "Inline JavaScript syntax",
+      "status": "passed",
+      "evidence": {
+        "script_count": 1
+      }
+    },
+    {
+      "source": "/workspace/kntr-fixed/kntr-mobile/android/app/src/main/assets/public/index.html",
+      "name": "Cash default sends cash without wallet debit",
+      "evidence": {
+        "default_cash_sent": true,
+        "wallet_balance_unchanged": true,
+        "available_methods": [
+          "cash",
+          "wallet"
+        ]
+      },
+      "status": "passed",
+      "mock_api_requests": [
+        {
+          "method": "POST",
+          "path": "/auth/login",
+          "body": {
+            "email": "owner@example.ly",
+            "password": "MockPassw0rd123"
+          },
+          "authorization": null
+        },
+        {
+          "method": "GET",
+          "path": "/auth/me",
+          "body": null,
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        },
+        {
+          "method": "GET",
+          "path": "/orders/estimate",
+          "body": null,
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        },
+        {
+          "method": "POST",
+          "path": "/orders",
+          "body": {
+            "pickup": {
+              "address": "طرابلس - سوق الجمعة",
+              "lat": 32.8872,
+              "lng": 13.1913
+            },
+            "dropoff": {
+              "address": "طرابلس - باب بن غشير",
+              "lat": 32.85,
+              "lng": 13.2
+            },
+            "vehicle_type": "motorcycle",
+            "priority": "standard",
+            "payment_method": "cash"
+          },
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        },
+        {
+          "method": "GET",
+          "path": "/auth/me",
+          "body": null,
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        }
+      ],
+      "blocked_external_urls": [
+        "https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap"
+      ],
+      "page_errors": [],
+      "dialogs": [],
+      "mock_created_orders": [
+        {
+          "id": "ORD-00001",
+          "payment_method": "cash"
+        }
+      ]
+    },
+    {
+      "source": "/workspace/kntr-fixed/kntr-mobile/android/app/src/main/assets/public/index.html",
+      "name": "Wallet selection sends wallet and refreshes server balance",
+      "evidence": {
+        "wallet_sent": true,
+        "displayed_balance": 84.5,
+        "server_charge": 15.5,
+        "authoritative_wallet_refresh": true
+      },
+      "status": "passed",
+      "mock_api_requests": [
+        {
+          "method": "POST",
+          "path": "/auth/login",
+          "body": {
+            "email": "owner@example.ly",
+            "password": "MockPassw0rd123"
+          },
+          "authorization": null
+        },
+        {
+          "method": "GET",
+          "path": "/auth/me",
+          "body": null,
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        },
+        {
+          "method": "GET",
+          "path": "/orders/estimate",
+          "body": null,
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        },
+        {
+          "method": "POST",
+          "path": "/orders",
+          "body": {
+            "pickup": {
+              "address": "طرابلس - سوق الجمعة",
+              "lat": 32.8872,
+              "lng": 13.1913
+            },
+            "dropoff": {
+              "address": "طرابلس - باب بن غشير",
+              "lat": 32.85,
+              "lng": 13.2
+            },
+            "vehicle_type": "motorcycle",
+            "priority": "standard",
+            "payment_method": "wallet"
+          },
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        },
+        {
+          "method": "GET",
+          "path": "/auth/me",
+          "body": null,
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        }
+      ],
+      "blocked_external_urls": [
+        "https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap"
+      ],
+      "page_errors": [],
+      "dialogs": [],
+      "mock_created_orders": [
+        {
+          "id": "ORD-00001",
+          "payment_method": "wallet"
+        }
+      ]
+    },
+    {
+      "source": "/workspace/kntr-fixed/kntr-mobile/android/app/src/main/assets/public/index.html",
+      "name": "Insufficient wallet server error creates no fake order",
+      "evidence": {
+        "server_error_visible": true,
+        "no_fake_order_created": true,
+        "button_reenabled": true
+      },
+      "status": "passed",
+      "mock_api_requests": [
+        {
+          "method": "POST",
+          "path": "/auth/login",
+          "body": {
+            "email": "owner@example.ly",
+            "password": "MockPassw0rd123"
+          },
+          "authorization": null
+        },
+        {
+          "method": "GET",
+          "path": "/auth/me",
+          "body": null,
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        },
+        {
+          "method": "GET",
+          "path": "/orders/estimate",
+          "body": null,
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        },
+        {
+          "method": "POST",
+          "path": "/orders",
+          "body": {
+            "pickup": {
+              "address": "طرابلس - سوق الجمعة",
+              "lat": 32.8872,
+              "lng": 13.1913
+            },
+            "dropoff": {
+              "address": "طرابلس - باب بن غشير",
+              "lat": 32.85,
+              "lng": 13.2
+            },
+            "vehicle_type": "motorcycle",
+            "priority": "standard",
+            "payment_method": "wallet"
+          },
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        }
+      ],
+      "blocked_external_urls": [
+        "https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap"
+      ],
+      "page_errors": [],
+      "dialogs": [],
+      "mock_created_orders": []
+    },
+    {
+      "source": "/workspace/kntr-fixed/kntr-mobile/android/app/src/main/assets/public/index.html",
+      "name": "Duplicate submit while request pending sends one POST",
+      "evidence": {
+        "pending_submit_attempts": 3,
+        "order_posts": 1,
+        "button_disabled_while_pending": true,
+        "one_order_after_release": true
+      },
+      "status": "passed",
+      "mock_api_requests": [
+        {
+          "method": "POST",
+          "path": "/auth/login",
+          "body": {
+            "email": "owner@example.ly",
+            "password": "MockPassw0rd123"
+          },
+          "authorization": null
+        },
+        {
+          "method": "GET",
+          "path": "/auth/me",
+          "body": null,
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        },
+        {
+          "method": "GET",
+          "path": "/orders/estimate",
+          "body": null,
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        },
+        {
+          "method": "POST",
+          "path": "/orders",
+          "body": {
+            "pickup": {
+              "address": "طرابلس - سوق الجمعة",
+              "lat": 32.8872,
+              "lng": 13.1913
+            },
+            "dropoff": {
+              "address": "طرابلس - باب بن غشير",
+              "lat": 32.85,
+              "lng": 13.2
+            },
+            "vehicle_type": "motorcycle",
+            "priority": "standard",
+            "payment_method": "wallet"
+          },
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        },
+        {
+          "method": "GET",
+          "path": "/auth/me",
+          "body": null,
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        }
+      ],
+      "blocked_external_urls": [
+        "https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap"
+      ],
+      "page_errors": [],
+      "dialogs": [],
+      "mock_created_orders": [
+        {
+          "id": "ORD-00001",
+          "payment_method": "wallet"
+        }
+      ]
+    },
+    {
+      "source": "/workspace/kntr-fixed/kntr-mobile/android/app/src/main/assets/public/index.html",
+      "name": "Network exception clears busy state and permits retry",
+      "evidence": {
+        "network_error_visible": "تعذّر الاتصال. تحقق من طلباتك قبل إعادة المحاولة",
+        "busy_state_cleared": true,
+        "retry_created_one_order": true
+      },
+      "status": "passed",
+      "mock_api_requests": [
+        {
+          "method": "POST",
+          "path": "/auth/login",
+          "body": {
+            "email": "owner@example.ly",
+            "password": "MockPassw0rd123"
+          },
+          "authorization": null
+        },
+        {
+          "method": "GET",
+          "path": "/auth/me",
+          "body": null,
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        },
+        {
+          "method": "GET",
+          "path": "/orders/estimate",
+          "body": null,
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        },
+        {
+          "method": "POST",
+          "path": "/orders",
+          "body": {
+            "pickup": {
+              "address": "طرابلس - سوق الجمعة",
+              "lat": 32.8872,
+              "lng": 13.1913
+            },
+            "dropoff": {
+              "address": "طرابلس - باب بن غشير",
+              "lat": 32.85,
+              "lng": 13.2
+            },
+            "vehicle_type": "motorcycle",
+            "priority": "standard",
+            "payment_method": "cash"
+          },
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        },
+        {
+          "method": "POST",
+          "path": "/orders",
+          "body": {
+            "pickup": {
+              "address": "طرابلس - سوق الجمعة",
+              "lat": 32.8872,
+              "lng": 13.1913
+            },
+            "dropoff": {
+              "address": "طرابلس - باب بن غشير",
+              "lat": 32.85,
+              "lng": 13.2
+            },
+            "vehicle_type": "motorcycle",
+            "priority": "standard",
+            "payment_method": "cash"
+          },
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        },
+        {
+          "method": "GET",
+          "path": "/auth/me",
+          "body": null,
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        }
+      ],
+      "blocked_external_urls": [
+        "https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap"
+      ],
+      "page_errors": [],
+      "dialogs": [],
+      "mock_created_orders": [
+        {
+          "id": "ORD-00001",
+          "payment_method": "cash"
+        }
+      ]
+    },
+    {
+      "source": "/workspace/kntr-fixed/kntr-mobile/android/app/src/main/assets/public/index.html",
+      "name": "Driver displays accrued earnings rather than wallet balance",
+      "evidence": {
+        "accrued_earnings_displayed": "123.45",
+        "distinct_wallet_balance": "7.00"
+      },
+      "status": "passed",
+      "mock_api_requests": [
+        {
+          "method": "POST",
+          "path": "/auth/login",
+          "body": {
+            "email": "driver@example.ly",
+            "password": "MockPassw0rd123"
+          },
+          "authorization": null
+        },
+        {
+          "method": "GET",
+          "path": "/auth/me",
+          "body": null,
+          "authorization": "Bearer MOCK-TOKEN-MOCK-DRIVER-A"
+        },
+        {
+          "method": "GET",
+          "path": "/drivers/orders",
+          "body": null,
+          "authorization": "Bearer MOCK-TOKEN-MOCK-DRIVER-A"
+        }
+      ],
+      "blocked_external_urls": [
+        "https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap"
+      ],
+      "page_errors": [],
+      "dialogs": [],
+      "mock_created_orders": []
+    },
+    {
+      "source": "/workspace/kntr-fixed/kntr-mobile/android/app/src/main/assets/public/index.html",
+      "name": "Logout posts captured token and clears private order and wallet state",
+      "evidence": {
+        "server_logout_called": true,
+        "authorization_preserved": true,
+        "private_state_and_dom_cleared": true,
+        "failure_mode": null,
+        "warning": ""
+      },
+      "status": "passed",
+      "mock_api_requests": [
+        {
+          "method": "POST",
+          "path": "/auth/login",
+          "body": {
+            "email": "owner@example.ly",
+            "password": "MockPassw0rd123"
+          },
+          "authorization": null
+        },
+        {
+          "method": "GET",
+          "path": "/auth/me",
+          "body": null,
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        },
+        {
+          "method": "GET",
+          "path": "/orders/estimate",
+          "body": null,
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        },
+        {
+          "method": "GET",
+          "path": "/auth/me",
+          "body": null,
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        },
+        {
+          "method": "GET",
+          "path": "/orders",
+          "body": null,
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        },
+        {
+          "method": "GET",
+          "path": "/orders/ORD-00001",
+          "body": null,
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        },
+        {
+          "method": "POST",
+          "path": "/auth/logout",
+          "body": {},
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        }
+      ],
+      "blocked_external_urls": [
+        "https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap"
+      ],
+      "page_errors": [],
+      "dialogs": [],
+      "mock_created_orders": []
+    },
+    {
+      "source": "/workspace/kntr-fixed/kntr-mobile/android/app/src/main/assets/public/index.html",
+      "name": "Server logout failure still clears private state and shows warning",
+      "evidence": {
+        "server_logout_called": true,
+        "authorization_preserved": true,
+        "private_state_and_dom_cleared": true,
+        "failure_mode": "server",
+        "warning": "تم الخروج محليًا؛ تعذّر إلغاء الجلسة على الخادم"
+      },
+      "status": "passed",
+      "mock_api_requests": [
+        {
+          "method": "POST",
+          "path": "/auth/login",
+          "body": {
+            "email": "owner@example.ly",
+            "password": "MockPassw0rd123"
+          },
+          "authorization": null
+        },
+        {
+          "method": "GET",
+          "path": "/auth/me",
+          "body": null,
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        },
+        {
+          "method": "GET",
+          "path": "/orders/estimate",
+          "body": null,
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        },
+        {
+          "method": "GET",
+          "path": "/auth/me",
+          "body": null,
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        },
+        {
+          "method": "GET",
+          "path": "/orders",
+          "body": null,
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        },
+        {
+          "method": "GET",
+          "path": "/orders/ORD-00001",
+          "body": null,
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        },
+        {
+          "method": "POST",
+          "path": "/auth/logout",
+          "body": {},
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        }
+      ],
+      "blocked_external_urls": [
+        "https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap"
+      ],
+      "page_errors": [],
+      "dialogs": [],
+      "mock_created_orders": []
+    },
+    {
+      "source": "/workspace/kntr-fixed/kntr-mobile/android/app/src/main/assets/public/index.html",
+      "name": "Network logout failure still clears private state and shows warning",
+      "evidence": {
+        "server_logout_called": true,
+        "authorization_preserved": true,
+        "private_state_and_dom_cleared": true,
+        "failure_mode": "network",
+        "warning": "تم الخروج محليًا؛ تعذّر إلغاء الجلسة على الخادم"
+      },
+      "status": "passed",
+      "mock_api_requests": [
+        {
+          "method": "POST",
+          "path": "/auth/login",
+          "body": {
+            "email": "owner@example.ly",
+            "password": "MockPassw0rd123"
+          },
+          "authorization": null
+        },
+        {
+          "method": "GET",
+          "path": "/auth/me",
+          "body": null,
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        },
+        {
+          "method": "GET",
+          "path": "/orders/estimate",
+          "body": null,
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        },
+        {
+          "method": "GET",
+          "path": "/auth/me",
+          "body": null,
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        },
+        {
+          "method": "GET",
+          "path": "/orders",
+          "body": null,
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        },
+        {
+          "method": "GET",
+          "path": "/orders/ORD-00001",
+          "body": null,
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        },
+        {
+          "method": "POST",
+          "path": "/auth/logout",
+          "body": {},
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        }
+      ],
+      "blocked_external_urls": [
+        "https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap"
+      ],
+      "page_errors": [],
+      "dialogs": [],
+      "mock_created_orders": []
+    },
+    {
+      "source": "/workspace/kntr-fixed/kntr-mobile/android/app/src/main/assets/public/index.html",
+      "name": "Late create response cannot restore private UI after logout",
+      "evidence": {
+        "late_create_callback_did_not_restore_private_ui": true,
+        "login_remained_visible": true
+      },
+      "status": "passed",
+      "mock_api_requests": [
+        {
+          "method": "POST",
+          "path": "/auth/login",
+          "body": {
+            "email": "owner@example.ly",
+            "password": "MockPassw0rd123"
+          },
+          "authorization": null
+        },
+        {
+          "method": "GET",
+          "path": "/auth/me",
+          "body": null,
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        },
+        {
+          "method": "GET",
+          "path": "/orders/estimate",
+          "body": null,
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        },
+        {
+          "method": "POST",
+          "path": "/orders",
+          "body": {
+            "pickup": {
+              "address": "طرابلس - سوق الجمعة",
+              "lat": 32.8872,
+              "lng": 13.1913
+            },
+            "dropoff": {
+              "address": "طرابلس - باب بن غشير",
+              "lat": 32.85,
+              "lng": 13.2
+            },
+            "vehicle_type": "motorcycle",
+            "priority": "standard",
+            "payment_method": "wallet"
+          },
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        },
+        {
+          "method": "POST",
+          "path": "/auth/logout",
+          "body": {},
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        }
+      ],
+      "blocked_external_urls": [
+        "https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap"
+      ],
+      "page_errors": [],
+      "dialogs": [],
+      "mock_created_orders": [
+        {
+          "id": "ORD-00001",
+          "payment_method": "wallet"
+        }
+      ]
+    },
+    {
+      "source": "/workspace/kntr-fixed/kntr-mobile/ios/App/App/public/index.html",
+      "name": "Inline JavaScript syntax",
+      "status": "passed",
+      "evidence": {
+        "script_count": 1
+      }
+    },
+    {
+      "source": "/workspace/kntr-fixed/kntr-mobile/ios/App/App/public/index.html",
+      "name": "Cash default sends cash without wallet debit",
+      "evidence": {
+        "default_cash_sent": true,
+        "wallet_balance_unchanged": true,
+        "available_methods": [
+          "cash",
+          "wallet"
+        ]
+      },
+      "status": "passed",
+      "mock_api_requests": [
+        {
+          "method": "POST",
+          "path": "/auth/login",
+          "body": {
+            "email": "owner@example.ly",
+            "password": "MockPassw0rd123"
+          },
+          "authorization": null
+        },
+        {
+          "method": "GET",
+          "path": "/auth/me",
+          "body": null,
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        },
+        {
+          "method": "GET",
+          "path": "/orders/estimate",
+          "body": null,
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        },
+        {
+          "method": "POST",
+          "path": "/orders",
+          "body": {
+            "pickup": {
+              "address": "طرابلس - سوق الجمعة",
+              "lat": 32.8872,
+              "lng": 13.1913
+            },
+            "dropoff": {
+              "address": "طرابلس - باب بن غشير",
+              "lat": 32.85,
+              "lng": 13.2
+            },
+            "vehicle_type": "motorcycle",
+            "priority": "standard",
+            "payment_method": "cash"
+          },
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        },
+        {
+          "method": "GET",
+          "path": "/auth/me",
+          "body": null,
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        }
+      ],
+      "blocked_external_urls": [
+        "https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap"
+      ],
+      "page_errors": [],
+      "dialogs": [],
+      "mock_created_orders": [
+        {
+          "id": "ORD-00001",
+          "payment_method": "cash"
+        }
+      ]
+    },
+    {
+      "source": "/workspace/kntr-fixed/kntr-mobile/ios/App/App/public/index.html",
+      "name": "Wallet selection sends wallet and refreshes server balance",
+      "evidence": {
+        "wallet_sent": true,
+        "displayed_balance": 84.5,
+        "server_charge": 15.5,
+        "authoritative_wallet_refresh": true
+      },
+      "status": "passed",
+      "mock_api_requests": [
+        {
+          "method": "POST",
+          "path": "/auth/login",
+          "body": {
+            "email": "owner@example.ly",
+            "password": "MockPassw0rd123"
+          },
+          "authorization": null
+        },
+        {
+          "method": "GET",
+          "path": "/auth/me",
+          "body": null,
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        },
+        {
+          "method": "GET",
+          "path": "/orders/estimate",
+          "body": null,
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        },
+        {
+          "method": "POST",
+          "path": "/orders",
+          "body": {
+            "pickup": {
+              "address": "طرابلس - سوق الجمعة",
+              "lat": 32.8872,
+              "lng": 13.1913
+            },
+            "dropoff": {
+              "address": "طرابلس - باب بن غشير",
+              "lat": 32.85,
+              "lng": 13.2
+            },
+            "vehicle_type": "motorcycle",
+            "priority": "standard",
+            "payment_method": "wallet"
+          },
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        },
+        {
+          "method": "GET",
+          "path": "/auth/me",
+          "body": null,
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        }
+      ],
+      "blocked_external_urls": [
+        "https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap"
+      ],
+      "page_errors": [],
+      "dialogs": [],
+      "mock_created_orders": [
+        {
+          "id": "ORD-00001",
+          "payment_method": "wallet"
+        }
+      ]
+    },
+    {
+      "source": "/workspace/kntr-fixed/kntr-mobile/ios/App/App/public/index.html",
+      "name": "Insufficient wallet server error creates no fake order",
+      "evidence": {
+        "server_error_visible": true,
+        "no_fake_order_created": true,
+        "button_reenabled": true
+      },
+      "status": "passed",
+      "mock_api_requests": [
+        {
+          "method": "POST",
+          "path": "/auth/login",
+          "body": {
+            "email": "owner@example.ly",
+            "password": "MockPassw0rd123"
+          },
+          "authorization": null
+        },
+        {
+          "method": "GET",
+          "path": "/auth/me",
+          "body": null,
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        },
+        {
+          "method": "GET",
+          "path": "/orders/estimate",
+          "body": null,
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        },
+        {
+          "method": "POST",
+          "path": "/orders",
+          "body": {
+            "pickup": {
+              "address": "طرابلس - سوق الجمعة",
+              "lat": 32.8872,
+              "lng": 13.1913
+            },
+            "dropoff": {
+              "address": "طرابلس - باب بن غشير",
+              "lat": 32.85,
+              "lng": 13.2
+            },
+            "vehicle_type": "motorcycle",
+            "priority": "standard",
+            "payment_method": "wallet"
+          },
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        }
+      ],
+      "blocked_external_urls": [
+        "https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap"
+      ],
+      "page_errors": [],
+      "dialogs": [],
+      "mock_created_orders": []
+    },
+    {
+      "source": "/workspace/kntr-fixed/kntr-mobile/ios/App/App/public/index.html",
+      "name": "Duplicate submit while request pending sends one POST",
+      "evidence": {
+        "pending_submit_attempts": 3,
+        "order_posts": 1,
+        "button_disabled_while_pending": true,
+        "one_order_after_release": true
+      },
+      "status": "passed",
+      "mock_api_requests": [
+        {
+          "method": "POST",
+          "path": "/auth/login",
+          "body": {
+            "email": "owner@example.ly",
+            "password": "MockPassw0rd123"
+          },
+          "authorization": null
+        },
+        {
+          "method": "GET",
+          "path": "/auth/me",
+          "body": null,
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        },
+        {
+          "method": "GET",
+          "path": "/orders/estimate",
+          "body": null,
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        },
+        {
+          "method": "POST",
+          "path": "/orders",
+          "body": {
+            "pickup": {
+              "address": "طرابلس - سوق الجمعة",
+              "lat": 32.8872,
+              "lng": 13.1913
+            },
+            "dropoff": {
+              "address": "طرابلس - باب بن غشير",
+              "lat": 32.85,
+              "lng": 13.2
+            },
+            "vehicle_type": "motorcycle",
+            "priority": "standard",
+            "payment_method": "wallet"
+          },
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        },
+        {
+          "method": "GET",
+          "path": "/auth/me",
+          "body": null,
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        }
+      ],
+      "blocked_external_urls": [
+        "https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap"
+      ],
+      "page_errors": [],
+      "dialogs": [],
+      "mock_created_orders": [
+        {
+          "id": "ORD-00001",
+          "payment_method": "wallet"
+        }
+      ]
+    },
+    {
+      "source": "/workspace/kntr-fixed/kntr-mobile/ios/App/App/public/index.html",
+      "name": "Network exception clears busy state and permits retry",
+      "evidence": {
+        "network_error_visible": "تعذّر الاتصال. تحقق من طلباتك قبل إعادة المحاولة",
+        "busy_state_cleared": true,
+        "retry_created_one_order": true
+      },
+      "status": "passed",
+      "mock_api_requests": [
+        {
+          "method": "POST",
+          "path": "/auth/login",
+          "body": {
+            "email": "owner@example.ly",
+            "password": "MockPassw0rd123"
+          },
+          "authorization": null
+        },
+        {
+          "method": "GET",
+          "path": "/auth/me",
+          "body": null,
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        },
+        {
+          "method": "GET",
+          "path": "/orders/estimate",
+          "body": null,
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        },
+        {
+          "method": "POST",
+          "path": "/orders",
+          "body": {
+            "pickup": {
+              "address": "طرابلس - سوق الجمعة",
+              "lat": 32.8872,
+              "lng": 13.1913
+            },
+            "dropoff": {
+              "address": "طرابلس - باب بن غشير",
+              "lat": 32.85,
+              "lng": 13.2
+            },
+            "vehicle_type": "motorcycle",
+            "priority": "standard",
+            "payment_method": "cash"
+          },
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        },
+        {
+          "method": "POST",
+          "path": "/orders",
+          "body": {
+            "pickup": {
+              "address": "طرابلس - سوق الجمعة",
+              "lat": 32.8872,
+              "lng": 13.1913
+            },
+            "dropoff": {
+              "address": "طرابلس - باب بن غشير",
+              "lat": 32.85,
+              "lng": 13.2
+            },
+            "vehicle_type": "motorcycle",
+            "priority": "standard",
+            "payment_method": "cash"
+          },
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        },
+        {
+          "method": "GET",
+          "path": "/auth/me",
+          "body": null,
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        }
+      ],
+      "blocked_external_urls": [
+        "https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap"
+      ],
+      "page_errors": [],
+      "dialogs": [],
+      "mock_created_orders": [
+        {
+          "id": "ORD-00001",
+          "payment_method": "cash"
+        }
+      ]
+    },
+    {
+      "source": "/workspace/kntr-fixed/kntr-mobile/ios/App/App/public/index.html",
+      "name": "Driver displays accrued earnings rather than wallet balance",
+      "evidence": {
+        "accrued_earnings_displayed": "123.45",
+        "distinct_wallet_balance": "7.00"
+      },
+      "status": "passed",
+      "mock_api_requests": [
+        {
+          "method": "POST",
+          "path": "/auth/login",
+          "body": {
+            "email": "driver@example.ly",
+            "password": "MockPassw0rd123"
+          },
+          "authorization": null
+        },
+        {
+          "method": "GET",
+          "path": "/auth/me",
+          "body": null,
+          "authorization": "Bearer MOCK-TOKEN-MOCK-DRIVER-A"
+        },
+        {
+          "method": "GET",
+          "path": "/drivers/orders",
+          "body": null,
+          "authorization": "Bearer MOCK-TOKEN-MOCK-DRIVER-A"
+        }
+      ],
+      "blocked_external_urls": [
+        "https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap"
+      ],
+      "page_errors": [],
+      "dialogs": [],
+      "mock_created_orders": []
+    },
+    {
+      "source": "/workspace/kntr-fixed/kntr-mobile/ios/App/App/public/index.html",
+      "name": "Logout posts captured token and clears private order and wallet state",
+      "evidence": {
+        "server_logout_called": true,
+        "authorization_preserved": true,
+        "private_state_and_dom_cleared": true,
+        "failure_mode": null,
+        "warning": ""
+      },
+      "status": "passed",
+      "mock_api_requests": [
+        {
+          "method": "POST",
+          "path": "/auth/login",
+          "body": {
+            "email": "owner@example.ly",
+            "password": "MockPassw0rd123"
+          },
+          "authorization": null
+        },
+        {
+          "method": "GET",
+          "path": "/auth/me",
+          "body": null,
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        },
+        {
+          "method": "GET",
+          "path": "/orders/estimate",
+          "body": null,
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        },
+        {
+          "method": "GET",
+          "path": "/auth/me",
+          "body": null,
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        },
+        {
+          "method": "GET",
+          "path": "/orders",
+          "body": null,
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        },
+        {
+          "method": "GET",
+          "path": "/orders/ORD-00001",
+          "body": null,
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        },
+        {
+          "method": "POST",
+          "path": "/auth/logout",
+          "body": {},
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        }
+      ],
+      "blocked_external_urls": [
+        "https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap"
+      ],
+      "page_errors": [],
+      "dialogs": [],
+      "mock_created_orders": []
+    },
+    {
+      "source": "/workspace/kntr-fixed/kntr-mobile/ios/App/App/public/index.html",
+      "name": "Server logout failure still clears private state and shows warning",
+      "evidence": {
+        "server_logout_called": true,
+        "authorization_preserved": true,
+        "private_state_and_dom_cleared": true,
+        "failure_mode": "server",
+        "warning": "تم الخروج محليًا؛ تعذّر إلغاء الجلسة على الخادم"
+      },
+      "status": "passed",
+      "mock_api_requests": [
+        {
+          "method": "POST",
+          "path": "/auth/login",
+          "body": {
+            "email": "owner@example.ly",
+            "password": "MockPassw0rd123"
+          },
+          "authorization": null
+        },
+        {
+          "method": "GET",
+          "path": "/auth/me",
+          "body": null,
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        },
+        {
+          "method": "GET",
+          "path": "/orders/estimate",
+          "body": null,
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        },
+        {
+          "method": "GET",
+          "path": "/auth/me",
+          "body": null,
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        },
+        {
+          "method": "GET",
+          "path": "/orders",
+          "body": null,
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        },
+        {
+          "method": "GET",
+          "path": "/orders/ORD-00001",
+          "body": null,
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        },
+        {
+          "method": "POST",
+          "path": "/auth/logout",
+          "body": {},
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        }
+      ],
+      "blocked_external_urls": [
+        "https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap"
+      ],
+      "page_errors": [],
+      "dialogs": [],
+      "mock_created_orders": []
+    },
+    {
+      "source": "/workspace/kntr-fixed/kntr-mobile/ios/App/App/public/index.html",
+      "name": "Network logout failure still clears private state and shows warning",
+      "evidence": {
+        "server_logout_called": true,
+        "authorization_preserved": true,
+        "private_state_and_dom_cleared": true,
+        "failure_mode": "network",
+        "warning": "تم الخروج محليًا؛ تعذّر إلغاء الجلسة على الخادم"
+      },
+      "status": "passed",
+      "mock_api_requests": [
+        {
+          "method": "POST",
+          "path": "/auth/login",
+          "body": {
+            "email": "owner@example.ly",
+            "password": "MockPassw0rd123"
+          },
+          "authorization": null
+        },
+        {
+          "method": "GET",
+          "path": "/auth/me",
+          "body": null,
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        },
+        {
+          "method": "GET",
+          "path": "/orders/estimate",
+          "body": null,
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        },
+        {
+          "method": "GET",
+          "path": "/auth/me",
+          "body": null,
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        },
+        {
+          "method": "GET",
+          "path": "/orders",
+          "body": null,
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        },
+        {
+          "method": "GET",
+          "path": "/orders/ORD-00001",
+          "body": null,
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        },
+        {
+          "method": "POST",
+          "path": "/auth/logout",
+          "body": {},
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        }
+      ],
+      "blocked_external_urls": [
+        "https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap"
+      ],
+      "page_errors": [],
+      "dialogs": [],
+      "mock_created_orders": []
+    },
+    {
+      "source": "/workspace/kntr-fixed/kntr-mobile/ios/App/App/public/index.html",
+      "name": "Late create response cannot restore private UI after logout",
+      "evidence": {
+        "late_create_callback_did_not_restore_private_ui": true,
+        "login_remained_visible": true
+      },
+      "status": "passed",
+      "mock_api_requests": [
+        {
+          "method": "POST",
+          "path": "/auth/login",
+          "body": {
+            "email": "owner@example.ly",
+            "password": "MockPassw0rd123"
+          },
+          "authorization": null
+        },
+        {
+          "method": "GET",
+          "path": "/auth/me",
+          "body": null,
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        },
+        {
+          "method": "GET",
+          "path": "/orders/estimate",
+          "body": null,
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        },
+        {
+          "method": "POST",
+          "path": "/orders",
+          "body": {
+            "pickup": {
+              "address": "طرابلس - سوق الجمعة",
+              "lat": 32.8872,
+              "lng": 13.1913
+            },
+            "dropoff": {
+              "address": "طرابلس - باب بن غشير",
+              "lat": 32.85,
+              "lng": 13.2
+            },
+            "vehicle_type": "motorcycle",
+            "priority": "standard",
+            "payment_method": "wallet"
+          },
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        },
+        {
+          "method": "POST",
+          "path": "/auth/logout",
+          "body": {},
+          "authorization": "Bearer MOCK-TOKEN-MOCK-CUSTOMER-A"
+        }
+      ],
+      "blocked_external_urls": [
+        "https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap"
+      ],
+      "page_errors": [],
+      "dialogs": [],
+      "mock_created_orders": [
+        {
+          "id": "ORD-00001",
+          "payment_method": "wallet"
+        }
+      ]
+    }
+  ],
+  "browser_version": "154.0.8037.57",
+  "summary": {
+    "passed": 44,
+    "failed": 0,
+    "success": true,
+    "api_mocked": true,
+    "payment_provider_tested": false,
+    "native_runtime_tested": false
+  }
+}

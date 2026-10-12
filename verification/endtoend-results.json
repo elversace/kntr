@@ -1,0 +1,76 @@
+{
+  "environment": {
+    "node": "v24.19.0",
+    "database": "PostgreSQL 18.4, fresh isolated data directory",
+    "backend": "/workspace/kntr-startup/kntr-package/kntr-backend",
+    "runDir": "/workspace/kntr-startup/verification/endtoend-run-QNTYhP",
+    "dbPort": 38957,
+    "appPort": 42783,
+    "postgis": "Current schema requires no PostGIS extension; these tests do not verify PostGIS or geospatial SQL"
+  },
+  "checks": [
+    {
+      "name": "Real Chromium customer and driver complete cash and wallet deliveries through real API",
+      "status": "passed",
+      "evidence": {
+        "actualBackend": true,
+        "apiMocked": false,
+        "native": false,
+        "flows": [
+          {
+            "order_id": "ORD-00001",
+            "payment_method": "cash",
+            "status": "delivered",
+            "wallet_before_creation": 100,
+            "wallet_after_creation": 100,
+            "wallet_after_delivery": 100,
+            "customer_confirmed": true,
+            "driver_active_cleared": true,
+            "screenshot": "/workspace/kntr-startup/verification/endtoend-cash-delivered.png"
+          },
+          {
+            "order_id": "ORD-00002",
+            "payment_method": "wallet",
+            "status": "delivered",
+            "wallet_before_creation": 100,
+            "wallet_after_creation": 89,
+            "wallet_after_delivery": 89,
+            "customer_confirmed": true,
+            "driver_active_cleared": true,
+            "screenshot": "/workspace/kntr-startup/verification/endtoend-wallet-delivered.png"
+          }
+        ],
+        "browser_version": "154.0.8037.57",
+        "realAPIResponses": 40
+      }
+    },
+    {
+      "name": "Real browser deliveries create exactly one matching payment ledger entry per order",
+      "status": "passed",
+      "evidence": {
+        "oneLedgerEntryEach": true,
+        "cashDidNotDebitWallet": true,
+        "walletDebitedOnce": true,
+        "initialWalletCents": 10000,
+        "walletChargeCents": 1100,
+        "finalWalletCents": 8900
+      }
+    },
+    {
+      "name": "Real browser delivery counters and earnings agree exactly with both paid orders",
+      "status": "passed",
+      "evidence": {
+        "driverTrips": 2,
+        "driverEarnings": "16.40",
+        "customerOrders": 2,
+        "customerSpent": "22.00",
+        "driverAvailable": true
+      }
+    }
+  ],
+  "summary": {
+    "passed": 3,
+    "failed": 0,
+    "success": true
+  }
+}

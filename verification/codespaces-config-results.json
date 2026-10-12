@@ -1,0 +1,81 @@
+{
+  "summary": {
+    "passed": 7,
+    "failed": 0,
+    "success": true
+  },
+  "checks": [
+    {
+      "name": "Fresh initialization creates private matching credentials without printing them",
+      "status": "passed",
+      "evidence": {
+        "mode": "0600",
+        "independentJwtSecrets": true,
+        "matchingDbPassword": true,
+        "noSecretOutput": true
+      }
+    },
+    {
+      "name": "Repeated initialization preserves every existing credential",
+      "status": "passed",
+      "evidence": {
+        "repeatedRuns": 3,
+        "allCredentialsPreserved": true
+      }
+    },
+    {
+      "name": "Missing app environment is recovered using the preserved database password",
+      "status": "passed",
+      "evidence": {
+        "existingDatabasePasswordPreserved": true,
+        "missingAppEnvRecovered": true
+      }
+    },
+    {
+      "name": "Mismatched database credentials fail closed without overwriting files",
+      "status": "passed",
+      "evidence": {
+        "refusedMismatchedPasswords": true,
+        "noOverwriteOrSecretOutput": true
+      }
+    },
+    {
+      "name": "Symlink credentials are refused without changing their target",
+      "status": "passed",
+      "evidence": {
+        "refusedSymlink": true,
+        "originalBytesPreserved": true
+      }
+    },
+    {
+      "name": "Lifecycle configuration forwards only API port and scripts have valid shell syntax",
+      "status": "passed",
+      "evidence": {
+        "apiPortOnly": 3000,
+        "shellSyntaxValid": true,
+        "publicForwardingNotEnabledByConfig": true
+      }
+    },
+    {
+      "name": "Docker Compose accepts the complete generated environment and service configuration",
+      "status": "passed",
+      "evidence": {
+        "composeSchemaValidated": true,
+        "containersLaunched": false
+      }
+    }
+  ],
+  "scope": {
+    "codespaceCreated": false,
+    "containerRuntimeTested": false,
+    "freeQuotaVerified": false
+  },
+  "configuration_sha256": {
+    ".devcontainer/stop.sh": "c9f88e6cc3ed734471f959c8b23ba504263822fa45ad5ff8d142b8ef8a0f2ac2",
+    ".devcontainer/devcontainer.json": "98accd7bb42e57d0cc044b1cc91974f3d1e4490c5742a656bab7a0627041f31c",
+    ".devcontainer/initialize.sh": "1907239ea9fbdd42d081198b9b3f64d6876e3cc679267d32916804e7a9f2196c",
+    ".devcontainer/start.sh": "642568bacc41c853994f28160f70d2844b165893bce4e6c411b40398f9bda094",
+    ".devcontainer/setup.sh": "357655db2b7ba768bda91df379f35a1047b6afd1bcc81f848fb7293a8a63c0c0",
+    ".devcontainer/compose.yaml": "5111dbd1bcf03dfc159f56cfc356d8d761c42898cb6f059c2bac8957e90dba24"
+  }
+}

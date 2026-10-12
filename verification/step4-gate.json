@@ -1,0 +1,355 @@
+{
+  "gate": "step4",
+  "completed_at_utc": "2026-10-11T18:37:39.230398+00:00",
+  "all_reports_passed": true,
+  "evidence": [
+    {
+      "report": "step4-results.json",
+      "sha256": "10d15d3e983e9d34d6c3092a1e214d4f1b2ce9bc656b0ffa316828d2f8087c85",
+      "result": {
+        "environment": {
+          "node": "v24.19.0",
+          "database": "PostgreSQL 18.4, fresh isolated data directory",
+          "backend": "/workspace/kntr-fixed/kntr-package/kntr-backend",
+          "runDir": "/workspace/kntr-fixed/verification/step4-run-A4IiO5",
+          "dbPort": 36491,
+          "appPort": 40489,
+          "postgis": "Optional extension omitted (SKIP_POSTGIS=1); these tests do not verify PostGIS or geospatial SQL"
+        },
+        "checks": [
+          {
+            "name": "First document upload recreates missing folder and stores private owned metadata",
+            "status": "passed",
+            "evidence": {
+              "folderRecreated": true,
+              "stableDocumentId": "1584579e-bf0b-4edd-aede-fedf3d12864d",
+              "privateURL": "/v1/drivers/documents/1584579e-bf0b-4edd-aede-fedf3d12864d/file",
+              "requestDriverIdCannotChangeOwnership": true
+            }
+          },
+          {
+            "name": "PDF, JPG, JPEG and PNG signatures upload successfully",
+            "status": "passed",
+            "evidence": {
+              "acceptedFormats": [
+                "pdf",
+                "jpg",
+                "jpeg",
+                "png"
+              ],
+              "oneRowPerDocumentType": true
+            }
+          },
+          {
+            "name": "Replacement keeps document ID, updates metadata, resets verification and removes unreferenced old file",
+            "status": "passed",
+            "evidence": {
+              "sameDocumentId": true,
+              "metadataUpdated": true,
+              "verificationCleared": true,
+              "expiredStatusCorrect": true,
+              "supersededFileRemoved": true
+            }
+          },
+          {
+            "name": "Expiry status reflects current, near and later expiry dates",
+            "status": "passed",
+            "evidence": {
+              "todayAndWithin30DaysExpiring": true,
+              "laterExpiryValid": true
+            }
+          },
+          {
+            "name": "Private downloads allow owner and admin, deny everyone else and expose no public uploads",
+            "status": "passed",
+            "evidence": {
+              "allowedOwnerAndAdmin": true,
+              "deniedOtherAccounts": 5,
+              "deniedAnonymous": true,
+              "publicUploadsRemoved": true,
+              "exactBytesAndAttachmentHeaders": true
+            }
+          },
+          {
+            "name": "Interrupted private download does not crash server or delete stored document",
+            "status": "passed",
+            "evidence": {
+              "downloadAbortedAfterBytes": 64324,
+              "serverStillHealthy": true,
+              "storedDocumentAndFilePreserved": true
+            }
+          },
+          {
+            "name": "Unauthenticated and customer uploads cannot write files",
+            "status": "passed",
+            "evidence": {
+              "rejectedBeforeFileWrite": true
+            }
+          },
+          {
+            "name": "Invalid multipart body and calendar dates leave no rows or orphan files",
+            "status": "passed",
+            "evidence": {
+              "rejectedCases": 10,
+              "rowsAndFilesUnchanged": true
+            }
+          },
+          {
+            "name": "Extension, declared MIME, signature and size checks reject disguised or oversized files without residue",
+            "status": "passed",
+            "evidence": {
+              "rejectedCases": 8,
+              "over5MiBRejected": true,
+              "rowsAndFilesUnchanged": true
+            }
+          },
+          {
+            "name": "Aborted multipart upload leaves no document or partial file",
+            "status": "passed",
+            "evidence": {
+              "partiallyWrittenUploadObserved": true,
+              "abortedFileRemoved": true,
+              "metadataUnchanged": true,
+              "serverHealthy": true
+            }
+          },
+          {
+            "name": "Six simultaneous replacements preserve one row and only the final referenced file",
+            "status": "passed",
+            "evidence": {
+              "responses": 6,
+              "sameDocumentId": true,
+              "uniqueRow": true,
+              "noSupersededOrphanFiles": true
+            }
+          },
+          {
+            "name": "Forced document upsert failure removes new file and preserves old metadata and bytes",
+            "status": "passed",
+            "evidence": {
+              "newFileCleaned": true,
+              "oldDocumentAndFilePreserved": true
+            }
+          },
+          {
+            "name": "Replacement retains old file while an archive record references it",
+            "status": "passed",
+            "evidence": {
+              "archiveReferencePreventsDeletion": true,
+              "newCurrentFileStored": true
+            }
+          },
+          {
+            "name": "Safe legacy files remain privately readable while traversal and missing files are unavailable",
+            "status": "passed",
+            "evidence": {
+              "safeLegacyFilenameMapped": true,
+              "publiclyUnavailable": true,
+              "traversalNotServed": true,
+              "missingFile404": true
+            }
+          },
+          {
+            "name": "Fresh schema enforces unique driver-document type and nonnull driver",
+            "status": "passed",
+            "evidence": {
+              "uniqueTypeSQLCode": "23505",
+              "nonnullOwnerSQLCode": "23502"
+            }
+          },
+          {
+            "name": "Original legacy database upgrades001–003 twice, archives complete duplicate/orphan history and deletes no files",
+            "status": "passed",
+            "evidence": {
+              "actualUpgrade001002003Repeated": true,
+              "newestDocumentKept": true,
+              "completeDuplicateNullOwnerAndUnsafeURLHistoryArchived": 3,
+              "safeFilenameBackfilled": true,
+              "unsafeFilenameNotMappedAndOriginalPreserved": true,
+              "direct003RepeatIdempotent": true,
+              "legacyFilesPreserved": 3
+            }
+          }
+        ],
+        "summary": {
+          "passed": 16,
+          "failed": 0,
+          "success": true
+        }
+      }
+    }
+  ],
+  "source_sha256": {
+    "kntr-package/README.md": "e4ba41afd1591becbc70525cd909f1cc1b224257975b27ddd7dca8e3aca5a3b3",
+    "kntr-package/frontend/kntr-admin-dashboard.html": "eb923e63457991f7d1813a42dc8159230cc89ab9db172241a389c0ab52e00302",
+    "kntr-package/frontend/kntr-app.html": "c7335e9967e84cee963d7d10ddfde22df71eed0744fad48b63b5324352880f30",
+    "kntr-package/kntr-backend/README.md": "bb192b83421124ba3da2ba0db4595d36c872e47be441dcfa0d63e91fc5f04635",
+    "kntr-package/kntr-backend/migrations/001_delivery_integrity.sql": "f539d9e8e46017ca217f3a26823a894261f4483018ccd6ed828b4f475cfdb891",
+    "kntr-package/kntr-backend/migrations/002_payment_integrity.sql": "4222594cdefc28cd9c633a3afb80f9e5b4232f12ee25e6b6e49ef43f2a3423d3",
+    "kntr-package/kntr-backend/migrations/003_document_integrity.sql": "067163bd86e0cf1e68640029793161da7f6f429904078fff5937a4a3ed1023cb",
+    "kntr-package/kntr-backend/package-lock.json": "ee85301ca9709090fe30bb7f29ac384636cbf6bdd7411e64f88c78cbe881d639",
+    "kntr-package/kntr-backend/package.json": "fc5a1aaee257f621c3753fcd09e54153cea65474f1ea2b51d96acd868969ba75",
+    "kntr-package/kntr-backend/schema.sql": "4cbf0aaef5385753837b7fdc6cb09a2bebd76c1fd9f45f98843ec1613360e5d9",
+    "kntr-package/kntr-backend/src/app.js": "c678f60578aad59bef4c8293210ae3fd965e56b900f3e765c96f1fbd9de722e4",
+    "kntr-package/kntr-backend/src/config/database.js": "0ef97b1b25a3c007f9beb3fe1c0e386e0caa4e58ba2f62ecee4f39e7e85ee47f",
+    "kntr-package/kntr-backend/src/controllers/adminController.js": "53da60794c3b41081016a833eefa890529fa71ec2ef211acb76abc91ef7fcfc0",
+    "kntr-package/kntr-backend/src/controllers/authController.js": "85bdeaada772e5b2ad87fc5bfe253bd0b1f8ae6542e1056975e733a11096a407",
+    "kntr-package/kntr-backend/src/controllers/driversController.js": "b91e0f9e9b69db1fc547192a565e5b9346774ea0b69a9b9e25a13cf96c0ac085",
+    "kntr-package/kntr-backend/src/controllers/ordersController.js": "babc392321bb8b5ee4a1f0e09c7b58d4302959da0866df8f1fba610c9a65bcc7",
+    "kntr-package/kntr-backend/src/middleware/auth.js": "9470806d807e61eb0f6c95163f1b4f73268feed0d26a3b7d8dc4d4801fae4de4",
+    "kntr-package/kntr-backend/src/middleware/documentUpload.js": "c5c4847e835dc72d56a84e75019b4dd82eda6df5bafe269555e305f4ae244f97",
+    "kntr-package/kntr-backend/src/middleware/errorHandler.js": "1707a7ccd21b46c19c917e32621b2c0eb3925ed46b3c7ccfa1212309a525081f",
+    "kntr-package/kntr-backend/src/routes/index.js": "d5c7faba37ec3c0d63b438a1336da2ed00977a398ff3dddbb3bcb35410f36af1",
+    "kntr-package/kntr-backend/src/scripts/upgrade.js": "cd20ece60ca8c52325ff76419741c36781870fae8a2e0af2cf92d230e5129159",
+    "kntr-package/kntr-backend/src/services/deliveryService.js": "9ac1bc76b5a4198182b1c30723405b2f88f9a541307c29483671df85ba9d91d0",
+    "kntr-package/kntr-backend/src/services/paymentService.js": "e9019742c7db61f6f02f707b005c29d2a616bf954f87331741755edade92fe4d",
+    "kntr-package/kntr-backend/src/services/socketService.js": "25f7b6188e0715060a74272748062af3d41c2a7e843ad12b4951980bdd5f7978",
+    "kntr-package/kntr-backend/src/utils/documentStorage.js": "d3da982677177b2a423c01c1cfdb9fec951e35a5a1e959ff2f93e8f3d4ce96fe",
+    "kntr-package/kntr-backend/src/utils/helpers.js": "172f022e834249dd9601717c2baa4ed20e5279b0ecf5ac55d7a1e6e7e5a4e4a4",
+    "kntr-package/kntr-backend/src/utils/jwt.js": "46b27671d681b9e988520b70733ae408eba11c1f946deb40f9cfe944b24f29cc",
+    "kntr-package/kntr-backend/src/utils/orderAccess.js": "978d94be59d42bdc745c05c6c4e29c3970269cac882c292c8a45034103677dfb",
+    "kntr-mobile/LAUNCH-GUIDE.md": "3ea537d6d78d12b993c086730736b4778b36f0ecc6b4470bfad5d74f53189617",
+    "kntr-mobile/README.md": "078837736b6c1b67aa5f27902b2bb6b6d60adff65ccc8c1ead2d92e4b62a0957",
+    "kntr-mobile/android/.gitignore": "065e4a92a240fe11a0ea230491ad9dabef143f5fd5a3e6884ad6f0395666a971",
+    "kntr-mobile/android/app/.gitignore": "99c54e51ee601a60fbde8016b2cbf717483bc2e92773be86c9247d02a7fa6ea4",
+    "kntr-mobile/android/app/build.gradle": "17bc1cd985981e3298a486c55857407cd4eda49c1e07b839b4550cc9fd09c20f",
+    "kntr-mobile/android/app/capacitor.build.gradle": "5d6486518199239c3338f72eeea408db9589c5d6cb91a5caad20765d6a02bb7b",
+    "kntr-mobile/android/app/proguard-rules.pro": "1cf8c57e8f79c250b0af9c1a5a4edad71a5c348a79ab70243b6bae086c150ad2",
+    "kntr-mobile/android/app/src/androidTest/java/com/getcapacitor/myapp/ExampleInstrumentedTest.java": "ff50b4c110a7434312f9af54171f9e8523b015836f707c9b387b76d4c38a97f8",
+    "kntr-mobile/android/app/src/main/AndroidManifest.xml": "50091be6e59b90c9115844b75e18dafc3bdc7d447d2ae6c352d40fec96929298",
+    "kntr-mobile/android/app/src/main/assets/capacitor.config.json": "18f86711aeb5c8b4a3232f6753517124932f541537f77432f6973d53ff3d402c",
+    "kntr-mobile/android/app/src/main/assets/capacitor.plugins.json": "c80eb2aca2b287a978fd22175e9911900c87bfa1ab0bcc709bceb24062c0ba4c",
+    "kntr-mobile/android/app/src/main/assets/public/cordova.js": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "kntr-mobile/android/app/src/main/assets/public/cordova_plugins.js": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "kntr-mobile/android/app/src/main/assets/public/index.html": "a681484b9a529aefeab94869122c0f8e3dd1847d4764fbe1f82203b3b0df7c7d",
+    "kntr-mobile/android/app/src/main/assets/public/manifest.json": "4826538618dbdc1836363709611823b287845c897f034e1660e7bb1bac4904d0",
+    "kntr-mobile/android/app/src/main/java/ly/kntr/app/MainActivity.java": "f91bd2b3c0462897f8817412a6fe0e5365237ba83e3b341ccd977774a8dfaff2",
+    "kntr-mobile/android/app/src/main/res/drawable/ic_launcher_background.xml": "718ba51adf166bb55c3e9936bb8199a0148457f7f0191aaa2f37a94f3159d6ec",
+    "kntr-mobile/android/app/src/main/res/drawable/splash.png": "fe20d8e4071026c082204e556781be34de21ef48c181607d71b5bcc82eba2a6e",
+    "kntr-mobile/android/app/src/main/res/drawable-land-hdpi/splash.png": "b850ca1b1d69ea72cfbe8ae213e4f2596897a2687f10b06894868abea1c96209",
+    "kntr-mobile/android/app/src/main/res/drawable-land-ldpi/splash.png": "06254c9b4a500043c6229674e377c824ebe95ad0533e017cf65b83a6cff997fa",
+    "kntr-mobile/android/app/src/main/res/drawable-land-mdpi/splash.png": "f243b43b4f76ee6cde354089cc0a07d4b836d2f68f09af7a4e270160b69f9f01",
+    "kntr-mobile/android/app/src/main/res/drawable-land-night-hdpi/splash.png": "e1aa3e27231b08b653d91287da32c472ae5521868975ee326958aa5c3af80b3f",
+    "kntr-mobile/android/app/src/main/res/drawable-land-night-ldpi/splash.png": "497a8ced5ab8f037ca6883890c663ac921055dcd4f178e4ed97938a56adffd36",
+    "kntr-mobile/android/app/src/main/res/drawable-land-night-mdpi/splash.png": "909243e7bb1ef972d7b6c501796ab2bc0fb15c01b6e27d5e384f9d8c41c7189d",
+    "kntr-mobile/android/app/src/main/res/drawable-land-night-xhdpi/splash.png": "7cee0173aab0ee655bed678b4c4fe287e5e58a4faaed1fcde5859ea475c7cc94",
+    "kntr-mobile/android/app/src/main/res/drawable-land-night-xxhdpi/splash.png": "091c6718e6d93992d5759bb44221837d1864e11c52fdf99c4f10168735cd0abf",
+    "kntr-mobile/android/app/src/main/res/drawable-land-night-xxxhdpi/splash.png": "e738aebbdf99d65930f2dd7f48ee31f611c16bf952731a533a13330aa7d06b67",
+    "kntr-mobile/android/app/src/main/res/drawable-land-xhdpi/splash.png": "774fec2a90b1f0f7500860b7aa2afd0e3f6e8a855661f1426d7a1dee42a133a1",
+    "kntr-mobile/android/app/src/main/res/drawable-land-xxhdpi/splash.png": "eeff05cce6a0b65cc45a3c322cd0ca4dd99b436b0c922ebd8e237e5df2459ff1",
+    "kntr-mobile/android/app/src/main/res/drawable-land-xxxhdpi/splash.png": "cc505b715aaf42354d7145c3f4d6ce64d8927bd8b917bab43cfc7403375c4b41",
+    "kntr-mobile/android/app/src/main/res/drawable-night/splash.png": "497a8ced5ab8f037ca6883890c663ac921055dcd4f178e4ed97938a56adffd36",
+    "kntr-mobile/android/app/src/main/res/drawable-port-hdpi/splash.png": "f76c981d2ecdc6ab03b2f19482668d37c96163964dcda2f2e15211843e70df95",
+    "kntr-mobile/android/app/src/main/res/drawable-port-ldpi/splash.png": "44bedec48a08d667a93532cad3fc9eec8a544b6e6cb3b4c847b787b420fe2f93",
+    "kntr-mobile/android/app/src/main/res/drawable-port-mdpi/splash.png": "fe20d8e4071026c082204e556781be34de21ef48c181607d71b5bcc82eba2a6e",
+    "kntr-mobile/android/app/src/main/res/drawable-port-night-hdpi/splash.png": "a282d31bc3f43ecc1087890573def716664ea19ed31daf72b1d005d124266a1a",
+    "kntr-mobile/android/app/src/main/res/drawable-port-night-ldpi/splash.png": "d08a6c758a329bab3c8472739dcb70e738e4b1069c545cc0cc5431c7d15c90a0",
+    "kntr-mobile/android/app/src/main/res/drawable-port-night-mdpi/splash.png": "acae4432e50a3c62a2201a97f14ed5db5e20ebc556bc90e4d8a7db54422cd0cb",
+    "kntr-mobile/android/app/src/main/res/drawable-port-night-xhdpi/splash.png": "b366c3f95061c4888e50013e5b1c700bebe87eb0162f1cd72edf09ab7dd20444",
+    "kntr-mobile/android/app/src/main/res/drawable-port-night-xxhdpi/splash.png": "fe71e440fad1b08bb22a5232489b307ce4b96c7120eac2404768d09d8ae4d8e1",
+    "kntr-mobile/android/app/src/main/res/drawable-port-night-xxxhdpi/splash.png": "56e19c2fe54b1459241f556b3931b00d0b41ca2321ffb7274ee6f211e40a3b62",
+    "kntr-mobile/android/app/src/main/res/drawable-port-xhdpi/splash.png": "3c0e89614efb05c984727b3f167e7c9b85ab39d6c270b1c5d8b30136aeaa7deb",
+    "kntr-mobile/android/app/src/main/res/drawable-port-xxhdpi/splash.png": "506d2c81a6b703c402ecf373f8488fc82598e2d254891034aa227b8dafe4ce26",
+    "kntr-mobile/android/app/src/main/res/drawable-port-xxxhdpi/splash.png": "a1dd8cb82cc678b3c4249c7d13ed105721ed2e437e12103aecfe6f4f929ee0fa",
+    "kntr-mobile/android/app/src/main/res/drawable-v24/ic_launcher_foreground.xml": "a8514094f754b099d3e55ce1d6e0b2de79db418b2eeacb0fc2a6bb0bfadef221",
+    "kntr-mobile/android/app/src/main/res/layout/activity_main.xml": "5d770feb791313b947020cbfc57e5c733c556dac5e9e49261a1190e527073253",
+    "kntr-mobile/android/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml": "70f2c6a1478441deb70762f95abf87a8ab8b2b38d53715edc1f7b73df8e5f8df",
+    "kntr-mobile/android/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml": "70f2c6a1478441deb70762f95abf87a8ab8b2b38d53715edc1f7b73df8e5f8df",
+    "kntr-mobile/android/app/src/main/res/mipmap-hdpi/ic_launcher.png": "86120e17b4d362be2378636b1708c89bd57fd51127771be68e3ff47db0eee0e1",
+    "kntr-mobile/android/app/src/main/res/mipmap-hdpi/ic_launcher_background.png": "7189839950fc679f54b3d42f1c7f9b26b1dcf022c8b4b1192963562f06366717",
+    "kntr-mobile/android/app/src/main/res/mipmap-hdpi/ic_launcher_foreground.png": "282d61311889762e60d148ac0c095078f0a5df2d87a2a31b079d6908bab11014",
+    "kntr-mobile/android/app/src/main/res/mipmap-hdpi/ic_launcher_round.png": "b9b4f33dbd3ad689f564330271521cfd8f5d051849414ab8364c6ac4b4191304",
+    "kntr-mobile/android/app/src/main/res/mipmap-ldpi/ic_launcher.png": "cb87063f4663c268562d2a703c699e4696603f5b075c6d3957c9c33ab3b852ee",
+    "kntr-mobile/android/app/src/main/res/mipmap-ldpi/ic_launcher_background.png": "aa92fd5bf862df0dc0abde01ce2696fa0a948cf3a18fc4de2602a0969ae6bc12",
+    "kntr-mobile/android/app/src/main/res/mipmap-ldpi/ic_launcher_foreground.png": "6cd996735160b3bc8ba2808c59ed02d12eaff9c4d438c81ec836126d3d622ed1",
+    "kntr-mobile/android/app/src/main/res/mipmap-ldpi/ic_launcher_round.png": "ee583313f110acc546b6b7abdd90619e330bdd1b22072cc48b585096c1e6f86a",
+    "kntr-mobile/android/app/src/main/res/mipmap-mdpi/ic_launcher.png": "3ccf42fb2d28eea239e56f3cca883a832c6aa144287c8e7c61907c4b9d68dd76",
+    "kntr-mobile/android/app/src/main/res/mipmap-mdpi/ic_launcher_background.png": "6acd52bdd43b528a024d6d46d5a50dba12b466c499a2a95fa1edf66af10b4918",
+    "kntr-mobile/android/app/src/main/res/mipmap-mdpi/ic_launcher_foreground.png": "49ea9611a15d8525dee372324b90d82d29f50f4c4173f012af0fc20584bd784a",
+    "kntr-mobile/android/app/src/main/res/mipmap-mdpi/ic_launcher_round.png": "0c789ef939ec64358ddda084c7ab82765a8ef224c8ae5ffeaeea9b549e4a386a",
+    "kntr-mobile/android/app/src/main/res/mipmap-xhdpi/ic_launcher.png": "293452f961080c2fa19c31f9b9d88bcc9f924a57b1307e4b7c877f3ef9a34ab3",
+    "kntr-mobile/android/app/src/main/res/mipmap-xhdpi/ic_launcher_background.png": "35b716f97156f38260ea4c99d6f9dad67f0fb742f05f821fe8a790f5c8eec082",
+    "kntr-mobile/android/app/src/main/res/mipmap-xhdpi/ic_launcher_foreground.png": "564d62927b9df391d7aa218f5d7d4d345fd89fb7ce63e015bec69e22d2d95d6f",
+    "kntr-mobile/android/app/src/main/res/mipmap-xhdpi/ic_launcher_round.png": "6c9051814da3c153276a61a16be5c89e5c80a05e16077bdd98d44adea286e36b",
+    "kntr-mobile/android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png": "1b35c314d13b9ccb84abd7e57598e04bb2cc3ec4af85d011f857b1ac84d87a48",
+    "kntr-mobile/android/app/src/main/res/mipmap-xxhdpi/ic_launcher_background.png": "779eab0767b85aa6f205ba4c0aba69fba43c9cd08b5052c42bcb53ef3832a123",
+    "kntr-mobile/android/app/src/main/res/mipmap-xxhdpi/ic_launcher_foreground.png": "d6f3f98ba15917a7b775f59449ccd41f1b3a2cb3cca73216f3a5b634222827ec",
+    "kntr-mobile/android/app/src/main/res/mipmap-xxhdpi/ic_launcher_round.png": "c2d97fcf4d2fe0a5cfc7bffef4e85018d6d8ee34ecf6de48ebc9f96d80df9dee",
+    "kntr-mobile/android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png": "91712a6ee79b46830b2bd150da618f2a3696ca05d0ae453d3b6e970a6863e065",
+    "kntr-mobile/android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_background.png": "ac90b7ceeacb59bc41e6ad470596a0192a819af38cdd03084ec9a293efeb870a",
+    "kntr-mobile/android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_foreground.png": "f8aa47382b194cc1078ae9d911fa761e0752ea4afa1fc7e1eb0efc000a0f2661",
+    "kntr-mobile/android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.png": "f293f92b230dd5e79d90071a3f53d641d3a70cc2599dc0a4741a660021771ceb",
+    "kntr-mobile/android/app/src/main/res/values/ic_launcher_background.xml": "cd40bafe618ff506f4088778b135cb4faa15f25e0c9b475e22d730c74b7be115",
+    "kntr-mobile/android/app/src/main/res/values/strings.xml": "0b133adeb40b867b3c811b77e28d260f9cdacdfb18e476ac37a40f10b557cf3a",
+    "kntr-mobile/android/app/src/main/res/values/styles.xml": "18ebba36575e9461347ee67361b23caf095f158ee85dbefe1b83a4669ba5bd6c",
+    "kntr-mobile/android/app/src/main/res/xml/config.xml": "e9dcda493e663c5c4db9e3cb3bd968477a6e90aa8840bcbba40d72ed54b767ce",
+    "kntr-mobile/android/app/src/main/res/xml/file_paths.xml": "a46ed43ef65c90cb6778f4581decf3556e3f0055aad8f36d69dae16f9a0e99aa",
+    "kntr-mobile/android/app/src/test/java/com/getcapacitor/myapp/ExampleUnitTest.java": "d4045ae8fac1f0807e6b24eb34e68409a9a235df9d1a3f896fb8c9a49424363d",
+    "kntr-mobile/android/build.gradle": "46ade7db7afeb8049ccea59fce83095dca736ceb8c9acd79cc944e988c3357d9",
+    "kntr-mobile/android/capacitor-cordova-android-plugins/build.gradle": "28e3fa281f4d1e388bf98abc7f5bb31e672516e385c165c719d201ed54b8236e",
+    "kntr-mobile/android/capacitor-cordova-android-plugins/cordova.variables.gradle": "b13104b34f7738abceec358ae8226ba5e64855e97babde54a115880e9b9bd47b",
+    "kntr-mobile/android/capacitor-cordova-android-plugins/src/main/AndroidManifest.xml": "2e3e383475f0e6cb76f0a7b46017a546663fba8e5bd1ef2a537412afac2ee9b5",
+    "kntr-mobile/android/capacitor-cordova-android-plugins/src/main/java/.gitkeep": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "kntr-mobile/android/capacitor-cordova-android-plugins/src/main/res/.gitkeep": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+    "kntr-mobile/android/capacitor.settings.gradle": "6ee99df3b4b71a568b9060562d2de53e991b2330755a8fcd0563d79fc237ef02",
+    "kntr-mobile/android/gradle/wrapper/gradle-wrapper.jar": "7d3a4ac4de1c32b59bc6a4eb8ecb8e612ccd0cf1ae1e99f66902da64df296172",
+    "kntr-mobile/android/gradle/wrapper/gradle-wrapper.properties": "9a479a85aa879bb55284fc16d0de5b81a745c3854f4e2d88c42e7debaf007435",
+    "kntr-mobile/android/gradle.properties": "3bab15c5b8bc4c2f4b6cf525497d15ad4abca53a460e6dd2eb0f0135817d31e6",
+    "kntr-mobile/android/gradlew": "b187b4c52e749f5760afdd6fadc31b2a98ad35fb249bf0dff03b72650f320409",
+    "kntr-mobile/android/gradlew.bat": "1d297e00bd21de3ace22b4d7f2de1f9dfa858883d66bbf7c1ccbecccec8f4f3b",
+    "kntr-mobile/android/settings.gradle": "6ce098d15ebd69b44c4ecd786bca1bdc366340d2459b2af4d7bb0ab317aa9669",
+    "kntr-mobile/android/variables.gradle": "83d502c9ed8fcf1dd4791482067abeedbebae49fafe9cd14a8a1f5891deb0d88",
+    "kntr-mobile/capacitor.config.json": "df97b4b4c7eaa1586891b95795eb7062787358fbc47be4c98f404bb06464457c",
+    "kntr-mobile/icons/icon-128.webp": "7253e303b724e8da800288621b7b77c284a20a2524efae480767d11c8d295904",
+    "kntr-mobile/icons/icon-192.webp": "8c4a7a1c919911badfb608c9baa572227812a61c1bac702c714c97fdaf86b732",
+    "kntr-mobile/icons/icon-256.webp": "15545d5ef060296f98541ea36ef7754d543c3c45ad72ab2774e03ba2c949b3f0",
+    "kntr-mobile/icons/icon-48.webp": "cd3d180d9418d94ca7c30519c31f882f9a648edc3af6af6214546cf5bbb2a2aa",
+    "kntr-mobile/icons/icon-512.webp": "27aca71a4b77b1d266f6dd070dd1915dc367658f7fb04b54d331930825647183",
+    "kntr-mobile/icons/icon-72.webp": "ffc465232d3ca03cb64af4a427ef4b63fb58f0c05c0d464e8da3663c17cb01d6",
+    "kntr-mobile/icons/icon-96.webp": "66fd361c8bcb6af96ecaedc438becc1d87528a95c31c2ad457557b917ac545de",
+    "kntr-mobile/ios/.gitignore": "2b7132a9943d2622e51e656897ca5162f56b121b40b423dedce1fbc699dba88a",
+    "kntr-mobile/ios/App/App/AppDelegate.swift": "5963d47ceba89e0d5694376ebf0bca630284db3de794bdf8666ea3093fe38a2f",
+    "kntr-mobile/ios/App/App/Assets.xcassets/AppIcon.appiconset/AppIcon-512@2x.png": "3a2fe5d22e7c7044df6ee905af3ee4d8d945a40992563d846d178a4af020da3c",
+    "kntr-mobile/ios/App/App/Assets.xcassets/AppIcon.appiconset/Contents.json": "30cdf27ab0ec2bcb51c244b829ea2f2202978c4bb8374299e90c09ea4017276c",
+    "kntr-mobile/ios/App/App/Assets.xcassets/Contents.json": "972ec1fd42325872438eb085ac29e94f51c10788ec18ec5549439950866c541d",
+    "kntr-mobile/ios/App/App/Assets.xcassets/Splash.imageset/Contents.json": "cfabec10f16bc5ae4b60f28dccc7f1626fd59b13135e064350ce36f484b44f95",
+    "kntr-mobile/ios/App/App/Assets.xcassets/Splash.imageset/Default@1x~universal~anyany-dark.png": "1d5c751de5ef844ff4cdced79756e456f25b21f7ad89e61eb817173f09e3e2de",
+    "kntr-mobile/ios/App/App/Assets.xcassets/Splash.imageset/Default@1x~universal~anyany.png": "aa9edd35cdd525c141b1d09760c5c0276ae624ee5fbe9032a33041314a93b617",
+    "kntr-mobile/ios/App/App/Assets.xcassets/Splash.imageset/Default@2x~universal~anyany-dark.png": "1d5c751de5ef844ff4cdced79756e456f25b21f7ad89e61eb817173f09e3e2de",
+    "kntr-mobile/ios/App/App/Assets.xcassets/Splash.imageset/Default@2x~universal~anyany.png": "aa9edd35cdd525c141b1d09760c5c0276ae624ee5fbe9032a33041314a93b617",
+    "kntr-mobile/ios/App/App/Assets.xcassets/Splash.imageset/Default@3x~universal~anyany-dark.png": "1d5c751de5ef844ff4cdced79756e456f25b21f7ad89e61eb817173f09e3e2de",
+    "kntr-mobile/ios/App/App/Assets.xcassets/Splash.imageset/Default@3x~universal~anyany.png": "aa9edd35cdd525c141b1d09760c5c0276ae624ee5fbe9032a33041314a93b617",
+    "kntr-mobile/ios/App/App/Assets.xcassets/Splash.imageset/splash-2732x2732-1.png": "1b5002b74a5500e697298ced06ca2811ac33f2771f236f3c720ff23243890530",
+    "kntr-mobile/ios/App/App/Assets.xcassets/Splash.imageset/splash-2732x2732-2.png": "1b5002b74a5500e697298ced06ca2811ac33f2771f236f3c720ff23243890530",
+    "kntr-mobile/ios/App/App/Assets.xcassets/Splash.imageset/splash-2732x2732.png": "1b5002b74a5500e697298ced06ca2811ac33f2771f236f3c720ff23243890530",
+    "kntr-mobile/ios/App/App/Base.lproj/LaunchScreen.storyboard": "87a42e842164d75f39cca56a2cf743652f4d8e858f2eba12ae21a8ddcd9a21c6",
+    "kntr-mobile/ios/App/App/Base.lproj/Main.storyboard": "7b7dc7acc67134bfaa80e5ce9c9068ba53db5369b9b70248aa7439fc2b09daae",
+    "kntr-mobile/ios/App/App/Info.plist": "02a457b26a0d030090ebefde886538189585b3470f40a6e6c84ff29e7dff471e",
+    "kntr-mobile/ios/App/App/capacitor.config.json": "1d82f43dd153f21fad2bf01679bf1b0a00f1fe50c615280b8f48c86a0aaed6b4",
+    "kntr-mobile/ios/App/App/config.xml": "e9dcda493e663c5c4db9e3cb3bd968477a6e90aa8840bcbba40d72ed54b767ce",
+    "kntr-mobile/ios/App/App/public/cordova.js": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "kntr-mobile/ios/App/App/public/cordova_plugins.js": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "kntr-mobile/ios/App/App/public/index.html": "a681484b9a529aefeab94869122c0f8e3dd1847d4764fbe1f82203b3b0df7c7d",
+    "kntr-mobile/ios/App/App/public/manifest.json": "4826538618dbdc1836363709611823b287845c897f034e1660e7bb1bac4904d0",
+    "kntr-mobile/ios/App/App.xcodeproj/project.pbxproj": "cc95d43269da1a42d6893a30b100ebd34518bb8925b09b7a73871459df4610bc",
+    "kntr-mobile/ios/App/App.xcodeproj/project.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist": "dfa0f9bb85b95ccba9c6811adadf8cb407fb5d52088e89db83ebc308ec448542",
+    "kntr-mobile/ios/App/CapApp-SPM/.gitignore": "4b958e2b4dd57319aadef2551153c74b9cb5ffe9f89d6e3e491122a94913f016",
+    "kntr-mobile/ios/App/CapApp-SPM/Package.swift": "8df3cd7f9cc3626dbafa932aa2bcad70203952aa5118496a73e3fb719895f9bb",
+    "kntr-mobile/ios/App/CapApp-SPM/README.md": "42c535861f4a866e35f85764ed6af1ea046d6a409bf9852ecb00e5d292a1626e",
+    "kntr-mobile/ios/App/CapApp-SPM/Sources/CapApp-SPM/CapApp-SPM.swift": "70bf9dafddc35e3877dfb133a996f5be7ccd1e132897a98fdbf4869ff605ece9",
+    "kntr-mobile/ios/capacitor-cordova-ios-plugins/CordovaPluginsResources.podspec": "6ace787f88f8c8da88526ed2ecdf0b9bd659cdb64f56bd5e73a684e0d26b7e06",
+    "kntr-mobile/ios/capacitor-cordova-ios-plugins/resources/.gitkeep": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+    "kntr-mobile/ios/capacitor-cordova-ios-plugins/sources/.gitkeep": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+    "kntr-mobile/ios/debug.xcconfig": "4838938a72b913b99cfda54a43bbe73f05893071dc6e3702b0adc44794b64272",
+    "kntr-mobile/package-lock.json": "e9098113fc43e89070c6ed5f44ed303688147cfff3d27858947569bcac49b5cb",
+    "kntr-mobile/package.json": "53d8922301c7945d40a060d889819a547afc926139e473f36871e12e1e436f6b",
+    "kntr-mobile/resources/icon.png": "5f4c6b0948740077d9d3240fe99f36277bfbe08febbf8c27dd5ea1794a00ff6b",
+    "kntr-mobile/resources/splash.png": "bc6dfdf5b8830020c1506cc3d2a373283382fb8a83e94bcfb3dce2f182a51784",
+    "kntr-mobile/store-listing/app-store-listing-ar.md": "e59f8e334790422fd5b531ad7313549d89a871e18b9c7404d5522ab252ba9b08",
+    "kntr-mobile/store-listing/play-store-listing-ar.md": "02916ddbad9063c7532c2910bea6f9dcc8b90d8a78ba15eadf3c46b0b341d56f",
+    "kntr-mobile/store-listing/privacy-policy.html": "3c55e143e876525f40b2b0e7aef9c8abf8ab4a4d9eb150001edaff9524f6e030",
+    "kntr-mobile/store-listing/terms-of-service.html": "e9437d914b0f1488bf124bf5e82af096a8a7de1a9ee875ec4d52ca2d632f9e5a",
+    "kntr-mobile/www/index.html": "a681484b9a529aefeab94869122c0f8e3dd1847d4764fbe1f82203b3b0df7c7d",
+    "kntr-mobile/www/manifest.json": "4826538618dbdc1836363709611823b287845c897f034e1660e7bb1bac4904d0"
+  }
+}

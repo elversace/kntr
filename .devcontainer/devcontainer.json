@@ -1,0 +1,25 @@
+{
+  "name": "KNTR free test workspace",
+  "dockerComposeFile": "compose.yaml",
+  "service": "app",
+  "runServices": ["app", "db"],
+  "workspaceFolder": "/workspaces/kntr",
+  "remoteUser": "node",
+  "shutdownAction": "stopCompose",
+  "initializeCommand": ["bash", ".devcontainer/initialize.sh"],
+  "postCreateCommand": "bash .devcontainer/setup.sh",
+  "postStartCommand": "bash .devcontainer/start.sh",
+  "forwardPorts": [3000],
+  "portsAttributes": {
+    "3000": {
+      "label": "KNTR test API",
+      "protocol": "http",
+      "onAutoForward": "notify"
+    }
+  },
+  "hostRequirements": {
+    "cpus": 2,
+    "memory": "4gb",
+    "storage": "10gb"
+  }
+}

@@ -1,0 +1,220 @@
+{
+  "environment": {
+    "node": "v24.19.0",
+    "database": "PostgreSQL 18.4, fresh isolated data directory",
+    "backend": "/workspace/kntr-startup/kntr-package/kntr-backend",
+    "runDir": "/workspace/kntr-startup/verification/step3-run-tjedrC",
+    "dbPort": 45195,
+    "appPort": 41393,
+    "postgis": "Current schema requires no PostGIS extension; these tests do not verify PostGIS or geospatial SQL"
+  },
+  "checks": [
+    {
+      "name": "Pricing conserves every cent across all configured vehicles and pricing combinations",
+      "status": "passed",
+      "evidence": {
+        "combinations": 1440,
+        "bothCentConservationIdentities": true,
+        "twoPackageZeroDiscountPreserved": true,
+        "invalidRatesRejected": 10,
+        "exactHalfUp675CentsAt70Percent": 473
+      }
+    },
+    {
+      "name": "Unimplemented card and bank payments cannot create falsely paid orders",
+      "status": "passed",
+      "evidence": {
+        "blockedMethods": [
+          "card",
+          "bank_transfer"
+        ],
+        "noOrderOrLedgerMutation": true
+      }
+    },
+    {
+      "name": "Zero or missing wallet funds cannot create an order",
+      "status": "passed",
+      "evidence": {
+        "rejectedZeroFundsAndMissingWallet": true,
+        "financialStateUnchanged": true
+      }
+    },
+    {
+      "name": "Wallet currency mismatch preserves balance, orders and ledger",
+      "status": "passed",
+      "evidence": {
+        "mismatchedCurrencyRejected": true,
+        "financialStateUnchanged": true
+      }
+    },
+    {
+      "name": "Wallet creation debits exactly once and records matching completed payment",
+      "status": "passed",
+      "evidence": {
+        "exactDebitCents": 1100,
+        "oneMatchingLedgerEntry": true,
+        "deliveryDidNotDebitAgain": true
+      }
+    },
+    {
+      "name": "Two concurrent wallet orders cannot overdraw one-order balance",
+      "status": "passed",
+      "evidence": {
+        "responseStatuses": [
+          409,
+          201
+        ],
+        "walletNeverNegative": true,
+        "onePayment": true
+      }
+    },
+    {
+      "name": "Forced wallet ledger failure rolls back debit and new order atomically",
+      "status": "passed",
+      "evidence": {
+        "walletOrderAndLedgerRolledBack": true
+      }
+    },
+    {
+      "name": "Wallet cancellation through both APIs refunds the full payment once with zero fee",
+      "status": "passed",
+      "evidence": {
+        "bothCancellationRoutesRefundExactlyOnce": true,
+        "fullRefundWithZeroFee": true,
+        "replayUnchanged": true
+      }
+    },
+    {
+      "name": "Concurrent wallet cancellation creates one refund and one wallet credit",
+      "status": "passed",
+      "evidence": {
+        "responseStatuses": [
+          400,
+          200,
+          400,
+          400,
+          400,
+          400
+        ],
+        "oneRefundAndOneCredit": true
+      }
+    },
+    {
+      "name": "Wallet refund racing delivery commits only the winning operation",
+      "status": "passed",
+      "evidence": {
+        "responseStatuses": [
+          409,
+          200
+        ],
+        "winningState": "cancelled",
+        "noDoubleDeliveryOrRefund": true
+      }
+    },
+    {
+      "name": "Legacy refunded wallet orders cannot confirm delivery or change accounting",
+      "status": "passed",
+      "evidence": {
+        "completedRefundLedgerBlocked": true,
+        "processedRefundRecordBlocked": true,
+        "balancesCountersAndFinancialHistoryUnchanged": true
+      }
+    },
+    {
+      "name": "Payout dates and permissions reject invalid requests without reservations",
+      "status": "passed",
+      "evidence": {
+        "invalidDatePairs": 4,
+        "forbiddenActors": 3,
+        "noReservations": true
+      }
+    },
+    {
+      "name": "Payout reserves only matching paid delivered orders, includes entire end date and excludes unfunded tips",
+      "status": "passed",
+      "evidence": {
+        "allocatedOrders": [
+          "ORD-00014",
+          "ORD-00015"
+        ],
+        "pendingOnly": true,
+        "includedEndDate235959": true,
+        "exactAmountWithoutUnfundedTip": "16.40",
+        "mismatchedPaymentsExcluded": true,
+        "completedLedgerAndProcessedRecordRefundsExcluded": true
+      }
+    },
+    {
+      "name": "Repeated and overlapping payout periods never reserve an order twice",
+      "status": "passed",
+      "evidence": {
+        "repeatedAndOverlappingPeriodsBlocked": true,
+        "orderAllocationUniqueSQLCode": "23505"
+      }
+    },
+    {
+      "name": "Concurrent payout requests create one pending reservation for one order",
+      "status": "passed",
+      "evidence": {
+        "responseStatuses": [
+          400,
+          201,
+          400,
+          400,
+          400
+        ],
+        "onePendingPayout": true,
+        "oneAllocation": true
+      }
+    },
+    {
+      "name": "Forced payout allocation failure rolls back payout and every allocation",
+      "status": "passed",
+      "evidence": {
+        "failedReservationFullyRolledBack": true,
+        "retrySuccessful": true
+      }
+    },
+    {
+      "name": "Historical unallocated payout blocks new periods until accounting reconciliation",
+      "status": "passed",
+      "evidence": {
+        "unrelatedLegacyPeriodStillBlocksUnsafeReallocation": true,
+        "financialHistoryPreserved": true
+      }
+    },
+    {
+      "name": "Financial overview excludes unfunded and refunded delivery revenue and counts only processed refunds",
+      "status": "passed",
+      "evidence": {
+        "unfundedAndRefundedRevenueExcluded": true,
+        "onlyProcessedRefundCounted": true,
+        "oneFundedOrderAddsExactRevenueVATAndCommission": true
+      }
+    },
+    {
+      "name": "Legacy migrations001 and002 are repeatable and reject null or negative balances without altering history",
+      "status": "passed",
+      "evidence": {
+        "originalSchemaUpgradedTwice": true,
+        "payoutAllocationTableInstalled": true,
+        "nullAndNegativeBalancesBlocked": true,
+        "failedUpgradePreservedBalancesAndSchema": true
+      }
+    },
+    {
+      "name": "Actual upgrade command upgrades legacy database twice and stops before002 on duplicate001 history",
+      "status": "passed",
+      "evidence": {
+        "actualUpgradeCommandRepeatedSuccessfully": true,
+        "duplicate001HistoryStops002": true,
+        "historicalLedgerAndLegacyBalanceSchemaPreserved": true
+      }
+    }
+  ],
+  "summary": {
+    "passed": 20,
+    "failed": 0,
+    "success": true
+  }
+}

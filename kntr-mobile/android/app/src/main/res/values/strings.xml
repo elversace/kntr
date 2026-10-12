@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">kntr</string>
+    <string name="title_activity_main">kntr</string>
+    <string name="package_name">ly.kntr.app</string>
+    <string name="custom_url_scheme">ly.kntr.app</string>
+</resources>

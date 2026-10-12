@@ -1,0 +1,540 @@
+{
+  "verification": "Actual Chromium connected to real isolated KNTR API and PostgreSQL; API responses are not mocked",
+  "timestamp_utc": "2026-10-11T22:11:39.965134+00:00",
+  "source": "/workspace/kntr-startup/kntr-package/frontend/kntr-app.html",
+  "source_sha256": "c7335e9967e84cee963d7d10ddfde22df71eed0744fad48b63b5324352880f30",
+  "api_base": "http://127.0.0.1:42783/v1",
+  "page_url": "http://127.0.0.1:42783/kntr-app.html",
+  "actualBackend": true,
+  "apiMocked": false,
+  "native": false,
+  "limitations": "Covers full HTML cash/wallet delivery flows with the HTML injected on the local API origin. No cross-origin deployment, Android/iOS runtime, physical cash transfer, external payment provider or production service is verified.",
+  "flows": [
+    {
+      "order_id": "ORD-00001",
+      "payment_method": "cash",
+      "status": "delivered",
+      "wallet_before_creation": 100.0,
+      "wallet_after_creation": 100.0,
+      "wallet_after_delivery": 100.0,
+      "customer_confirmed": true,
+      "driver_active_cleared": true,
+      "screenshot": "/workspace/kntr-startup/verification/endtoend-cash-delivered.png"
+    },
+    {
+      "order_id": "ORD-00002",
+      "payment_method": "wallet",
+      "status": "delivered",
+      "wallet_before_creation": 100.0,
+      "wallet_after_creation": 89.0,
+      "wallet_after_delivery": 89.0,
+      "customer_confirmed": true,
+      "driver_active_cleared": true,
+      "screenshot": "/workspace/kntr-startup/verification/endtoend-wallet-delivered.png"
+    }
+  ],
+  "api_requests": [
+    {
+      "role": "customer",
+      "url": "http://127.0.0.1:42783/v1/auth/login",
+      "method": "POST"
+    },
+    {
+      "role": "customer",
+      "url": "http://127.0.0.1:42783/v1/auth/me",
+      "method": "GET"
+    },
+    {
+      "role": "customer",
+      "url": "http://127.0.0.1:42783/v1/orders/estimate?pickup_lat=32.8872&pickup_lng=13.1913&dropoff_lat=32.8500&dropoff_lng=13.2000&vehicle_type=motorcycle&priority=standard",
+      "method": "GET"
+    },
+    {
+      "role": "driver",
+      "url": "http://127.0.0.1:42783/v1/auth/login",
+      "method": "POST"
+    },
+    {
+      "role": "driver",
+      "url": "http://127.0.0.1:42783/v1/auth/me",
+      "method": "GET"
+    },
+    {
+      "role": "driver",
+      "url": "http://127.0.0.1:42783/v1/drivers/orders",
+      "method": "GET"
+    },
+    {
+      "role": "customer",
+      "url": "http://127.0.0.1:42783/v1/orders/estimate?pickup_lat=32.8872&pickup_lng=13.1913&dropoff_lat=32.8500&dropoff_lng=13.2000&vehicle_type=car&priority=standard",
+      "method": "GET"
+    },
+    {
+      "role": "customer",
+      "url": "http://127.0.0.1:42783/v1/orders",
+      "method": "POST"
+    },
+    {
+      "role": "customer",
+      "url": "http://127.0.0.1:42783/v1/auth/me",
+      "method": "GET"
+    },
+    {
+      "role": "driver",
+      "url": "http://127.0.0.1:42783/v1/drivers/orders",
+      "method": "GET"
+    },
+    {
+      "role": "driver",
+      "url": "http://127.0.0.1:42783/v1/drivers/orders/ORD-00001/accept",
+      "method": "POST"
+    },
+    {
+      "role": "driver",
+      "url": "http://127.0.0.1:42783/v1/drivers/orders",
+      "method": "GET"
+    },
+    {
+      "role": "driver",
+      "url": "http://127.0.0.1:42783/v1/auth/me",
+      "method": "GET"
+    },
+    {
+      "role": "driver",
+      "url": "http://127.0.0.1:42783/v1/orders/ORD-00001/status",
+      "method": "PATCH"
+    },
+    {
+      "role": "driver",
+      "url": "http://127.0.0.1:42783/v1/orders/ORD-00001/generate-qr",
+      "method": "POST"
+    },
+    {
+      "role": "customer",
+      "url": "http://127.0.0.1:42783/v1/auth/me",
+      "method": "GET"
+    },
+    {
+      "role": "customer",
+      "url": "http://127.0.0.1:42783/v1/orders?limit=10",
+      "method": "GET"
+    },
+    {
+      "role": "customer",
+      "url": "http://127.0.0.1:42783/v1/orders/ORD-00001",
+      "method": "GET"
+    },
+    {
+      "role": "customer",
+      "url": "http://127.0.0.1:42783/v1/orders/ORD-00001/verify-qr",
+      "method": "POST"
+    },
+    {
+      "role": "customer",
+      "url": "http://127.0.0.1:42783/v1/orders/ORD-00001",
+      "method": "GET"
+    },
+    {
+      "role": "driver",
+      "url": "http://127.0.0.1:42783/v1/orders/ORD-00001",
+      "method": "GET"
+    },
+    {
+      "role": "driver",
+      "url": "http://127.0.0.1:42783/v1/auth/me",
+      "method": "GET"
+    },
+    {
+      "role": "driver",
+      "url": "http://127.0.0.1:42783/v1/drivers/orders",
+      "method": "GET"
+    },
+    {
+      "role": "customer",
+      "url": "http://127.0.0.1:42783/v1/orders/estimate?pickup_lat=32.8872&pickup_lng=13.1913&dropoff_lat=32.8500&dropoff_lng=13.2000&vehicle_type=car&priority=standard",
+      "method": "GET"
+    },
+    {
+      "role": "customer",
+      "url": "http://127.0.0.1:42783/v1/orders",
+      "method": "POST"
+    },
+    {
+      "role": "customer",
+      "url": "http://127.0.0.1:42783/v1/auth/me",
+      "method": "GET"
+    },
+    {
+      "role": "driver",
+      "url": "http://127.0.0.1:42783/v1/drivers/orders",
+      "method": "GET"
+    },
+    {
+      "role": "driver",
+      "url": "http://127.0.0.1:42783/v1/drivers/orders/ORD-00002/accept",
+      "method": "POST"
+    },
+    {
+      "role": "driver",
+      "url": "http://127.0.0.1:42783/v1/drivers/orders",
+      "method": "GET"
+    },
+    {
+      "role": "driver",
+      "url": "http://127.0.0.1:42783/v1/auth/me",
+      "method": "GET"
+    },
+    {
+      "role": "driver",
+      "url": "http://127.0.0.1:42783/v1/orders/ORD-00002/status",
+      "method": "PATCH"
+    },
+    {
+      "role": "driver",
+      "url": "http://127.0.0.1:42783/v1/orders/ORD-00002/generate-qr",
+      "method": "POST"
+    },
+    {
+      "role": "customer",
+      "url": "http://127.0.0.1:42783/v1/auth/me",
+      "method": "GET"
+    },
+    {
+      "role": "customer",
+      "url": "http://127.0.0.1:42783/v1/orders?limit=10",
+      "method": "GET"
+    },
+    {
+      "role": "customer",
+      "url": "http://127.0.0.1:42783/v1/orders/ORD-00002",
+      "method": "GET"
+    },
+    {
+      "role": "customer",
+      "url": "http://127.0.0.1:42783/v1/orders/ORD-00002/verify-qr",
+      "method": "POST"
+    },
+    {
+      "role": "customer",
+      "url": "http://127.0.0.1:42783/v1/orders/ORD-00002",
+      "method": "GET"
+    },
+    {
+      "role": "driver",
+      "url": "http://127.0.0.1:42783/v1/orders/ORD-00002",
+      "method": "GET"
+    },
+    {
+      "role": "driver",
+      "url": "http://127.0.0.1:42783/v1/auth/me",
+      "method": "GET"
+    },
+    {
+      "role": "driver",
+      "url": "http://127.0.0.1:42783/v1/drivers/orders",
+      "method": "GET"
+    }
+  ],
+  "api_responses": [
+    {
+      "role": "customer",
+      "path": "/v1/auth/login",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "role": "customer",
+      "path": "/v1/auth/me",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "customer",
+      "path": "/v1/orders/estimate",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "driver",
+      "path": "/v1/auth/login",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "role": "driver",
+      "path": "/v1/auth/me",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "driver",
+      "path": "/v1/drivers/orders",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "customer",
+      "path": "/v1/orders/estimate",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "customer",
+      "path": "/v1/orders",
+      "method": "POST",
+      "status": 201
+    },
+    {
+      "role": "customer",
+      "path": "/v1/auth/me",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "driver",
+      "path": "/v1/drivers/orders",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "driver",
+      "path": "/v1/drivers/orders/ORD-00001/accept",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "role": "driver",
+      "path": "/v1/drivers/orders",
+      "method": "GET",
+      "status": 400
+    },
+    {
+      "role": "driver",
+      "path": "/v1/auth/me",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "driver",
+      "path": "/v1/orders/ORD-00001/status",
+      "method": "PATCH",
+      "status": 200
+    },
+    {
+      "role": "driver",
+      "path": "/v1/orders/ORD-00001/generate-qr",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "role": "customer",
+      "path": "/v1/auth/me",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "customer",
+      "path": "/v1/orders",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "customer",
+      "path": "/v1/orders/ORD-00001",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "customer",
+      "path": "/v1/orders/ORD-00001/verify-qr",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "role": "customer",
+      "path": "/v1/orders/ORD-00001",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "driver",
+      "path": "/v1/orders/ORD-00001",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "driver",
+      "path": "/v1/auth/me",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "driver",
+      "path": "/v1/drivers/orders",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "customer",
+      "path": "/v1/orders/estimate",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "customer",
+      "path": "/v1/orders",
+      "method": "POST",
+      "status": 201
+    },
+    {
+      "role": "customer",
+      "path": "/v1/auth/me",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "driver",
+      "path": "/v1/drivers/orders",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "driver",
+      "path": "/v1/drivers/orders/ORD-00002/accept",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "role": "driver",
+      "path": "/v1/drivers/orders",
+      "method": "GET",
+      "status": 400
+    },
+    {
+      "role": "driver",
+      "path": "/v1/auth/me",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "driver",
+      "path": "/v1/orders/ORD-00002/status",
+      "method": "PATCH",
+      "status": 200
+    },
+    {
+      "role": "driver",
+      "path": "/v1/orders/ORD-00002/generate-qr",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "role": "customer",
+      "path": "/v1/auth/me",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "customer",
+      "path": "/v1/orders",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "customer",
+      "path": "/v1/orders/ORD-00002",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "customer",
+      "path": "/v1/orders/ORD-00002/verify-qr",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "role": "customer",
+      "path": "/v1/orders/ORD-00002",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "driver",
+      "path": "/v1/orders/ORD-00002",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "driver",
+      "path": "/v1/auth/me",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "driver",
+      "path": "/v1/drivers/orders",
+      "method": "GET",
+      "status": 200
+    }
+  ],
+  "request_failures": [
+    {
+      "role": "customer",
+      "url": "https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap",
+      "method": "GET",
+      "failure": "net::ERR_FAILED"
+    },
+    {
+      "role": "driver",
+      "url": "https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap",
+      "method": "GET",
+      "failure": "net::ERR_FAILED"
+    }
+  ],
+  "console": [
+    {
+      "role": "customer",
+      "type": "error",
+      "text": "Failed to load resource: net::ERR_FAILED"
+    },
+    {
+      "role": "customer",
+      "type": "verbose",
+      "text": "[DOM] Password field is not contained in a form: (More info: https://goo.gl/9p2vKq)"
+    },
+    {
+      "role": "driver",
+      "type": "error",
+      "text": "Failed to load resource: net::ERR_FAILED"
+    },
+    {
+      "role": "driver",
+      "type": "verbose",
+      "text": "[DOM] Password field is not contained in a form: (More info: https://goo.gl/9p2vKq)"
+    },
+    {
+      "role": "driver",
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 400 (Bad Request)"
+    },
+    {
+      "role": "driver",
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 400 (Bad Request)"
+    }
+  ],
+  "blocked_external_urls": [
+    "https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap",
+    "https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap"
+  ],
+  "page_errors": [],
+  "dialogs": [],
+  "browser_version": "154.0.8037.57",
+  "summary": {
+    "success": true,
+    "real_delivery_flows": 2,
+    "actualBackend": true,
+    "apiMocked": false,
+    "native": false
+  }
+}

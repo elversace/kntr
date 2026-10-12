@@ -1,0 +1,171 @@
+{
+  "environment": {
+    "node": "v24.19.0",
+    "database": "PostgreSQL 18.4, fresh isolated data directory",
+    "backend": "/workspace/kntr-startup/kntr-package/kntr-backend",
+    "runDir": "/workspace/kntr-startup/verification/step4-run-KL9XYo",
+    "dbPort": 41301,
+    "appPort": 37755,
+    "postgis": "Current schema requires no PostGIS extension; these tests do not verify PostGIS or geospatial SQL"
+  },
+  "checks": [
+    {
+      "name": "First document upload recreates missing folder and stores private owned metadata",
+      "status": "passed",
+      "evidence": {
+        "folderRecreated": true,
+        "stableDocumentId": "7ec704d7-5750-4b1d-a17c-02ce2364be05",
+        "privateURL": "/v1/drivers/documents/7ec704d7-5750-4b1d-a17c-02ce2364be05/file",
+        "requestDriverIdCannotChangeOwnership": true
+      }
+    },
+    {
+      "name": "PDF, JPG, JPEG and PNG signatures upload successfully",
+      "status": "passed",
+      "evidence": {
+        "acceptedFormats": [
+          "pdf",
+          "jpg",
+          "jpeg",
+          "png"
+        ],
+        "oneRowPerDocumentType": true
+      }
+    },
+    {
+      "name": "Replacement keeps document ID, updates metadata, resets verification and removes unreferenced old file",
+      "status": "passed",
+      "evidence": {
+        "sameDocumentId": true,
+        "metadataUpdated": true,
+        "verificationCleared": true,
+        "expiredStatusCorrect": true,
+        "supersededFileRemoved": true
+      }
+    },
+    {
+      "name": "Expiry status reflects current, near and later expiry dates",
+      "status": "passed",
+      "evidence": {
+        "todayAndWithin30DaysExpiring": true,
+        "laterExpiryValid": true
+      }
+    },
+    {
+      "name": "Private downloads allow owner and admin, deny everyone else and expose no public uploads",
+      "status": "passed",
+      "evidence": {
+        "allowedOwnerAndAdmin": true,
+        "deniedOtherAccounts": 5,
+        "deniedAnonymous": true,
+        "publicUploadsRemoved": true,
+        "exactBytesAndAttachmentHeaders": true
+      }
+    },
+    {
+      "name": "Interrupted private download does not crash server or delete stored document",
+      "status": "passed",
+      "evidence": {
+        "downloadAbortedAfterBytes": 64364,
+        "serverStillHealthy": true,
+        "storedDocumentAndFilePreserved": true
+      }
+    },
+    {
+      "name": "Unauthenticated and customer uploads cannot write files",
+      "status": "passed",
+      "evidence": {
+        "rejectedBeforeFileWrite": true
+      }
+    },
+    {
+      "name": "Invalid multipart body and calendar dates leave no rows or orphan files",
+      "status": "passed",
+      "evidence": {
+        "rejectedCases": 10,
+        "rowsAndFilesUnchanged": true
+      }
+    },
+    {
+      "name": "Extension, declared MIME, signature and size checks reject disguised or oversized files without residue",
+      "status": "passed",
+      "evidence": {
+        "rejectedCases": 8,
+        "over5MiBRejected": true,
+        "rowsAndFilesUnchanged": true
+      }
+    },
+    {
+      "name": "Aborted multipart upload leaves no document or partial file",
+      "status": "passed",
+      "evidence": {
+        "partiallyWrittenUploadObserved": true,
+        "abortedFileRemoved": true,
+        "metadataUnchanged": true,
+        "serverHealthy": true
+      }
+    },
+    {
+      "name": "Six simultaneous replacements preserve one row and only the final referenced file",
+      "status": "passed",
+      "evidence": {
+        "responses": 6,
+        "sameDocumentId": true,
+        "uniqueRow": true,
+        "noSupersededOrphanFiles": true
+      }
+    },
+    {
+      "name": "Forced document upsert failure removes new file and preserves old metadata and bytes",
+      "status": "passed",
+      "evidence": {
+        "newFileCleaned": true,
+        "oldDocumentAndFilePreserved": true
+      }
+    },
+    {
+      "name": "Replacement retains old file while an archive record references it",
+      "status": "passed",
+      "evidence": {
+        "archiveReferencePreventsDeletion": true,
+        "newCurrentFileStored": true
+      }
+    },
+    {
+      "name": "Safe legacy files remain privately readable while traversal and missing files are unavailable",
+      "status": "passed",
+      "evidence": {
+        "safeLegacyFilenameMapped": true,
+        "publiclyUnavailable": true,
+        "traversalNotServed": true,
+        "missingFile404": true
+      }
+    },
+    {
+      "name": "Fresh schema enforces unique driver-document type and nonnull driver",
+      "status": "passed",
+      "evidence": {
+        "uniqueTypeSQLCode": "23505",
+        "nonnullOwnerSQLCode": "23502"
+      }
+    },
+    {
+      "name": "Original legacy database upgrades001–003 twice, archives complete duplicate/orphan history and deletes no files",
+      "status": "passed",
+      "evidence": {
+        "actualUpgrade001002003Repeated": true,
+        "newestDocumentKept": true,
+        "completeDuplicateNullOwnerAndUnsafeURLHistoryArchived": 3,
+        "safeFilenameBackfilled": true,
+        "unsafeFilenameNotMappedAndOriginalPreserved": true,
+        "direct003RepeatIdempotent": true,
+        "legacyFilesPreserved": 3
+      }
+    }
+  ],
+  "summary": {
+    "passed": 16,
+    "failed": 0,
+    "success": true
+  }
+}

@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>kntr — لوحة التحكم</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0D1B24; --surface:#142935; --surface-2:#1A3340; --hairline:#24404D;
+    --ink:#EDEDE5; --ink-dim:#93A8B2;
+    --amber:#E8A33D; --teal:#2FA88C; --coral:#E5573F;
+    --radius:10px;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{
+    background:var(--bg); color:var(--ink);
+    font-family:'IBM Plex Sans Arabic', sans-serif;
+    min-height:100vh;
+  }
+  h1,h2,h3,.disp{font-family:'Almarai', sans-serif;}
+  .shell{max-width:1180px; margin:0 auto; padding:24px 20px 60px;}
+
+  header{display:flex; align-items:center; justify-content:space-between; margin-bottom:28px; flex-wrap:wrap; gap:14px;}
+  .brand{display:flex; align-items:center; gap:12px;}
+  .brand .mark{width:38px; height:38px; border-radius:9px; background:linear-gradient(135deg,var(--amber),var(--coral)); display:flex; align-items:center; justify-content:center; font-weight:800; color:#0D1B24; font-family:'Almarai';}
+  .brand h1{font-size:20px; font-weight:800;}
+  .brand span{color:var(--ink-dim); font-size:12.5px;}
+
+  .cfg{display:flex; gap:8px; align-items:center;}
+  .cfg input{background:var(--surface); border:1px solid var(--hairline); color:var(--ink); padding:8px 12px; border-radius:8px; font-family:inherit; font-size:12.5px; width:230px;}
+  .cfg button{background:var(--surface-2); border:1px solid var(--hairline); color:var(--ink); padding:8px 14px; border-radius:8px; cursor:pointer; font-family:inherit; font-size:13px;}
+  .cfg .pulse{width:8px; height:8px; border-radius:50%; background:var(--ink-dim);}
+  .cfg .pulse.on{background:var(--teal); box-shadow:0 0 0 0 rgba(47,168,140,.6); animation:pulse 1.8s infinite;}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(47,168,140,.55);}70%{box-shadow:0 0 0 8px rgba(47,168,140,0);}100%{box-shadow:0 0 0 0 rgba(47,168,140,0);}}
+
+  .login-box{background:var(--surface); border:1px solid var(--hairline); border-radius:var(--radius); padding:22px; max-width:420px; margin:60px auto; text-align:center;}
+  .login-box h2{margin-bottom:6px;}
+  .login-box p{color:var(--ink-dim); font-size:13px; margin-bottom:18px;}
+  .login-box input{width:100%; background:var(--bg); border:1px solid var(--hairline); color:var(--ink); padding:11px 14px; border-radius:8px; margin-bottom:10px; font-family:inherit;}
+  .login-box button{width:100%; background:var(--amber); color:#0D1B24; border:none; padding:12px; border-radius:8px; font-weight:700; cursor:pointer; font-family:inherit;}
+  .login-err{color:var(--coral); font-size:12.5px; margin-top:8px; min-height:16px;}
+
+  .hidden{display:none !important;}
+
+  .stats{display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px; margin-bottom:26px;}
+  .stat{background:var(--surface); border:1px solid var(--hairline); border-radius:var(--radius); padding:16px 18px; position:relative; overflow:hidden;}
+  .stat .n{font-size:28px; font-weight:800; font-family:'Almarai';}
+  .stat .l{color:var(--ink-dim); font-size:12px; margin-top:4px;}
+  .stat.warn{border-color:rgba(232,163,61,.4);}
+  .stat.warn .n{color:var(--amber);}
+
+  .route-divider{display:flex; align-items:center; gap:8px; margin:30px 0 14px;}
+  .route-divider .line{flex:1; height:1px; background:repeating-linear-gradient(90deg, var(--hairline) 0 6px, transparent 6px 12px);}
+  .route-divider span{font-size:13px; color:var(--ink-dim); font-weight:600; white-space:nowrap;}
+
+  .grid2{display:grid; grid-template-columns:1.4fr 1fr; gap:16px;}
+  @media(max-width:860px){.grid2{grid-template-columns:1fr;}}
+
+  .panel{background:var(--surface); border:1px solid var(--hairline); border-radius:var(--radius); padding:18px; overflow:auto;}
+  .panel h3{font-size:15px; margin-bottom:12px; display:flex; justify-content:space-between; align-items:center;}
+  .panel h3 button{background:none; border:1px solid var(--hairline); color:var(--ink-dim); font-size:11.5px; padding:4px 9px; border-radius:6px; cursor:pointer; font-family:inherit;}
+
+  table{width:100%; border-collapse:collapse; font-size:13px;}
+  th{color:var(--ink-dim); font-weight:600; text-align:right; padding:8px 6px; border-bottom:1px solid var(--hairline); font-size:11.5px;}
+  td{padding:9px 6px; border-bottom:1px solid var(--hairline); vertical-align:middle;}
+  tr:last-child td{border-bottom:none;}
+  .badge{display:inline-block; padding:3px 9px; border-radius:20px; font-size:11px; font-weight:700;}
+  .b-pending{background:rgba(232,163,61,.15); color:var(--amber);}
+  .b-accepted,.b-in_transit{background:rgba(47,168,140,.15); color:var(--teal);}
+  .b-delivered{background:rgba(255,255,255,.08); color:var(--ink-dim);}
+  .b-cancelled{background:rgba(229,87,63,.15); color:var(--coral);}
+
+  .empty{color:var(--ink-dim); font-size:13px; text-align:center; padding:24px 0;}
+  .drv-row{display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid var(--hairline);}
+  .drv-row:last-child{border-bottom:none;}
+  .drv-row .name{font-weight:600; font-size:13.5px;}
+  .drv-row .meta{color:var(--ink-dim); font-size:11.5px; margin-top:2px;}
+  .btn-sm{border:none; padding:6px 12px; border-radius:6px; font-size:12px; cursor:pointer; font-weight:700; font-family:inherit;}
+  .approve{background:var(--teal); color:#0D1B24;}
+  .reject{background:rgba(229,87,63,.15); color:var(--coral); margin-inline-start:6px;}
+</style>
+</head>
+<body>
+<div class="shell">
+  <header>
+    <div class="brand">
+      <div class="mark">ك</div>
+      <div>
+        <h1>kntr <span style="color:var(--ink-dim); font-weight:400;">لوحة التحكم</span></h1>
+        <span id="who">غير متصل</span>
+      </div>
+    </div>
+    <div class="cfg">
+      <div class="pulse" id="pulse"></div>
+      <input id="apiBase" value="http://localhost:3000/v1" title="عنوان الـ API">
+      <button onclick="logout()" id="logoutBtn" class="hidden">خروج</button>
+    </div>
+  </header>
+
+  <div class="login-box" id="loginBox">
+    <h2>تسجيل دخول المشرف</h2>
+    <p>ادخل بيانات حساب admin للوصول للوحة التحكم</p>
+    <input id="email" placeholder="البريد الإلكتروني" value="admin@quickship.ly">
+    <input id="password" type="password" placeholder="كلمة المرور" value="Passw0rd123">
+    <button onclick="login()">دخول</button>
+    <div class="login-err" id="loginErr"></div>
+  </div>
+
+  <div id="dash" class="hidden">
+    <div class="stats" id="statsBox"></div>
+
+    <div class="route-divider"><span>سائقون بانتظار الاعتماد</span><div class="line"></div></div>
+    <div class="panel">
+      <h3>الطلبات المعلّقة <button onclick="loadDrivers()">تحديث</button></h3>
+      <div id="driversList"><div class="empty">جارِ التحميل...</div></div>
+    </div>
+
+    <div class="route-divider"><span>سجل الطلبات</span><div class="line"></div></div>
+    <div class="panel">
+      <h3>أحدث الطلبات <button onclick="loadOrders()">تحديث</button></h3>
+      <div style="overflow-x:auto;">
+      <table id="ordersTable">
+        <thead><tr><th>الرقم</th><th>العميل</th><th>السائق</th><th>الحالة</th><th>السعر</th></tr></thead>
+        <tbody><tr><td colspan="5" class="empty">جارِ التحميل...</td></tr></tbody>
+      </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+let TOKEN = null;
+
+function esc(s){ return String(s??'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function api(){ return document.getElementById('apiBase').value.replace(/\/$/,''); }
+
+async function login(){
+  const email = document.getElementById('email').value;
+  const password = document.getElementById('password').value;
+  const err = document.getElementById('loginErr');
+  err.textContent = '';
+  try{
+    const res = await fetch(api()+'/auth/login', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({email, password})
+    });
+    const data = await res.json();
+    if(!data.success){ err.textContent = data.error?.message || 'فشل الدخول'; return; }
+    if(data.data.user.role !== 'admin'){ err.textContent = 'هذا الحساب ليس حساب مشرف'; return; }
+    TOKEN = data.data.tokens.access_token;
+    document.getElementById('who').textContent = data.data.user.full_name_ar;
+    document.getElementById('loginBox').classList.add('hidden');
+    document.getElementById('dash').classList.remove('hidden');
+    document.getElementById('logoutBtn').classList.remove('hidden');
+    document.getElementById('pulse').classList.add('on');
+    refreshAll();
+  }catch(e){
+    err.textContent = 'تعذّر الاتصال بالسيرفر — تحقق من عنوان الـ API';
+  }
+}
+
+function logout(){
+  TOKEN = null;
+  document.getElementById('dash').classList.add('hidden');
+  document.getElementById('loginBox').classList.remove('hidden');
+  document.getElementById('logoutBtn').classList.add('hidden');
+  document.getElementById('pulse').classList.remove('on');
+}
+
+async function authFetch(path, opts={}){
+  opts.headers = Object.assign({'Content-Type':'application/json','Authorization':'Bearer '+TOKEN}, opts.headers||{});
+  const res = await fetch(api()+path, opts);
+  return res.json();
+}
+
+async function loadStats(){
+  const box = document.getElementById('statsBox');
+  const d = await authFetch('/admin/statistics');
+  if(!d.success){ box.innerHTML = '<div class="empty">تعذّر تحميل الإحصائيات</div>'; return; }
+  const s = d.data || {};
+  const cards = [
+    ['طلبات نشطة الآن', s.active_orders ?? '—', false],
+    ['إيرادات اليوم (LYD)', s.today_revenue ?? '—', false],
+    ['سائقون نشطون', s.active_drivers ?? '—', false],
+    ['بانتظار الاعتماد', s.pending_approvals ?? '—', true],
+    ['إجمالي العملاء', s.total_customers ?? '—', false],
+  ];
+  box.innerHTML = cards.map(c=>`<div class="stat ${c[2]?'warn':''}"><div class="n">${c[1]}</div><div class="l">${c[0]}</div></div>`).join('');
+}
+
+async function loadDrivers(){
+  const box = document.getElementById('driversList');
+  box.innerHTML = '<div class="empty">جارِ التحميل...</div>';
+  const d = await authFetch('/admin/drivers/pending');
+  if(!d.success || !d.data || !d.data.length){ box.innerHTML = '<div class="empty">لا يوجد سائقون بانتظار الاعتماد</div>'; return; }
+  box.innerHTML = d.data.map(dr=>`
+    <div class="drv-row">
+      <div>
+        <div class="name">${esc(dr.full_name_ar) || 'بدون اسم'}</div>
+        <div class="meta">${esc(dr.phone) || ''} · ${esc(dr.vehicles && dr.vehicles[0] && dr.vehicles[0].type) || 'بدون مركبة'}</div>
+      </div>
+      <div>
+        <button class="btn-sm approve" onclick="approveDriver('${dr.id}')">اعتماد</button>
+        <button class="btn-sm reject" onclick="rejectDriver('${dr.id}')">رفض</button>
+      </div>
+    </div>`).join('');
+}
+
+async function approveDriver(id){
+  await authFetch('/admin/drivers/'+id+'/approve', {method:'POST'});
+  loadDrivers(); loadStats();
+}
+async function rejectDriver(id){
+  const reason = prompt('سبب الرفض:', 'مستندات غير مكتملة');
+  if(reason===null) return;
+  await authFetch('/admin/drivers/'+id+'/reject', {method:'POST', body: JSON.stringify({reason})});
+  loadDrivers(); loadStats();
+}
+
+const statusLabel = {pending:'قيد الانتظار', accepted:'مقبول', in_transit:'في الطريق', delivered:'تم التسليم', cancelled:'ملغي'};
+async function loadOrders(){
+  const tbody = document.querySelector('#ordersTable tbody');
+  tbody.innerHTML = '<tr><td colspan="5" class="empty">جارِ التحميل...</td></tr>';
+  const d = await authFetch('/orders?limit=15');
+  if(!d.success || !d.data || !d.data.length){ tbody.innerHTML = '<tr><td colspan="5" class="empty">لا توجد طلبات بعد</td></tr>'; return; }
+  tbody.innerHTML = d.data.map(o=>`
+    <tr>
+      <td>${o.id}</td>
+      <td>${esc(o.customer_name) || '—'}</td>
+      <td>${esc(o.driver_name) || '—'}</td>
+      <td><span class="badge b-${o.status}">${statusLabel[o.status]||o.status}</span></td>
+      <td>${o.final_price ?? '—'} د.ل</td>
+    </tr>`).join('');
+}
+
+function refreshAll(){ loadStats(); loadDrivers(); loadOrders(); }
+setInterval(()=>{ if(TOKEN) refreshAll(); }, 15000);
+</script>
+</body>
+</html>

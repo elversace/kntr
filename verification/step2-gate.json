@@ -1,0 +1,2602 @@
+{
+  "gate": "step2",
+  "completed_at_utc": "2026-10-11T11:53:24.945163+00:00",
+  "all_reports_passed": true,
+  "evidence": [
+    {
+      "report": "step2-results.json",
+      "sha256": "bc91ef55f6cb4090df3cb21049f008a1e0764218ea83a2a95e3588e7c976b1ba",
+      "result": {
+        "environment": {
+          "node": "v24.19.0",
+          "database": "PostgreSQL 18.4, fresh isolated data directory",
+          "backend": "/workspace/kntr-fixed/kntr-package/kntr-backend",
+          "runDir": "/workspace/kntr-fixed/verification/step2-run-lvI1Bm",
+          "dbPort": 36941,
+          "appPort": 36319,
+          "postgis": "Optional extension omitted (SKIP_POSTGIS=1); these tests do not verify PostGIS or geospatial SQL"
+        },
+        "checks": [
+          {
+            "name": "Pending, accepted and cancelled orders cannot be confirmed or regenerate QR",
+            "status": "passed",
+            "evidence": {
+              "statesRejected": [
+                "pending",
+                "accepted",
+                "cancelled"
+              ],
+              "stateUnchanged": true
+            }
+          },
+          {
+            "name": "Only assigned driver generates QR; only owning customer confirms it",
+            "status": "passed",
+            "evidence": {
+              "deniedGenerators": 5,
+              "deniedConfirmers": 5,
+              "assignedDriverCannotSelfConfirm": true,
+              "stateUnchanged": true
+            }
+          },
+          {
+            "name": "Ordinary order reads, lists and pending feeds never expose QR secrets",
+            "status": "passed",
+            "evidence": {
+              "verifiedResponses": 7,
+              "activeAndLegacyPendingSecretsHidden": true
+            }
+          },
+          {
+            "name": "Unexpired QR generation retry returns same token and timestamps",
+            "status": "passed",
+            "evidence": {
+              "sameToken": true,
+              "sameLifetime": true,
+              "noMutation": true
+            }
+          },
+          {
+            "name": "Malformed and wrong QR codes fail without changing delivery or accounting",
+            "status": "passed",
+            "evidence": {
+              "rejectedInputs": 8,
+              "stateUnchanged": true
+            }
+          },
+          {
+            "name": "Receipt and cash confirmation require explicit boolean true",
+            "status": "passed",
+            "evidence": {
+              "rejectedInputs": 10,
+              "receiptCode": "RECEIPT_REQUIRED",
+              "cashCode": "CASH_CONFIRMATION_REQUIRED",
+              "stateUnchanged": true
+            }
+          },
+          {
+            "name": "Missing, future and expired generation times cannot confirm delivery",
+            "status": "passed",
+            "evidence": {
+              "invalidGenerationTimesRejected": 3,
+              "stateUnchanged": true
+            }
+          },
+          {
+            "name": "Direct delivered status cannot bypass customer QR confirmation",
+            "status": "passed",
+            "evidence": {
+              "deniedBypasses": 6,
+              "stateUnchanged": true
+            }
+          },
+          {
+            "name": "Customer confirms cash delivery once; sequential replay changes nothing",
+            "status": "passed",
+            "evidence": {
+              "oneTrip": true,
+              "oneCustomerOrder": true,
+              "oneCompletedPayment": true,
+              "earningsExact": true,
+              "driverAvailable": true,
+              "sequentialReplayRejected": true,
+              "deliveredRegenerationRejected": true
+            }
+          },
+          {
+            "name": "Eight simultaneous confirmations commit exactly one delivery and payment",
+            "status": "passed",
+            "evidence": {
+              "responseStatuses": [
+                200,
+                409,
+                409,
+                409,
+                409,
+                409,
+                409,
+                409
+              ],
+              "oneTrip": true,
+              "oneCustomerOrder": true,
+              "oneCompletedPayment": true,
+              "earningsExact": true,
+              "driverAvailable": true
+            }
+          },
+          {
+            "name": "QR generation racing confirmation cannot rotate or double-confirm delivery",
+            "status": "passed",
+            "evidence": {
+              "generationHttp": 200,
+              "confirmationHttp": 200,
+              "oneTrip": true,
+              "oneCustomerOrder": true,
+              "oneCompletedPayment": true,
+              "earningsExact": true,
+              "driverAvailable": true
+            }
+          },
+          {
+            "name": "Confirmation racing cash cancellation has one winner and no double accounting or refund",
+            "status": "passed",
+            "evidence": {
+              "races": [
+                {
+                  "state": "delivered",
+                  "responseStatuses": [
+                    200,
+                    400
+                  ]
+                },
+                {
+                  "state": "cancelled",
+                  "responseStatuses": [
+                    200,
+                    409
+                  ]
+                },
+                {
+                  "state": "delivered",
+                  "responseStatuses": [
+                    200,
+                    400
+                  ]
+                }
+              ],
+              "exactlyOneWinnerPerRace": true,
+              "noCashRefund": true
+            }
+          },
+          {
+            "name": "QR expiry is checked after the delivery row lock wait",
+            "status": "passed",
+            "evidence": {
+              "observedVerificationBlockedOnOrderLock": true,
+              "lockHeldAcrossExpiry": true,
+              "expiredAfterWaitRejected": true,
+              "accountingUnchanged": true
+            }
+          },
+          {
+            "name": "Concurrent confirmation and replay emit each delivered event exactly once",
+            "status": "passed",
+            "evidence": {
+              "events": {
+                "delivered": 1,
+                "status": 1
+              },
+              "authenticatedCustomerTracking": true,
+              "replayEmittedNoEvent": true,
+              "oneTrip": true,
+              "oneCustomerOrder": true,
+              "oneCompletedPayment": true,
+              "earningsExact": true,
+              "driverAvailable": true
+            }
+          },
+          {
+            "name": "Noncash paid flag without matching confirmed ledger cannot deliver",
+            "status": "passed",
+            "evidence": {
+              "paidFlagAloneRejected": true,
+              "wrongCustomerLedgerRejected": true,
+              "cashFlagCannotApproveCard": true
+            }
+          },
+          {
+            "name": "Forced ledger failure rolls back all delivery and accounting changes",
+            "status": "passed",
+            "evidence": {
+              "rollbackLeftEveryFieldUnchanged": true,
+              "sameQRRetryWorks": true,
+              "oneTrip": true,
+              "oneCustomerOrder": true,
+              "oneCompletedPayment": true,
+              "earningsExact": true,
+              "driverAvailable": true
+            }
+          },
+          {
+            "name": "Forced customer_stats failure rolls back all delivery and accounting changes",
+            "status": "passed",
+            "evidence": {
+              "rollbackLeftEveryFieldUnchanged": true,
+              "sameQRRetryWorks": true,
+              "oneTrip": true,
+              "oneCustomerOrder": true,
+              "oneCompletedPayment": true,
+              "earningsExact": true,
+              "driverAvailable": true
+            }
+          },
+          {
+            "name": "Schema prevents duplicate completed payment and refund ledger events",
+            "status": "passed",
+            "evidence": {
+              "paymentDuplicateSQLCode": "23505",
+              "refundDuplicateSQLCode": "23505"
+            }
+          },
+          {
+            "name": "Migration001 is idempotent and blocks historical duplicate ledger without deleting it",
+            "status": "passed",
+            "evidence": {
+              "migratedLegacyWithoutIndex": true,
+              "repeatedMigrationIdempotent": true,
+              "duplicateHistoryBlocked": true,
+              "allHistoricalRowsPreserved": 2,
+              "failedMigrationRolledBack": true
+            }
+          }
+        ],
+        "summary": {
+          "passed": 19,
+          "failed": 0,
+          "success": true
+        }
+      }
+    },
+    {
+      "report": "step2-browser-results.json",
+      "sha256": "ecc0f3e795d4b272d40516f656fd1cc3246c0e3d1eb44dd8d6be41ef3335ccea",
+      "result": {
+        "verification": "Actual Chromium frontend; ALL API responses MOCKED",
+        "limitations": "No backend, deployed service, Android or iOS runtime verification; native copies only tested as browser HTML.",
+        "network": "Mock localhost page/API routes fulfilled in Playwright; every external request aborted; no external network.",
+        "timestamp_utc": "2026-10-11T11:45:48.890255+00:00",
+        "sources": [
+          {
+            "path": "/workspace/kntr-fixed/kntr-package/frontend/kntr-app.html",
+            "sha256": "5a0c06ca3e77b312c3a8920baee574882e8e799978ea36f599c637b6e37b8cbb"
+          },
+          {
+            "path": "/workspace/kntr-fixed/kntr-mobile/www/index.html",
+            "sha256": "33795981a1e29da44a97b31af595ce108e25fc4eb96eace0a2415ac3637d985f"
+          },
+          {
+            "path": "/workspace/kntr-fixed/kntr-mobile/android/app/src/main/assets/public/index.html",
+            "sha256": "33795981a1e29da44a97b31af595ce108e25fc4eb96eace0a2415ac3637d985f"
+          },
+          {
+            "path": "/workspace/kntr-fixed/kntr-mobile/ios/App/App/public/index.html",
+            "sha256": "33795981a1e29da44a97b31af595ce108e25fc4eb96eace0a2415ac3637d985f"
+          }
+        ],
+        "checks": [
+          {
+            "source": "/workspace/kntr-fixed/kntr-package/frontend/kntr-app.html",
+            "name": "Inline JavaScript syntax",
+            "status": "passed",
+            "evidence": {
+              "script_count": 1
+            }
+          },
+          {
+            "source": "/workspace/kntr-fixed/kntr-package/frontend/kntr-app.html",
+            "name": "Driver generates code and refreshes without self confirmation",
+            "evidence": {
+              "driver_self_confirm_absent": true,
+              "qr_visible": true,
+              "server_refresh_requested": true
+            },
+            "status": "passed",
+            "mock_api_requests": [
+              {
+                "method": "POST",
+                "path": "/auth/login",
+                "body": {
+                  "email": "driver@example.ly",
+                  "password": "MockPassw0rd123"
+                }
+              },
+              {
+                "method": "GET",
+                "path": "/auth/me",
+                "body": null
+              },
+              {
+                "method": "GET",
+                "path": "/drivers/orders",
+                "body": null
+              },
+              {
+                "method": "POST",
+                "path": "/drivers/orders/ORD-00001/accept",
+                "body": {}
+              },
+              {
+                "method": "GET",
+                "path": "/drivers/orders",
+                "body": null
+              },
+              {
+                "method": "GET",
+                "path": "/auth/me",
+                "body": null
+              },
+              {
+                "method": "PATCH",
+                "path": "/orders/ORD-00001/status",
+                "body": {
+                  "status": "in_transit"
+                }
+              },
+              {
+                "method": "POST",
+                "path": "/orders/ORD-00001/generate-qr",
+                "body": null
+              },
+              {
+                "method": "GET",
+                "path": "/orders/ORD-00001",
+                "body": null
+              }
+            ],
+            "blocked_external_urls": [
+              "https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap"
+            ],
+            "page_errors": [],
+            "dialogs": []
+          },
+          {
+            "source": "/workspace/kntr-fixed/kntr-package/frontend/kntr-app.html",
+            "name": "Owner receipt and cash acknowledgement block incomplete confirmation",
+            "evidence": {
+              "receipt_and_cash_required": true,
+              "verify_requests_blocked": 3
+            },
+            "status": "passed",
+            "mock_api_requests": [
+              {
+                "method": "POST",
+                "path": "/auth/login",
+                "body": {
+                  "email": "owner@example.ly",
+                  "password": "MockPassw0rd123"
+                }
+              },
+              {
+                "method": "GET",
+                "path": "/orders/estimate",
+                "body": null
+              },
+              {
+                "method": "GET",
+                "path": "/orders",
+                "body": null
+              },
+              {
+                "method": "GET",
+                "path": "/orders/ORD-00001",
+                "body": null
+              }
+            ],
+            "blocked_external_urls": [
+              "https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap"
+            ],
+            "page_errors": [],
+            "dialogs": []
+          },
+          {
+            "source": "/workspace/kntr-fixed/kntr-package/frontend/kntr-app.html",
+            "name": "Owner raw QR token confirms then reloads tracking",
+            "evidence": {
+              "input": "raw_code",
+              "post_body": {
+                "qr_code": "EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE",
+                "received": true,
+                "cash_paid": true
+              },
+              "tracking_refreshed": true
+            },
+            "status": "passed",
+            "mock_api_requests": [
+              {
+                "method": "POST",
+                "path": "/auth/login",
+                "body": {
+                  "email": "owner@example.ly",
+                  "password": "MockPassw0rd123"
+                }
+              },
+              {
+                "method": "GET",
+                "path": "/orders/estimate",
+                "body": null
+              },
+              {
+                "method": "GET",
+                "path": "/orders",
+                "body": null
+              },
+              {
+                "method": "GET",
+                "path": "/orders/ORD-00001",
+                "body": null
+              },
+              {
+                "method": "POST",
+                "path": "/orders/ORD-00001/verify-qr",
+                "body": {
+                  "qr_code": "EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE",
+                  "received": true,
+                  "cash_paid": true
+                }
+              },
+              {
+                "method": "GET",
+                "path": "/orders/ORD-00001",
+                "body": null
+              }
+            ],
+            "blocked_external_urls": [
+              "https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap"
+            ],
+            "page_errors": [],
+            "dialogs": []
+          },
+          {
+            "source": "/workspace/kntr-fixed/kntr-package/frontend/kntr-app.html",
+            "name": "Owner order-bound QR payload is parsed and confirms",
+            "evidence": {
+              "input": "order_bound_qr_payload",
+              "post_body": {
+                "qr_code": "EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE",
+                "received": true,
+                "cash_paid": true
+              },
+              "tracking_refreshed": true
+            },
+            "status": "passed",
+            "mock_api_requests": [
+              {
+                "method": "POST",
+                "path": "/auth/login",
+                "body": {
+                  "email": "owner@example.ly",
+                  "password": "MockPassw0rd123"
+                }
+              },
+              {
+                "method": "GET",
+                "path": "/orders/estimate",
+                "body": null
+              },
+              {
+                "method": "GET",
+                "path": "/orders",
+                "body": null
+              },
+              {
+                "method": "GET",
+                "path": "/orders/ORD-00001",
+                "body": null
+              },
+              {
+                "method": "POST",
+                "path": "/orders/ORD-00001/verify-qr",
+                "body": {
+                  "qr_code": "EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE",
+                  "received": true,
+                  "cash_paid": true
+                }
+              },
+              {
+                "method": "GET",
+                "path": "/orders/ORD-00001",
+                "body": null
+              }
+            ],
+            "blocked_external_urls": [
+              "https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap"
+            ],
+            "page_errors": [],
+            "dialogs": []
+          },
+          {
+            "source": "/workspace/kntr-fixed/kntr-package/frontend/kntr-app.html",
+            "name": "Different-order QR payload is rejected before API request",
+            "evidence": {
+              "different_order_payload_blocked_without_fetch": true
+            },
+            "status": "passed",
+            "mock_api_requests": [
+              {
+                "method": "POST",
+                "path": "/auth/login",
+                "body": {
+                  "email": "owner@example.ly",
+                  "password": "MockPassw0rd123"
+                }
+              },
+              {
+                "method": "GET",
+                "path": "/orders/estimate",
+                "body": null
+              },
+              {
+                "method": "GET",
+                "path": "/orders",
+                "body": null
+              },
+              {
+                "method": "GET",
+                "path": "/orders/ORD-00001",
+                "body": null
+              }
+            ],
+            "blocked_external_urls": [
+              "https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap"
+            ],
+            "page_errors": [],
+            "dialogs": []
+          },
+          {
+            "source": "/workspace/kntr-fixed/kntr-package/frontend/kntr-app.html",
+            "name": "Expired server QR response remains visible with transit status",
+            "evidence": {
+              "server_error_visible": true,
+              "status_unchanged": true
+            },
+            "status": "passed",
+            "mock_api_requests": [
+              {
+                "method": "POST",
+                "path": "/auth/login",
+                "body": {
+                  "email": "owner@example.ly",
+                  "password": "MockPassw0rd123"
+                }
+              },
+              {
+                "method": "GET",
+                "path": "/orders/estimate",
+                "body": null
+              },
+              {
+                "method": "GET",
+                "path": "/orders",
+                "body": null
+              },
+              {
+                "method": "GET",
+                "path": "/orders/ORD-00001",
+                "body": null
+              },
+              {
+                "method": "POST",
+                "path": "/orders/ORD-00001/verify-qr",
+                "body": {
+                  "qr_code": "EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE",
+                  "received": true,
+                  "cash_paid": true
+                }
+              }
+            ],
+            "blocked_external_urls": [
+              "https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap"
+            ],
+            "page_errors": [],
+            "dialogs": []
+          },
+          {
+            "source": "/workspace/kntr-fixed/kntr-package/frontend/kntr-app.html",
+            "name": "Noncash confirmation requires receipt without cash checkbox",
+            "evidence": {
+              "cash_checkbox_absent": true,
+              "receipt_ack_required": true,
+              "post_body": {
+                "qr_code": "EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE",
+                "received": true,
+                "cash_paid": false
+              }
+            },
+            "status": "passed",
+            "mock_api_requests": [
+              {
+                "method": "POST",
+                "path": "/auth/login",
+                "body": {
+                  "email": "owner@example.ly",
+                  "password": "MockPassw0rd123"
+                }
+              },
+              {
+                "method": "GET",
+                "path": "/orders/estimate",
+                "body": null
+              },
+              {
+                "method": "GET",
+                "path": "/orders",
+                "body": null
+              },
+              {
+                "method": "GET",
+                "path": "/orders/ORD-00001",
+                "body": null
+              },
+              {
+                "method": "POST",
+                "path": "/orders/ORD-00001/verify-qr",
+                "body": {
+                  "qr_code": "EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE",
+                  "received": true,
+                  "cash_paid": false
+                }
+              },
+              {
+                "method": "GET",
+                "path": "/orders/ORD-00001",
+                "body": null
+              }
+            ],
+            "blocked_external_urls": [
+              "https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap"
+            ],
+            "page_errors": [],
+            "dialogs": []
+          },
+          {
+            "source": "/workspace/kntr-fixed/kntr-package/frontend/kntr-app.html",
+            "name": "Another customer order has no receipt form",
+            "evidence": {
+              "order_status": "in_transit",
+              "owner": "MOCK-CUSTOMER-B",
+              "form_absent": true
+            },
+            "status": "passed",
+            "mock_api_requests": [
+              {
+                "method": "POST",
+                "path": "/auth/login",
+                "body": {
+                  "email": "owner@example.ly",
+                  "password": "MockPassw0rd123"
+                }
+              },
+              {
+                "method": "GET",
+                "path": "/orders/estimate",
+                "body": null
+              },
+              {
+                "method": "GET",
+                "path": "/orders",
+                "body": null
+              },
+              {
+                "method": "GET",
+                "path": "/orders/ORD-00001",
+                "body": null
+              }
+            ],
+            "blocked_external_urls": [
+              "https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap"
+            ],
+            "page_errors": [],
+            "dialogs": []
+          },
+          {
+            "source": "/workspace/kntr-fixed/kntr-package/frontend/kntr-app.html",
+            "name": "Pending order has no receipt form",
+            "evidence": {
+              "order_status": "pending",
+              "owner": "MOCK-CUSTOMER-A",
+              "form_absent": true
+            },
+            "status": "passed",
+            "mock_api_requests": [
+              {
+                "method": "POST",
+                "path": "/auth/login",
+                "body": {
+                  "email": "owner@example.ly",
+                  "password": "MockPassw0rd123"
+                }
+              },
+              {
+                "method": "GET",
+                "path": "/orders/estimate",
+                "body": null
+              },
+              {
+                "method": "GET",
+                "path": "/orders",
+                "body": null
+              },
+              {
+                "method": "GET",
+                "path": "/orders/ORD-00001",
+                "body": null
+              }
+            ],
+            "blocked_external_urls": [
+              "https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap"
+            ],
+            "page_errors": [],
+            "dialogs": []
+          },
+          {
+            "source": "/workspace/kntr-fixed/kntr-package/frontend/kntr-app.html",
+            "name": "Accepted order has no receipt form",
+            "evidence": {
+              "order_status": "accepted",
+              "owner": "MOCK-CUSTOMER-A",
+              "form_absent": true
+            },
+            "status": "passed",
+            "mock_api_requests": [
+              {
+                "method": "POST",
+                "path": "/auth/login",
+                "body": {
+                  "email": "owner@example.ly",
+                  "password": "MockPassw0rd123"
+                }
+              },
+              {
+                "method": "GET",
+                "path": "/orders/estimate",
+                "body": null
+              },
+              {
+                "method": "GET",
+                "path": "/orders",
+                "body": null
+              },
+              {
+                "method": "GET",
+                "path": "/orders/ORD-00001",
+                "body": null
+              }
+            ],
+            "blocked_external_urls": [
+              "https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap"
+            ],
+            "page_errors": [],
+            "dialogs": []
+          },
+          {
+            "source": "/workspace/kntr-fixed/kntr-package/frontend/kntr-app.html",
+            "name": "Delivered order has no receipt form",
+            "evidence": {
+              "order_status": "delivered",
+              "owner": "MOCK-CUSTOMER-A",
+              "form_absent": true
+            },
+            "status": "passed",
+            "mock_api_requests": [
+              {
+                "method": "POST",
+                "path": "/auth/login",
+                "body": {
+                  "email": "owner@example.ly",
+                  "password": "MockPassw0rd123"
+                }
+              },
+              {
+                "method": "GET",
+                "path": "/orders/estimate",
+                "body": null
+              },
+              {
+                "method": "GET",
+                "path": "/orders",
+                "body": null
+              },
+              {
+                "method": "GET",
+                "path": "/orders/ORD-00001",
+                "body": null
+              }
+            ],
+            "blocked_external_urls": [
+              "https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap"
+            ],
+            "page_errors": [],
+            "dialogs": []
+          },
+          {
+            "source": "/workspace/kntr-fixed/kntr-mobile/www/index.html",
+            "name": "Inline JavaScript syntax",
+            "status": "passed",
+            "evidence": {
+              "script_count": 1
+            }
+          },
+          {
+            "source": "/workspace/kntr-fixed/kntr-mobile/www/index.html",
+            "name": "Driver generates code and refreshes without self confirmation",
+            "evidence": {
+              "driver_self_confirm_absent": true,
+              "qr_visible": true,
+              "server_refresh_requested": true
+            },
+            "status": "passed",
+            "mock_api_requests": [
+              {
+                "method": "POST",
+                "path": "/auth/login",
+                "body": {
+                  "email": "driver@example.ly",
+                  "password": "MockPassw0rd123"
+                }
+              },
+              {
+                "method": "GET",
+                "path": "/auth/me",
+                "body": null
+              },
+              {
+                "method": "GET",
+                "path": "/drivers/orders",
+                "body": null
+              },
+              {
+                "method": "POST",
+                "path": "/drivers/orders/ORD-00001/accept",
+                "body": {}
+              },
+              {
+                "method": "GET",
+                "path": "/drivers/orders",
+                "body": null
+              },
+              {
+                "method": "GET",
+                "path": "/auth/me",
+                "body": null
+              },
+              {
+                "method": "PATCH",
+                "path": "/orders/ORD-00001/status",
+                "body": {
+                  "status": "in_transit"
+                }
+              },
+              {
+                "method": "POST",
+                "path": "/orders/ORD-00001/generate-qr",
+                "body": null
+              },
+              {
+                "method": "GET",
+                "path": "/orders/ORD-00001",
+                "body": null
+              }
+            ],
+            "blocked_external_urls": [
+              "https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap"
+            ],
+            "page_errors": [],
+            "dialogs": []
+          },
+          {
+            "source": "/workspace/kntr-fixed/kntr-mobile/www/index.html",
+            "name": "Owner receipt and cash acknowledgement block incomplete confirmation",
+            "evidence": {
+              "receipt_and_cash_required": true,
+              "verify_requests_blocked": 3
+            },
+            "status": "passed",
+            "mock_api_requests": [
+              {
+                "method": "POST",
+                "path": "/auth/login",
+                "body": {
+                  "email": "owner@example.ly",
+                  "password": "MockPassw0rd123"
+                }
+              },
+              {
+                "method": "GET",
+                "path": "/orders/estimate",
+                "body": null
+              },
+              {
+                "method": "GET",
+                "path": "/orders",
+                "body": null
+              },
+              {
+                "method": "GET",
+                "path": "/orders/ORD-00001",
+                "body": null
+              }
+            ],
+            "blocked_external_urls": [
+              "https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap"
+            ],
+            "page_errors": [],
+            "dialogs": []
+          },
+          {
+            "source": "/workspace/kntr-fixed/kntr-mobile/www/index.html",
+            "name": "Owner raw QR token confirms then reloads tracking",
+            "evidence": {
+              "input": "raw_code",
+              "post_body": {
+                "qr_code": "EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE",
+                "received": true,
+                "cash_paid": true
+              },
+              "tracking_refreshed": true
+            },
+            "status": "passed",
+            "mock_api_requests": [
+              {
+                "method": "POST",
+                "path": "/auth/login",
+                "body": {
+                  "email": "owner@example.ly",
+                  "password": "MockPassw0rd123"
+                }
+              },
+              {
+                "method": "GET",
+                "path": "/orders/estimate",
+                "body": null
+              },
+              {
+                "method": "GET",
+                "path": "/orders",
+                "body": null
+              },
+              {
+                "method": "GET",
+                "path": "/orders/ORD-00001",
+                "body": null
+              },
+              {
+                "method": "POST",
+                "path": "/orders/ORD-00001/verify-qr",
+                "body": {
+                  "qr_code": "EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE",
+                  "received": true,
+                  "cash_paid": true
+                }
+              },
+              {
+                "method": "GET",
+                "path": "/orders/ORD-00001",
+                "body": null
+              }
+            ],
+            "blocked_external_urls": [
+              "https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap"
+            ],
+            "page_errors": [],
+            "dialogs": []
+          },
+          {
+            "source": "/workspace/kntr-fixed/kntr-mobile/www/index.html",
+            "name": "Owner order-bound QR payload is parsed and confirms",
+            "evidence": {
+              "input": "order_bound_qr_payload",
+              "post_body": {
+                "qr_code": "EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE",
+                "received": true,
+                "cash_paid": true
+              },
+              "tracking_refreshed": true
+            },
+            "status": "passed",
+            "mock_api_requests": [
+              {
+                "method": "POST",
+                "path": "/auth/login",
+                "body": {
+                  "email": "owner@example.ly",
+                  "password": "MockPassw0rd123"
+                }
+              },
+              {
+                "method": "GET",
+                "path": "/orders/estimate",
+                "body": null
+              },
+              {
+                "method": "GET",
+                "path": "/orders",
+                "body": null
+              },
+              {
+                "method": "GET",
+                "path": "/orders/ORD-00001",
+                "body": null
+              },
+              {
+                "method": "POST",
+                "path": "/orders/ORD-00001/verify-qr",
+                "body": {
+                  "qr_code": "EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE",
+                  "received": true,
+                  "cash_paid": true
+                }
+              },
+              {
+                "method": "GET",
+                "path": "/orders/ORD-00001",
+                "body": null
+              }
+            ],
+            "blocked_external_urls": [
+              "https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap"
+            ],
+            "page_errors": [],
+            "dialogs": []
+          },
+          {
+            "source": "/workspace/kntr-fixed/kntr-mobile/www/index.html",
+            "name": "Different-order QR payload is rejected before API request",
+            "evidence": {
+              "different_order_payload_blocked_without_fetch": true
+            },
+            "status": "passed",
+            "mock_api_requests": [
+              {
+                "method": "POST",
+                "path": "/auth/login",
+                "body": {
+                  "email": "owner@example.ly",
+                  "password": "MockPassw0rd123"
+                }
+              },
+              {
+                "method": "GET",
+                "path": "/orders/estimate",
+                "body": null
+              },
+              {
+                "method": "GET",
+                "path": "/orders",
+                "body": null
+              },
+              {
+                "method": "GET",
+                "path": "/orders/ORD-00001",
+                "body": null
+              }
+            ],
+            "blocked_external_urls": [
+              "https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap"
+            ],
+            "page_errors": [],
+            "dialogs": []
+          },
+          {
+            "source": "/workspace/kntr-fixed/kntr-mobile/www/index.html",
+            "name": "Expired server QR response remains visible with transit status",
+            "evidence": {
+              "server_error_visible": true,
+              "status_unchanged": true
+            },
+            "status": "passed",
+            "mock_api_requests": [
+              {
+                "method": "POST",
+                "path": "/auth/login",
+                "body": {
+                  "email": "owner@example.ly",
+                  "password": "MockPassw0rd123"
+                }
+              },
+              {
+                "method": "GET",
+                "path": "/orders/estimate",
+                "body": null
+              },
+              {
+                "method": "GET",
+                "path": "/orders",
+                "body": null
+              },
+              {
+                "method": "GET",
+                "path": "/orders/ORD-00001",
+                "body": null
+              },
+              {
+                "method": "POST",
+                "path": "/orders/ORD-00001/verify-qr",
+                "body": {
+                  "qr_code": "EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE",
+                  "received": true,
+                  "cash_paid": true
+                }
+              }
+            ],
+            "blocked_external_urls": [
+              "https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap"
+            ],
+            "page_errors": [],
+            "dialogs": []
+          },
+          {
+            "source": "/workspace/kntr-fixed/kntr-mobile/www/index.html",
+            "name": "Noncash confirmation requires receipt without cash checkbox",
+            "evidence": {
+              "cash_checkbox_absent": true,
+              "receipt_ack_required": true,
+              "post_body": {
+                "qr_code": "EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE",
+                "received": true,
+                "cash_paid": false
+              }
+            },
+            "status": "passed",
+            "mock_api_requests": [
+              {
+                "method": "POST",
+                "path": "/auth/login",
+                "body": {
+                  "email": "owner@example.ly",
+                  "password": "MockPassw0rd123"
+                }
+              },
+              {
+                "method": "GET",
+                "path": "/orders/estimate",
+                "body": null
+              },
+              {
+                "method": "GET",
+                "path": "/orders",
+                "body": null
+              },
+              {
+                "method": "GET",
+                "path": "/orders/ORD-00001",
+                "body": null
+              },
+              {
+                "method": "POST",
+                "path": "/orders/ORD-00001/verify-qr",
+                "body": {
+                  "qr_code": "EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE",
+                  "received": true,
+                  "cash_paid": false
+                }
+              },
+              {
+                "method": "GET",
+                "path": "/orders/ORD-00001",
+                "body": null
+              }
+            ],
+            "blocked_external_urls": [
+              "https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap"
+            ],
+            "page_errors": [],
+            "dialogs": []
+          },
+          {
+            "source": "/workspace/kntr-fixed/kntr-mobile/www/index.html",
+            "name": "Another customer order has no receipt form",
+            "evidence": {
+              "order_status": "in_transit",
+              "owner": "MOCK-CUSTOMER-B",
+              "form_absent": true
+            },
+            "status": "passed",
+            "mock_api_requests": [
+              {
+                "method": "POST",
+                "path": "/auth/login",
+                "body": {
+                  "email": "owner@example.ly",
+                  "password": "MockPassw0rd123"
+                }
+              },
+              {
+                "method": "GET",
+                "path": "/orders/estimate",
+                "body": null
+              },
+              {
+                "method": "GET",
+                "path": "/orders",
+                "body": null
+              },
+              {
+                "method": "GET",
+                "path": "/orders/ORD-00001",
+                "body": null
+              }
+            ],
+            "blocked_external_urls": [
+              "https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap"
+            ],
+            "page_errors": [],
+            "dialogs": []
+          },
+          {
+            "source": "/workspace/kntr-fixed/kntr-mobile/www/index.html",
+            "name": "Pending order has no receipt form",
+            "evidence": {
+              "order_status": "pending",
+              "owner": "MOCK-CUSTOMER-A",
+              "form_absent": true
+            },
+            "status": "passed",
+            "mock_api_requests": [
+              {
+                "method": "POST",
+                "path": "/auth/login",
+                "body": {
+                  "email": "owner@example.ly",
+                  "password": "MockPassw0rd123"
+                }
+              },
+              {
+                "method": "GET",
+                "path": "/orders/estimate",
+                "body": null
+              },
+              {
+                "method": "GET",
+                "path": "/orders",
+                "body": null
+              },
+              {
+                "method": "GET",
+                "path": "/orders/ORD-00001",
+                "body": null
+              }
+            ],
+            "blocked_external_urls": [
+              "https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap"
+            ],
+            "page_errors": [],
+            "dialogs": []
+          },
+          {
+            "source": "/workspace/kntr-fixed/kntr-mobile/www/index.html",
+            "name": "Accepted order has no receipt form",
+            "evidence": {
+              "order_status": "accepted",
+              "owner": "MOCK-CUSTOMER-A",
+              "form_absent": true
+            },
+            "status": "passed",
+            "mock_api_requests": [
+              {
+                "method": "POST",
+                "path": "/auth/login",
+                "body": {
+                  "email": "owner@example.ly",
+                  "password": "MockPassw0rd123"
+                }
+              },
+              {
+                "method": "GET",
+                "path": "/orders/estimate",
+                "body": null
+              },
+              {
+                "method": "GET",
+                "path": "/orders",
+                "body": null
+              },
+              {
+                "method": "GET",
+                "path": "/orders/ORD-00001",
+                "body": null
+              }
+            ],
+            "blocked_external_urls": [
+              "https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap"
+            ],
+            "page_errors": [],
+            "dialogs": []
+          },
+          {
+            "source": "/workspace/kntr-fixed/kntr-mobile/www/index.html",
+            "name": "Delivered order has no receipt form",
+            "evidence": {
+              "order_status": "delivered",
+              "owner": "MOCK-CUSTOMER-A",
+              "form_absent": true
+            },
+            "status": "passed",
+            "mock_api_requests": [
+              {
+                "method": "POST",
+                "path": "/auth/login",
+                "body": {
+                  "email": "owner@example.ly",
+                  "password": "MockPassw0rd123"
+                }
+              },
+              {
+                "method": "GET",
+                "path": "/orders/estimate",
+                "body": null
+              },
+              {
+                "method": "GET",
+                "path": "/orders",
+                "body": null
+              },
+              {
+                "method": "GET",
+                "path": "/orders/ORD-00001",
+                "body": null
+              }
+            ],
+            "blocked_external_urls": [
+              "https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap"
+            ],
+            "page_errors": [],
+            "dialogs": []
+          },
+          {
+            "source": "/workspace/kntr-fixed/kntr-mobile/android/app/src/main/assets/public/index.html",
+            "name": "Inline JavaScript syntax",
+            "status": "passed",
+            "evidence": {
+              "script_count": 1
+            }
+          },
+          {
+            "source": "/workspace/kntr-fixed/kntr-mobile/android/app/src/main/assets/public/index.html",
+            "name": "Driver generates code and refreshes without self confirmation",
+            "evidence": {
+              "driver_self_confirm_absent": true,
+              "qr_visible": true,
+              "server_refresh_requested": true
+            },
+            "status": "passed",
+            "mock_api_requests": [
+              {
+                "method": "POST",
+                "path": "/auth/login",
+                "body": {
+                  "email": "driver@example.ly",
+                  "password": "MockPassw0rd123"
+                }
+              },
+              {
+                "method": "GET",
+                "path": "/auth/me",
+                "body": null
+              },
+              {
+                "method": "GET",
+                "path": "/drivers/orders",
+                "body": null
+              },
+              {
+                "method": "POST",
+                "path": "/drivers/orders/ORD-00001/accept",
+                "body": {}
+              },
+              {
+                "method": "GET",
+                "path": "/drivers/orders",
+                "body": null
+              },
+              {
+                "method": "GET",
+                "path": "/auth/me",
+                "body": null
+              },
+              {
+                "method": "PATCH",
+                "path": "/orders/ORD-00001/status",
+                "body": {
+                  "status": "in_transit"
+                }
+              },
+              {
+                "method": "POST",
+                "path": "/orders/ORD-00001/generate-qr",
+                "body": null
+              },
+              {
+                "method": "GET",
+                "path": "/orders/ORD-00001",
+                "body": null
+              }
+            ],
+            "blocked_external_urls": [
+              "https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap"
+            ],
+            "page_errors": [],
+            "dialogs": []
+          },
+          {
+            "source": "/workspace/kntr-fixed/kntr-mobile/android/app/src/main/assets/public/index.html",
+            "name": "Owner receipt and cash acknowledgement block incomplete confirmation",
+            "evidence": {
+              "receipt_and_cash_required": true,
+              "verify_requests_blocked": 3
+            },
+            "status": "passed",
+            "mock_api_requests": [
+              {
+                "method": "POST",
+                "path": "/auth/login",
+                "body": {
+                  "email": "owner@example.ly",
+                  "password": "MockPassw0rd123"
+                }
+              },
+              {
+                "method": "GET",
+                "path": "/orders/estimate",
+                "body": null
+              },
+              {
+                "method": "GET",
+                "path": "/orders",
+                "body": null
+              },
+              {
+                "method": "GET",
+                "path": "/orders/ORD-00001",
+                "body": null
+              }
+            ],
+            "blocked_external_urls": [
+              "https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap"
+            ],
+            "page_errors": [],
+            "dialogs": []
+          },
+          {
+            "source": "/workspace/kntr-fixed/kntr-mobile/android/app/src/main/assets/public/index.html",
+            "name": "Owner raw QR token confirms then reloads tracking",
+            "evidence": {
+              "input": "raw_code",
+              "post_body": {
+                "qr_code": "EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE",
+                "received": true,
+                "cash_paid": true
+              },
+              "tracking_refreshed": true
+            },
+            "status": "passed",
+            "mock_api_requests": [
+              {
+                "method": "POST",
+                "path": "/auth/login",
+                "body": {
+                  "email": "owner@example.ly",
+                  "password": "MockPassw0rd123"
+                }
+              },
+              {
+                "method": "GET",
+                "path": "/orders/estimate",
+                "body": null
+              },
+              {
+                "method": "GET",
+                "path": "/orders",
+                "body": null
+              },
+              {
+                "method": "GET",
+                "path": "/orders/ORD-00001",
+                "body": null
+              },
+              {
+                "method": "POST",
+                "path": "/orders/ORD-00001/verify-qr",
+                "body": {
+                  "qr_code": "EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE",
+                  "received": true,
+                  "cash_paid": true
+                }
+              },
+              {
+                "method": "GET",
+                "path": "/orders/ORD-00001",
+                "body": null
+              }
+            ],
+            "blocked_external_urls": [
+              "https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap"
+            ],
+            "page_errors": [],
+            "dialogs": []
+          },
+          {
+            "source": "/workspace/kntr-fixed/kntr-mobile/android/app/src/main/assets/public/index.html",
+            "name": "Owner order-bound QR payload is parsed and confirms",
+            "evidence": {
+              "input": "order_bound_qr_payload",
+              "post_body": {
+                "qr_code": "EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE",
+                "received": true,
+                "cash_paid": true
+              },
+              "tracking_refreshed": true
+            },
+            "status": "passed",
+            "mock_api_requests": [
+              {
+                "method": "POST",
+                "path": "/auth/login",
+                "body": {
+                  "email": "owner@example.ly",
+                  "password": "MockPassw0rd123"
+                }
+              },
+              {
+                "method": "GET",
+                "path": "/orders/estimate",
+                "body": null
+              },
+              {
+                "method": "GET",
+                "path": "/orders",
+                "body": null
+              },
+              {
+                "method": "GET",
+                "path": "/orders/ORD-00001",
+                "body": null
+              },
+              {
+                "method": "POST",
+                "path": "/orders/ORD-00001/verify-qr",
+                "body": {
+                  "qr_code": "EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE",
+                  "received": true,
+                  "cash_paid": true
+                }
+              },
+              {
+                "method": "GET",
+                "path": "/orders/ORD-00001",
+                "body": null
+              }
+            ],
+            "blocked_external_urls": [
+              "https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap"
+            ],
+            "page_errors": [],
+            "dialogs": []
+          },
+          {
+            "source": "/workspace/kntr-fixed/kntr-mobile/android/app/src/main/assets/public/index.html",
+            "name": "Different-order QR payload is rejected before API request",
+            "evidence": {
+              "different_order_payload_blocked_without_fetch": true
+            },
+            "status": "passed",
+            "mock_api_requests": [
+              {
+                "method": "POST",
+                "path": "/auth/login",
+                "body": {
+                  "email": "owner@example.ly",
+                  "password": "MockPassw0rd123"
+                }
+              },
+              {
+                "method": "GET",
+                "path": "/orders/estimate",
+                "body": null
+              },
+              {
+                "method": "GET",
+                "path": "/orders",
+                "body": null
+              },
+              {
+                "method": "GET",
+                "path": "/orders/ORD-00001",
+                "body": null
+              }
+            ],
+            "blocked_external_urls": [
+              "https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap"
+            ],
+            "page_errors": [],
+            "dialogs": []
+          },
+          {
+            "source": "/workspace/kntr-fixed/kntr-mobile/android/app/src/main/assets/public/index.html",
+            "name": "Expired server QR response remains visible with transit status",
+            "evidence": {
+              "server_error_visible": true,
+              "status_unchanged": true
+            },
+            "status": "passed",
+            "mock_api_requests": [
+              {
+                "method": "POST",
+                "path": "/auth/login",
+                "body": {
+                  "email": "owner@example.ly",
+                  "password": "MockPassw0rd123"
+                }
+              },
+              {
+                "method": "GET",
+                "path": "/orders/estimate",
+                "body": null
+              },
+              {
+                "method": "GET",
+                "path": "/orders",
+                "body": null
+              },
+              {
+                "method": "GET",
+                "path": "/orders/ORD-00001",
+                "body": null
+              },
+              {
+                "method": "POST",
+                "path": "/orders/ORD-00001/verify-qr",
+                "body": {
+                  "qr_code": "EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE",
+                  "received": true,
+                  "cash_paid": true
+                }
+              }
+            ],
+            "blocked_external_urls": [
+              "https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap"
+            ],
+            "page_errors": [],
+            "dialogs": []
+          },
+          {
+            "source": "/workspace/kntr-fixed/kntr-mobile/android/app/src/main/assets/public/index.html",
+            "name": "Noncash confirmation requires receipt without cash checkbox",
+            "evidence": {
+              "cash_checkbox_absent": true,
+              "receipt_ack_required": true,
+              "post_body": {
+                "qr_code": "EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE",
+                "received": true,
+                "cash_paid": false
+              }
+            },
+            "status": "passed",
+            "mock_api_requests": [
+              {
+                "method": "POST",
+                "path": "/auth/login",
+                "body": {
+                  "email": "owner@example.ly",
+                  "password": "MockPassw0rd123"
+                }
+              },
+              {
+                "method": "GET",
+                "path": "/orders/estimate",
+                "body": null
+              },
+              {
+                "method": "GET",
+                "path": "/orders",
+                "body": null
+              },
+              {
+                "method": "GET",
+                "path": "/orders/ORD-00001",
+                "body": null
+              },
+              {
+                "method": "POST",
+                "path": "/orders/ORD-00001/verify-qr",
+                "body": {
+                  "qr_code": "EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE",
+                  "received": true,
+                  "cash_paid": false
+                }
+              },
+              {
+                "method": "GET",
+                "path": "/orders/ORD-00001",
+                "body": null
+              }
+            ],
+            "blocked_external_urls": [
+              "https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap"
+            ],
+            "page_errors": [],
+            "dialogs": []
+          },
+          {
+            "source": "/workspace/kntr-fixed/kntr-mobile/android/app/src/main/assets/public/index.html",
+            "name": "Another customer order has no receipt form",
+            "evidence": {
+              "order_status": "in_transit",
+              "owner": "MOCK-CUSTOMER-B",
+              "form_absent": true
+            },
+            "status": "passed",
+            "mock_api_requests": [
+              {
+                "method": "POST",
+                "path": "/auth/login",
+                "body": {
+                  "email": "owner@example.ly",
+                  "password": "MockPassw0rd123"
+                }
+              },
+              {
+                "method": "GET",
+                "path": "/orders/estimate",
+                "body": null
+              },
+              {
+                "method": "GET",
+                "path": "/orders",
+                "body": null
+              },
+              {
+                "method": "GET",
+                "path": "/orders/ORD-00001",
+                "body": null
+              }
+            ],
+            "blocked_external_urls": [
+              "https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap"
+            ],
+            "page_errors": [],
+            "dialogs": []
+          },
+          {
+            "source": "/workspace/kntr-fixed/kntr-mobile/android/app/src/main/assets/public/index.html",
+            "name": "Pending order has no receipt form",
+            "evidence": {
+              "order_status": "pending",
+              "owner": "MOCK-CUSTOMER-A",
+              "form_absent": true
+            },
+            "status": "passed",
+            "mock_api_requests": [
+              {
+                "method": "POST",
+                "path": "/auth/login",
+                "body": {
+                  "email": "owner@example.ly",
+                  "password": "MockPassw0rd123"
+                }
+              },
+              {
+                "method": "GET",
+                "path": "/orders/estimate",
+                "body": null
+              },
+              {
+                "method": "GET",
+                "path": "/orders",
+                "body": null
+              },
+              {
+                "method": "GET",
+                "path": "/orders/ORD-00001",
+                "body": null
+              }
+            ],
+            "blocked_external_urls": [
+              "https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap"
+            ],
+            "page_errors": [],
+            "dialogs": []
+          },
+          {
+            "source": "/workspace/kntr-fixed/kntr-mobile/android/app/src/main/assets/public/index.html",
+            "name": "Accepted order has no receipt form",
+            "evidence": {
+              "order_status": "accepted",
+              "owner": "MOCK-CUSTOMER-A",
+              "form_absent": true
+            },
+            "status": "passed",
+            "mock_api_requests": [
+              {
+                "method": "POST",
+                "path": "/auth/login",
+                "body": {
+                  "email": "owner@example.ly",
+                  "password": "MockPassw0rd123"
+                }
+              },
+              {
+                "method": "GET",
+                "path": "/orders/estimate",
+                "body": null
+              },
+              {
+                "method": "GET",
+                "path": "/orders",
+                "body": null
+              },
+              {
+                "method": "GET",
+                "path": "/orders/ORD-00001",
+                "body": null
+              }
+            ],
+            "blocked_external_urls": [
+              "https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap"
+            ],
+            "page_errors": [],
+            "dialogs": []
+          },
+          {
+            "source": "/workspace/kntr-fixed/kntr-mobile/android/app/src/main/assets/public/index.html",
+            "name": "Delivered order has no receipt form",
+            "evidence": {
+              "order_status": "delivered",
+              "owner": "MOCK-CUSTOMER-A",
+              "form_absent": true
+            },
+            "status": "passed",
+            "mock_api_requests": [
+              {
+                "method": "POST",
+                "path": "/auth/login",
+                "body": {
+                  "email": "owner@example.ly",
+                  "password": "MockPassw0rd123"
+                }
+              },
+              {
+                "method": "GET",
+                "path": "/orders/estimate",
+                "body": null
+              },
+              {
+                "method": "GET",
+                "path": "/orders",
+                "body": null
+              },
+              {
+                "method": "GET",
+                "path": "/orders/ORD-00001",
+                "body": null
+              }
+            ],
+            "blocked_external_urls": [
+              "https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap"
+            ],
+            "page_errors": [],
+            "dialogs": []
+          },
+          {
+            "source": "/workspace/kntr-fixed/kntr-mobile/ios/App/App/public/index.html",
+            "name": "Inline JavaScript syntax",
+            "status": "passed",
+            "evidence": {
+              "script_count": 1
+            }
+          },
+          {
+            "source": "/workspace/kntr-fixed/kntr-mobile/ios/App/App/public/index.html",
+            "name": "Driver generates code and refreshes without self confirmation",
+            "evidence": {
+              "driver_self_confirm_absent": true,
+              "qr_visible": true,
+              "server_refresh_requested": true
+            },
+            "status": "passed",
+            "mock_api_requests": [
+              {
+                "method": "POST",
+                "path": "/auth/login",
+                "body": {
+                  "email": "driver@example.ly",
+                  "password": "MockPassw0rd123"
+                }
+              },
+              {
+                "method": "GET",
+                "path": "/auth/me",
+                "body": null
+              },
+              {
+                "method": "GET",
+                "path": "/drivers/orders",
+                "body": null
+              },
+              {
+                "method": "POST",
+                "path": "/drivers/orders/ORD-00001/accept",
+                "body": {}
+              },
+              {
+                "method": "GET",
+                "path": "/drivers/orders",
+                "body": null
+              },
+              {
+                "method": "GET",
+                "path": "/auth/me",
+                "body": null
+              },
+              {
+                "method": "PATCH",
+                "path": "/orders/ORD-00001/status",
+                "body": {
+                  "status": "in_transit"
+                }
+              },
+              {
+                "method": "POST",
+                "path": "/orders/ORD-00001/generate-qr",
+                "body": null
+              },
+              {
+                "method": "GET",
+                "path": "/orders/ORD-00001",
+                "body": null
+              }
+            ],
+            "blocked_external_urls": [
+              "https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap"
+            ],
+            "page_errors": [],
+            "dialogs": []
+          },
+          {
+            "source": "/workspace/kntr-fixed/kntr-mobile/ios/App/App/public/index.html",
+            "name": "Owner receipt and cash acknowledgement block incomplete confirmation",
+            "evidence": {
+              "receipt_and_cash_required": true,
+              "verify_requests_blocked": 3
+            },
+            "status": "passed",
+            "mock_api_requests": [
+              {
+                "method": "POST",
+                "path": "/auth/login",
+                "body": {
+                  "email": "owner@example.ly",
+                  "password": "MockPassw0rd123"
+                }
+              },
+              {
+                "method": "GET",
+                "path": "/orders/estimate",
+                "body": null
+              },
+              {
+                "method": "GET",
+                "path": "/orders",
+                "body": null
+              },
+              {
+                "method": "GET",
+                "path": "/orders/ORD-00001",
+                "body": null
+              }
+            ],
+            "blocked_external_urls": [
+              "https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap"
+            ],
+            "page_errors": [],
+            "dialogs": []
+          },
+          {
+            "source": "/workspace/kntr-fixed/kntr-mobile/ios/App/App/public/index.html",
+            "name": "Owner raw QR token confirms then reloads tracking",
+            "evidence": {
+              "input": "raw_code",
+              "post_body": {
+                "qr_code": "EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE",
+                "received": true,
+                "cash_paid": true
+              },
+              "tracking_refreshed": true
+            },
+            "status": "passed",
+            "mock_api_requests": [
+              {
+                "method": "POST",
+                "path": "/auth/login",
+                "body": {
+                  "email": "owner@example.ly",
+                  "password": "MockPassw0rd123"
+                }
+              },
+              {
+                "method": "GET",
+                "path": "/orders/estimate",
+                "body": null
+              },
+              {
+                "method": "GET",
+                "path": "/orders",
+                "body": null
+              },
+              {
+                "method": "GET",
+                "path": "/orders/ORD-00001",
+                "body": null
+              },
+              {
+                "method": "POST",
+                "path": "/orders/ORD-00001/verify-qr",
+                "body": {
+                  "qr_code": "EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE",
+                  "received": true,
+                  "cash_paid": true
+                }
+              },
+              {
+                "method": "GET",
+                "path": "/orders/ORD-00001",
+                "body": null
+              }
+            ],
+            "blocked_external_urls": [
+              "https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap"
+            ],
+            "page_errors": [],
+            "dialogs": []
+          },
+          {
+            "source": "/workspace/kntr-fixed/kntr-mobile/ios/App/App/public/index.html",
+            "name": "Owner order-bound QR payload is parsed and confirms",
+            "evidence": {
+              "input": "order_bound_qr_payload",
+              "post_body": {
+                "qr_code": "EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE",
+                "received": true,
+                "cash_paid": true
+              },
+              "tracking_refreshed": true
+            },
+            "status": "passed",
+            "mock_api_requests": [
+              {
+                "method": "POST",
+                "path": "/auth/login",
+                "body": {
+                  "email": "owner@example.ly",
+                  "password": "MockPassw0rd123"
+                }
+              },
+              {
+                "method": "GET",
+                "path": "/orders/estimate",
+                "body": null
+              },
+              {
+                "method": "GET",
+                "path": "/orders",
+                "body": null
+              },
+              {
+                "method": "GET",
+                "path": "/orders/ORD-00001",
+                "body": null
+              },
+              {
+                "method": "POST",
+                "path": "/orders/ORD-00001/verify-qr",
+                "body": {
+                  "qr_code": "EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE",
+                  "received": true,
+                  "cash_paid": true
+                }
+              },
+              {
+                "method": "GET",
+                "path": "/orders/ORD-00001",
+                "body": null
+              }
+            ],
+            "blocked_external_urls": [
+              "https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap"
+            ],
+            "page_errors": [],
+            "dialogs": []
+          },
+          {
+            "source": "/workspace/kntr-fixed/kntr-mobile/ios/App/App/public/index.html",
+            "name": "Different-order QR payload is rejected before API request",
+            "evidence": {
+              "different_order_payload_blocked_without_fetch": true
+            },
+            "status": "passed",
+            "mock_api_requests": [
+              {
+                "method": "POST",
+                "path": "/auth/login",
+                "body": {
+                  "email": "owner@example.ly",
+                  "password": "MockPassw0rd123"
+                }
+              },
+              {
+                "method": "GET",
+                "path": "/orders/estimate",
+                "body": null
+              },
+              {
+                "method": "GET",
+                "path": "/orders",
+                "body": null
+              },
+              {
+                "method": "GET",
+                "path": "/orders/ORD-00001",
+                "body": null
+              }
+            ],
+            "blocked_external_urls": [
+              "https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap"
+            ],
+            "page_errors": [],
+            "dialogs": []
+          },
+          {
+            "source": "/workspace/kntr-fixed/kntr-mobile/ios/App/App/public/index.html",
+            "name": "Expired server QR response remains visible with transit status",
+            "evidence": {
+              "server_error_visible": true,
+              "status_unchanged": true
+            },
+            "status": "passed",
+            "mock_api_requests": [
+              {
+                "method": "POST",
+                "path": "/auth/login",
+                "body": {
+                  "email": "owner@example.ly",
+                  "password": "MockPassw0rd123"
+                }
+              },
+              {
+                "method": "GET",
+                "path": "/orders/estimate",
+                "body": null
+              },
+              {
+                "method": "GET",
+                "path": "/orders",
+                "body": null
+              },
+              {
+                "method": "GET",
+                "path": "/orders/ORD-00001",
+                "body": null
+              },
+              {
+                "method": "POST",
+                "path": "/orders/ORD-00001/verify-qr",
+                "body": {
+                  "qr_code": "EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE",
+                  "received": true,
+                  "cash_paid": true
+                }
+              }
+            ],
+            "blocked_external_urls": [
+              "https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap"
+            ],
+            "page_errors": [],
+            "dialogs": []
+          },
+          {
+            "source": "/workspace/kntr-fixed/kntr-mobile/ios/App/App/public/index.html",
+            "name": "Noncash confirmation requires receipt without cash checkbox",
+            "evidence": {
+              "cash_checkbox_absent": true,
+              "receipt_ack_required": true,
+              "post_body": {
+                "qr_code": "EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE",
+                "received": true,
+                "cash_paid": false
+              }
+            },
+            "status": "passed",
+            "mock_api_requests": [
+              {
+                "method": "POST",
+                "path": "/auth/login",
+                "body": {
+                  "email": "owner@example.ly",
+                  "password": "MockPassw0rd123"
+                }
+              },
+              {
+                "method": "GET",
+                "path": "/orders/estimate",
+                "body": null
+              },
+              {
+                "method": "GET",
+                "path": "/orders",
+                "body": null
+              },
+              {
+                "method": "GET",
+                "path": "/orders/ORD-00001",
+                "body": null
+              },
+              {
+                "method": "POST",
+                "path": "/orders/ORD-00001/verify-qr",
+                "body": {
+                  "qr_code": "EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE",
+                  "received": true,
+                  "cash_paid": false
+                }
+              },
+              {
+                "method": "GET",
+                "path": "/orders/ORD-00001",
+                "body": null
+              }
+            ],
+            "blocked_external_urls": [
+              "https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap"
+            ],
+            "page_errors": [],
+            "dialogs": []
+          },
+          {
+            "source": "/workspace/kntr-fixed/kntr-mobile/ios/App/App/public/index.html",
+            "name": "Another customer order has no receipt form",
+            "evidence": {
+              "order_status": "in_transit",
+              "owner": "MOCK-CUSTOMER-B",
+              "form_absent": true
+            },
+            "status": "passed",
+            "mock_api_requests": [
+              {
+                "method": "POST",
+                "path": "/auth/login",
+                "body": {
+                  "email": "owner@example.ly",
+                  "password": "MockPassw0rd123"
+                }
+              },
+              {
+                "method": "GET",
+                "path": "/orders/estimate",
+                "body": null
+              },
+              {
+                "method": "GET",
+                "path": "/orders",
+                "body": null
+              },
+              {
+                "method": "GET",
+                "path": "/orders/ORD-00001",
+                "body": null
+              }
+            ],
+            "blocked_external_urls": [
+              "https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap"
+            ],
+            "page_errors": [],
+            "dialogs": []
+          },
+          {
+            "source": "/workspace/kntr-fixed/kntr-mobile/ios/App/App/public/index.html",
+            "name": "Pending order has no receipt form",
+            "evidence": {
+              "order_status": "pending",
+              "owner": "MOCK-CUSTOMER-A",
+              "form_absent": true
+            },
+            "status": "passed",
+            "mock_api_requests": [
+              {
+                "method": "POST",
+                "path": "/auth/login",
+                "body": {
+                  "email": "owner@example.ly",
+                  "password": "MockPassw0rd123"
+                }
+              },
+              {
+                "method": "GET",
+                "path": "/orders/estimate",
+                "body": null
+              },
+              {
+                "method": "GET",
+                "path": "/orders",
+                "body": null
+              },
+              {
+                "method": "GET",
+                "path": "/orders/ORD-00001",
+                "body": null
+              }
+            ],
+            "blocked_external_urls": [
+              "https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap"
+            ],
+            "page_errors": [],
+            "dialogs": []
+          },
+          {
+            "source": "/workspace/kntr-fixed/kntr-mobile/ios/App/App/public/index.html",
+            "name": "Accepted order has no receipt form",
+            "evidence": {
+              "order_status": "accepted",
+              "owner": "MOCK-CUSTOMER-A",
+              "form_absent": true
+            },
+            "status": "passed",
+            "mock_api_requests": [
+              {
+                "method": "POST",
+                "path": "/auth/login",
+                "body": {
+                  "email": "owner@example.ly",
+                  "password": "MockPassw0rd123"
+                }
+              },
+              {
+                "method": "GET",
+                "path": "/orders/estimate",
+                "body": null
+              },
+              {
+                "method": "GET",
+                "path": "/orders",
+                "body": null
+              },
+              {
+                "method": "GET",
+                "path": "/orders/ORD-00001",
+                "body": null
+              }
+            ],
+            "blocked_external_urls": [
+              "https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap"
+            ],
+            "page_errors": [],
+            "dialogs": []
+          },
+          {
+            "source": "/workspace/kntr-fixed/kntr-mobile/ios/App/App/public/index.html",
+            "name": "Delivered order has no receipt form",
+            "evidence": {
+              "order_status": "delivered",
+              "owner": "MOCK-CUSTOMER-A",
+              "form_absent": true
+            },
+            "status": "passed",
+            "mock_api_requests": [
+              {
+                "method": "POST",
+                "path": "/auth/login",
+                "body": {
+                  "email": "owner@example.ly",
+                  "password": "MockPassw0rd123"
+                }
+              },
+              {
+                "method": "GET",
+                "path": "/orders/estimate",
+                "body": null
+              },
+              {
+                "method": "GET",
+                "path": "/orders",
+                "body": null
+              },
+              {
+                "method": "GET",
+                "path": "/orders/ORD-00001",
+                "body": null
+              }
+            ],
+            "blocked_external_urls": [
+              "https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap"
+            ],
+            "page_errors": [],
+            "dialogs": []
+          }
+        ],
+        "browser_version": "154.0.8037.57",
+        "summary": {
+          "passed": 48,
+          "failed": 0,
+          "success": true,
+          "api_mocked": true,
+          "native_runtime_tested": false
+        }
+      }
+    }
+  ],
+  "source_sha256": {
+    "kntr-package/README.md": "e4ba41afd1591becbc70525cd909f1cc1b224257975b27ddd7dca8e3aca5a3b3",
+    "kntr-package/frontend/kntr-admin-dashboard.html": "eb923e63457991f7d1813a42dc8159230cc89ab9db172241a389c0ab52e00302",
+    "kntr-package/frontend/kntr-app.html": "5a0c06ca3e77b312c3a8920baee574882e8e799978ea36f599c637b6e37b8cbb",
+    "kntr-package/kntr-backend/README.md": "1ec29846e2dc22ff0ba5bd60689fb403c7ae1a83875a2d02b025990c45044468",
+    "kntr-package/kntr-backend/migrations/001_delivery_integrity.sql": "f539d9e8e46017ca217f3a26823a894261f4483018ccd6ed828b4f475cfdb891",
+    "kntr-package/kntr-backend/package-lock.json": "cf22c2b71ae52d97c07d9c6dc4e7d659507765937d9a34239203d68bcbe0345f",
+    "kntr-package/kntr-backend/package.json": "f688f86c63d66d935ba6c57bc79a2959f7ce8de4081a1f269473c38ea164679d",
+    "kntr-package/kntr-backend/schema.sql": "cf4cb47c7b5d766eee8c5d59350c452867c295562085ae04b2297ff7d2791416",
+    "kntr-package/kntr-backend/src/app.js": "c331bcc195e7fd1d2636dfd1f9951bf2df2af60735163d7b5fd6fd85b66c7dae",
+    "kntr-package/kntr-backend/src/config/database.js": "0ef97b1b25a3c007f9beb3fe1c0e386e0caa4e58ba2f62ecee4f39e7e85ee47f",
+    "kntr-package/kntr-backend/src/controllers/adminController.js": "b1bfdec3caadac063b3118b1584c6ca328ad915a92d15ad7fa7f3efe45a6e382",
+    "kntr-package/kntr-backend/src/controllers/authController.js": "e59489d06c057d194cdd728e0770fee870ad0908735ad24b64ce14d54908804d",
+    "kntr-package/kntr-backend/src/controllers/driversController.js": "b833eac01fe3b691d5dab088b2902c8ccecfa514701f7ec0459d448a210439a9",
+    "kntr-package/kntr-backend/src/controllers/ordersController.js": "a905ad2f28fa579bfbb52c8a41837b4de48989bfa421d73292e59144f102c8f4",
+    "kntr-package/kntr-backend/src/middleware/auth.js": "9470806d807e61eb0f6c95163f1b4f73268feed0d26a3b7d8dc4d4801fae4de4",
+    "kntr-package/kntr-backend/src/middleware/errorHandler.js": "363f06f05e76ec97d0f06f25c2d43275037d770f43da5dd0d9881e41f8ba43c9",
+    "kntr-package/kntr-backend/src/routes/index.js": "414af6705dd34d3ff6daf856e731836202a3e3b6136445e09f164a192d79cbbf",
+    "kntr-package/kntr-backend/src/services/deliveryService.js": "de2bf3b53fc22f9640146f5e67880d9a7bc6cdfd11468109941065916af99d92",
+    "kntr-package/kntr-backend/src/services/socketService.js": "25f7b6188e0715060a74272748062af3d41c2a7e843ad12b4951980bdd5f7978",
+    "kntr-package/kntr-backend/src/utils/helpers.js": "32c25526fee32a8058455d98a00795e472776702524f88930877522bc74857e7",
+    "kntr-package/kntr-backend/src/utils/jwt.js": "ad99704fbeb9d8bc7f582dfc81ae0a96f9190673667c9e093277c79827849d1a",
+    "kntr-package/kntr-backend/src/utils/orderAccess.js": "978d94be59d42bdc745c05c6c4e29c3970269cac882c292c8a45034103677dfb",
+    "kntr-mobile/LAUNCH-GUIDE.md": "3ea537d6d78d12b993c086730736b4778b36f0ecc6b4470bfad5d74f53189617",
+    "kntr-mobile/README.md": "078837736b6c1b67aa5f27902b2bb6b6d60adff65ccc8c1ead2d92e4b62a0957",
+    "kntr-mobile/android/.gitignore": "065e4a92a240fe11a0ea230491ad9dabef143f5fd5a3e6884ad6f0395666a971",
+    "kntr-mobile/android/app/.gitignore": "99c54e51ee601a60fbde8016b2cbf717483bc2e92773be86c9247d02a7fa6ea4",
+    "kntr-mobile/android/app/build.gradle": "17bc1cd985981e3298a486c55857407cd4eda49c1e07b839b4550cc9fd09c20f",
+    "kntr-mobile/android/app/capacitor.build.gradle": "5d6486518199239c3338f72eeea408db9589c5d6cb91a5caad20765d6a02bb7b",
+    "kntr-mobile/android/app/proguard-rules.pro": "1cf8c57e8f79c250b0af9c1a5a4edad71a5c348a79ab70243b6bae086c150ad2",
+    "kntr-mobile/android/app/src/androidTest/java/com/getcapacitor/myapp/ExampleInstrumentedTest.java": "ff50b4c110a7434312f9af54171f9e8523b015836f707c9b387b76d4c38a97f8",
+    "kntr-mobile/android/app/src/main/AndroidManifest.xml": "50091be6e59b90c9115844b75e18dafc3bdc7d447d2ae6c352d40fec96929298",
+    "kntr-mobile/android/app/src/main/assets/capacitor.config.json": "18f86711aeb5c8b4a3232f6753517124932f541537f77432f6973d53ff3d402c",
+    "kntr-mobile/android/app/src/main/assets/capacitor.plugins.json": "c80eb2aca2b287a978fd22175e9911900c87bfa1ab0bcc709bceb24062c0ba4c",
+    "kntr-mobile/android/app/src/main/assets/public/cordova.js": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "kntr-mobile/android/app/src/main/assets/public/cordova_plugins.js": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "kntr-mobile/android/app/src/main/assets/public/index.html": "33795981a1e29da44a97b31af595ce108e25fc4eb96eace0a2415ac3637d985f",
+    "kntr-mobile/android/app/src/main/assets/public/manifest.json": "4826538618dbdc1836363709611823b287845c897f034e1660e7bb1bac4904d0",
+    "kntr-mobile/android/app/src/main/java/ly/kntr/app/MainActivity.java": "f91bd2b3c0462897f8817412a6fe0e5365237ba83e3b341ccd977774a8dfaff2",
+    "kntr-mobile/android/app/src/main/res/drawable/ic_launcher_background.xml": "718ba51adf166bb55c3e9936bb8199a0148457f7f0191aaa2f37a94f3159d6ec",
+    "kntr-mobile/android/app/src/main/res/drawable/splash.png": "fe20d8e4071026c082204e556781be34de21ef48c181607d71b5bcc82eba2a6e",
+    "kntr-mobile/android/app/src/main/res/drawable-land-hdpi/splash.png": "b850ca1b1d69ea72cfbe8ae213e4f2596897a2687f10b06894868abea1c96209",
+    "kntr-mobile/android/app/src/main/res/drawable-land-ldpi/splash.png": "06254c9b4a500043c6229674e377c824ebe95ad0533e017cf65b83a6cff997fa",
+    "kntr-mobile/android/app/src/main/res/drawable-land-mdpi/splash.png": "f243b43b4f76ee6cde354089cc0a07d4b836d2f68f09af7a4e270160b69f9f01",
+    "kntr-mobile/android/app/src/main/res/drawable-land-night-hdpi/splash.png": "e1aa3e27231b08b653d91287da32c472ae5521868975ee326958aa5c3af80b3f",
+    "kntr-mobile/android/app/src/main/res/drawable-land-night-ldpi/splash.png": "497a8ced5ab8f037ca6883890c663ac921055dcd4f178e4ed97938a56adffd36",
+    "kntr-mobile/android/app/src/main/res/drawable-land-night-mdpi/splash.png": "909243e7bb1ef972d7b6c501796ab2bc0fb15c01b6e27d5e384f9d8c41c7189d",
+    "kntr-mobile/android/app/src/main/res/drawable-land-night-xhdpi/splash.png": "7cee0173aab0ee655bed678b4c4fe287e5e58a4faaed1fcde5859ea475c7cc94",
+    "kntr-mobile/android/app/src/main/res/drawable-land-night-xxhdpi/splash.png": "091c6718e6d93992d5759bb44221837d1864e11c52fdf99c4f10168735cd0abf",
+    "kntr-mobile/android/app/src/main/res/drawable-land-night-xxxhdpi/splash.png": "e738aebbdf99d65930f2dd7f48ee31f611c16bf952731a533a13330aa7d06b67",
+    "kntr-mobile/android/app/src/main/res/drawable-land-xhdpi/splash.png": "774fec2a90b1f0f7500860b7aa2afd0e3f6e8a855661f1426d7a1dee42a133a1",
+    "kntr-mobile/android/app/src/main/res/drawable-land-xxhdpi/splash.png": "eeff05cce6a0b65cc45a3c322cd0ca4dd99b436b0c922ebd8e237e5df2459ff1",
+    "kntr-mobile/android/app/src/main/res/drawable-land-xxxhdpi/splash.png": "cc505b715aaf42354d7145c3f4d6ce64d8927bd8b917bab43cfc7403375c4b41",
+    "kntr-mobile/android/app/src/main/res/drawable-night/splash.png": "497a8ced5ab8f037ca6883890c663ac921055dcd4f178e4ed97938a56adffd36",
+    "kntr-mobile/android/app/src/main/res/drawable-port-hdpi/splash.png": "f76c981d2ecdc6ab03b2f19482668d37c96163964dcda2f2e15211843e70df95",
+    "kntr-mobile/android/app/src/main/res/drawable-port-ldpi/splash.png": "44bedec48a08d667a93532cad3fc9eec8a544b6e6cb3b4c847b787b420fe2f93",
+    "kntr-mobile/android/app/src/main/res/drawable-port-mdpi/splash.png": "fe20d8e4071026c082204e556781be34de21ef48c181607d71b5bcc82eba2a6e",
+    "kntr-mobile/android/app/src/main/res/drawable-port-night-hdpi/splash.png": "a282d31bc3f43ecc1087890573def716664ea19ed31daf72b1d005d124266a1a",
+    "kntr-mobile/android/app/src/main/res/drawable-port-night-ldpi/splash.png": "d08a6c758a329bab3c8472739dcb70e738e4b1069c545cc0cc5431c7d15c90a0",
+    "kntr-mobile/android/app/src/main/res/drawable-port-night-mdpi/splash.png": "acae4432e50a3c62a2201a97f14ed5db5e20ebc556bc90e4d8a7db54422cd0cb",
+    "kntr-mobile/android/app/src/main/res/drawable-port-night-xhdpi/splash.png": "b366c3f95061c4888e50013e5b1c700bebe87eb0162f1cd72edf09ab7dd20444",
+    "kntr-mobile/android/app/src/main/res/drawable-port-night-xxhdpi/splash.png": "fe71e440fad1b08bb22a5232489b307ce4b96c7120eac2404768d09d8ae4d8e1",
+    "kntr-mobile/android/app/src/main/res/drawable-port-night-xxxhdpi/splash.png": "56e19c2fe54b1459241f556b3931b00d0b41ca2321ffb7274ee6f211e40a3b62",
+    "kntr-mobile/android/app/src/main/res/drawable-port-xhdpi/splash.png": "3c0e89614efb05c984727b3f167e7c9b85ab39d6c270b1c5d8b30136aeaa7deb",
+    "kntr-mobile/android/app/src/main/res/drawable-port-xxhdpi/splash.png": "506d2c81a6b703c402ecf373f8488fc82598e2d254891034aa227b8dafe4ce26",
+    "kntr-mobile/android/app/src/main/res/drawable-port-xxxhdpi/splash.png": "a1dd8cb82cc678b3c4249c7d13ed105721ed2e437e12103aecfe6f4f929ee0fa",
+    "kntr-mobile/android/app/src/main/res/drawable-v24/ic_launcher_foreground.xml": "a8514094f754b099d3e55ce1d6e0b2de79db418b2eeacb0fc2a6bb0bfadef221",
+    "kntr-mobile/android/app/src/main/res/layout/activity_main.xml": "5d770feb791313b947020cbfc57e5c733c556dac5e9e49261a1190e527073253",
+    "kntr-mobile/android/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml": "70f2c6a1478441deb70762f95abf87a8ab8b2b38d53715edc1f7b73df8e5f8df",
+    "kntr-mobile/android/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml": "70f2c6a1478441deb70762f95abf87a8ab8b2b38d53715edc1f7b73df8e5f8df",
+    "kntr-mobile/android/app/src/main/res/mipmap-hdpi/ic_launcher.png": "86120e17b4d362be2378636b1708c89bd57fd51127771be68e3ff47db0eee0e1",
+    "kntr-mobile/android/app/src/main/res/mipmap-hdpi/ic_launcher_background.png": "7189839950fc679f54b3d42f1c7f9b26b1dcf022c8b4b1192963562f06366717",
+    "kntr-mobile/android/app/src/main/res/mipmap-hdpi/ic_launcher_foreground.png": "282d61311889762e60d148ac0c095078f0a5df2d87a2a31b079d6908bab11014",
+    "kntr-mobile/android/app/src/main/res/mipmap-hdpi/ic_launcher_round.png": "b9b4f33dbd3ad689f564330271521cfd8f5d051849414ab8364c6ac4b4191304",
+    "kntr-mobile/android/app/src/main/res/mipmap-ldpi/ic_launcher.png": "cb87063f4663c268562d2a703c699e4696603f5b075c6d3957c9c33ab3b852ee",
+    "kntr-mobile/android/app/src/main/res/mipmap-ldpi/ic_launcher_background.png": "aa92fd5bf862df0dc0abde01ce2696fa0a948cf3a18fc4de2602a0969ae6bc12",
+    "kntr-mobile/android/app/src/main/res/mipmap-ldpi/ic_launcher_foreground.png": "6cd996735160b3bc8ba2808c59ed02d12eaff9c4d438c81ec836126d3d622ed1",
+    "kntr-mobile/android/app/src/main/res/mipmap-ldpi/ic_launcher_round.png": "ee583313f110acc546b6b7abdd90619e330bdd1b22072cc48b585096c1e6f86a",
+    "kntr-mobile/android/app/src/main/res/mipmap-mdpi/ic_launcher.png": "3ccf42fb2d28eea239e56f3cca883a832c6aa144287c8e7c61907c4b9d68dd76",
+    "kntr-mobile/android/app/src/main/res/mipmap-mdpi/ic_launcher_background.png": "6acd52bdd43b528a024d6d46d5a50dba12b466c499a2a95fa1edf66af10b4918",
+    "kntr-mobile/android/app/src/main/res/mipmap-mdpi/ic_launcher_foreground.png": "49ea9611a15d8525dee372324b90d82d29f50f4c4173f012af0fc20584bd784a",
+    "kntr-mobile/android/app/src/main/res/mipmap-mdpi/ic_launcher_round.png": "0c789ef939ec64358ddda084c7ab82765a8ef224c8ae5ffeaeea9b549e4a386a",
+    "kntr-mobile/android/app/src/main/res/mipmap-xhdpi/ic_launcher.png": "293452f961080c2fa19c31f9b9d88bcc9f924a57b1307e4b7c877f3ef9a34ab3",
+    "kntr-mobile/android/app/src/main/res/mipmap-xhdpi/ic_launcher_background.png": "35b716f97156f38260ea4c99d6f9dad67f0fb742f05f821fe8a790f5c8eec082",
+    "kntr-mobile/android/app/src/main/res/mipmap-xhdpi/ic_launcher_foreground.png": "564d62927b9df391d7aa218f5d7d4d345fd89fb7ce63e015bec69e22d2d95d6f",
+    "kntr-mobile/android/app/src/main/res/mipmap-xhdpi/ic_launcher_round.png": "6c9051814da3c153276a61a16be5c89e5c80a05e16077bdd98d44adea286e36b",
+    "kntr-mobile/android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png": "1b35c314d13b9ccb84abd7e57598e04bb2cc3ec4af85d011f857b1ac84d87a48",
+    "kntr-mobile/android/app/src/main/res/mipmap-xxhdpi/ic_launcher_background.png": "779eab0767b85aa6f205ba4c0aba69fba43c9cd08b5052c42bcb53ef3832a123",
+    "kntr-mobile/android/app/src/main/res/mipmap-xxhdpi/ic_launcher_foreground.png": "d6f3f98ba15917a7b775f59449ccd41f1b3a2cb3cca73216f3a5b634222827ec",
+    "kntr-mobile/android/app/src/main/res/mipmap-xxhdpi/ic_launcher_round.png": "c2d97fcf4d2fe0a5cfc7bffef4e85018d6d8ee34ecf6de48ebc9f96d80df9dee",
+    "kntr-mobile/android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png": "91712a6ee79b46830b2bd150da618f2a3696ca05d0ae453d3b6e970a6863e065",
+    "kntr-mobile/android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_background.png": "ac90b7ceeacb59bc41e6ad470596a0192a819af38cdd03084ec9a293efeb870a",
+    "kntr-mobile/android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_foreground.png": "f8aa47382b194cc1078ae9d911fa761e0752ea4afa1fc7e1eb0efc000a0f2661",
+    "kntr-mobile/android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.png": "f293f92b230dd5e79d90071a3f53d641d3a70cc2599dc0a4741a660021771ceb",
+    "kntr-mobile/android/app/src/main/res/values/ic_launcher_background.xml": "cd40bafe618ff506f4088778b135cb4faa15f25e0c9b475e22d730c74b7be115",
+    "kntr-mobile/android/app/src/main/res/values/strings.xml": "0b133adeb40b867b3c811b77e28d260f9cdacdfb18e476ac37a40f10b557cf3a",
+    "kntr-mobile/android/app/src/main/res/values/styles.xml": "18ebba36575e9461347ee67361b23caf095f158ee85dbefe1b83a4669ba5bd6c",
+    "kntr-mobile/android/app/src/main/res/xml/config.xml": "e9dcda493e663c5c4db9e3cb3bd968477a6e90aa8840bcbba40d72ed54b767ce",
+    "kntr-mobile/android/app/src/main/res/xml/file_paths.xml": "a46ed43ef65c90cb6778f4581decf3556e3f0055aad8f36d69dae16f9a0e99aa",
+    "kntr-mobile/android/app/src/test/java/com/getcapacitor/myapp/ExampleUnitTest.java": "d4045ae8fac1f0807e6b24eb34e68409a9a235df9d1a3f896fb8c9a49424363d",
+    "kntr-mobile/android/build.gradle": "46ade7db7afeb8049ccea59fce83095dca736ceb8c9acd79cc944e988c3357d9",
+    "kntr-mobile/android/capacitor-cordova-android-plugins/build.gradle": "28e3fa281f4d1e388bf98abc7f5bb31e672516e385c165c719d201ed54b8236e",
+    "kntr-mobile/android/capacitor-cordova-android-plugins/cordova.variables.gradle": "b13104b34f7738abceec358ae8226ba5e64855e97babde54a115880e9b9bd47b",
+    "kntr-mobile/android/capacitor-cordova-android-plugins/src/main/AndroidManifest.xml": "2e3e383475f0e6cb76f0a7b46017a546663fba8e5bd1ef2a537412afac2ee9b5",
+    "kntr-mobile/android/capacitor-cordova-android-plugins/src/main/java/.gitkeep": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "kntr-mobile/android/capacitor-cordova-android-plugins/src/main/res/.gitkeep": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+    "kntr-mobile/android/capacitor.settings.gradle": "6ee99df3b4b71a568b9060562d2de53e991b2330755a8fcd0563d79fc237ef02",
+    "kntr-mobile/android/gradle/wrapper/gradle-wrapper.jar": "7d3a4ac4de1c32b59bc6a4eb8ecb8e612ccd0cf1ae1e99f66902da64df296172",
+    "kntr-mobile/android/gradle/wrapper/gradle-wrapper.properties": "9a479a85aa879bb55284fc16d0de5b81a745c3854f4e2d88c42e7debaf007435",
+    "kntr-mobile/android/gradle.properties": "3bab15c5b8bc4c2f4b6cf525497d15ad4abca53a460e6dd2eb0f0135817d31e6",
+    "kntr-mobile/android/gradlew": "b187b4c52e749f5760afdd6fadc31b2a98ad35fb249bf0dff03b72650f320409",
+    "kntr-mobile/android/gradlew.bat": "1d297e00bd21de3ace22b4d7f2de1f9dfa858883d66bbf7c1ccbecccec8f4f3b",
+    "kntr-mobile/android/settings.gradle": "6ce098d15ebd69b44c4ecd786bca1bdc366340d2459b2af4d7bb0ab317aa9669",
+    "kntr-mobile/android/variables.gradle": "83d502c9ed8fcf1dd4791482067abeedbebae49fafe9cd14a8a1f5891deb0d88",
+    "kntr-mobile/capacitor.config.json": "df97b4b4c7eaa1586891b95795eb7062787358fbc47be4c98f404bb06464457c",
+    "kntr-mobile/icons/icon-128.webp": "7253e303b724e8da800288621b7b77c284a20a2524efae480767d11c8d295904",
+    "kntr-mobile/icons/icon-192.webp": "8c4a7a1c919911badfb608c9baa572227812a61c1bac702c714c97fdaf86b732",
+    "kntr-mobile/icons/icon-256.webp": "15545d5ef060296f98541ea36ef7754d543c3c45ad72ab2774e03ba2c949b3f0",
+    "kntr-mobile/icons/icon-48.webp": "cd3d180d9418d94ca7c30519c31f882f9a648edc3af6af6214546cf5bbb2a2aa",
+    "kntr-mobile/icons/icon-512.webp": "27aca71a4b77b1d266f6dd070dd1915dc367658f7fb04b54d331930825647183",
+    "kntr-mobile/icons/icon-72.webp": "ffc465232d3ca03cb64af4a427ef4b63fb58f0c05c0d464e8da3663c17cb01d6",
+    "kntr-mobile/icons/icon-96.webp": "66fd361c8bcb6af96ecaedc438becc1d87528a95c31c2ad457557b917ac545de",
+    "kntr-mobile/ios/.gitignore": "2b7132a9943d2622e51e656897ca5162f56b121b40b423dedce1fbc699dba88a",
+    "kntr-mobile/ios/App/App/AppDelegate.swift": "5963d47ceba89e0d5694376ebf0bca630284db3de794bdf8666ea3093fe38a2f",
+    "kntr-mobile/ios/App/App/Assets.xcassets/AppIcon.appiconset/AppIcon-512@2x.png": "3a2fe5d22e7c7044df6ee905af3ee4d8d945a40992563d846d178a4af020da3c",
+    "kntr-mobile/ios/App/App/Assets.xcassets/AppIcon.appiconset/Contents.json": "30cdf27ab0ec2bcb51c244b829ea2f2202978c4bb8374299e90c09ea4017276c",
+    "kntr-mobile/ios/App/App/Assets.xcassets/Contents.json": "972ec1fd42325872438eb085ac29e94f51c10788ec18ec5549439950866c541d",
+    "kntr-mobile/ios/App/App/Assets.xcassets/Splash.imageset/Contents.json": "cfabec10f16bc5ae4b60f28dccc7f1626fd59b13135e064350ce36f484b44f95",
+    "kntr-mobile/ios/App/App/Assets.xcassets/Splash.imageset/Default@1x~universal~anyany-dark.png": "1d5c751de5ef844ff4cdced79756e456f25b21f7ad89e61eb817173f09e3e2de",
+    "kntr-mobile/ios/App/App/Assets.xcassets/Splash.imageset/Default@1x~universal~anyany.png": "aa9edd35cdd525c141b1d09760c5c0276ae624ee5fbe9032a33041314a93b617",
+    "kntr-mobile/ios/App/App/Assets.xcassets/Splash.imageset/Default@2x~universal~anyany-dark.png": "1d5c751de5ef844ff4cdced79756e456f25b21f7ad89e61eb817173f09e3e2de",
+    "kntr-mobile/ios/App/App/Assets.xcassets/Splash.imageset/Default@2x~universal~anyany.png": "aa9edd35cdd525c141b1d09760c5c0276ae624ee5fbe9032a33041314a93b617",
+    "kntr-mobile/ios/App/App/Assets.xcassets/Splash.imageset/Default@3x~universal~anyany-dark.png": "1d5c751de5ef844ff4cdced79756e456f25b21f7ad89e61eb817173f09e3e2de",
+    "kntr-mobile/ios/App/App/Assets.xcassets/Splash.imageset/Default@3x~universal~anyany.png": "aa9edd35cdd525c141b1d09760c5c0276ae624ee5fbe9032a33041314a93b617",
+    "kntr-mobile/ios/App/App/Assets.xcassets/Splash.imageset/splash-2732x2732-1.png": "1b5002b74a5500e697298ced06ca2811ac33f2771f236f3c720ff23243890530",
+    "kntr-mobile/ios/App/App/Assets.xcassets/Splash.imageset/splash-2732x2732-2.png": "1b5002b74a5500e697298ced06ca2811ac33f2771f236f3c720ff23243890530",
+    "kntr-mobile/ios/App/App/Assets.xcassets/Splash.imageset/splash-2732x2732.png": "1b5002b74a5500e697298ced06ca2811ac33f2771f236f3c720ff23243890530",
+    "kntr-mobile/ios/App/App/Base.lproj/LaunchScreen.storyboard": "87a42e842164d75f39cca56a2cf743652f4d8e858f2eba12ae21a8ddcd9a21c6",
+    "kntr-mobile/ios/App/App/Base.lproj/Main.storyboard": "7b7dc7acc67134bfaa80e5ce9c9068ba53db5369b9b70248aa7439fc2b09daae",
+    "kntr-mobile/ios/App/App/Info.plist": "02a457b26a0d030090ebefde886538189585b3470f40a6e6c84ff29e7dff471e",
+    "kntr-mobile/ios/App/App/capacitor.config.json": "1d82f43dd153f21fad2bf01679bf1b0a00f1fe50c615280b8f48c86a0aaed6b4",
+    "kntr-mobile/ios/App/App/config.xml": "e9dcda493e663c5c4db9e3cb3bd968477a6e90aa8840bcbba40d72ed54b767ce",
+    "kntr-mobile/ios/App/App/public/cordova.js": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "kntr-mobile/ios/App/App/public/cordova_plugins.js": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "kntr-mobile/ios/App/App/public/index.html": "33795981a1e29da44a97b31af595ce108e25fc4eb96eace0a2415ac3637d985f",
+    "kntr-mobile/ios/App/App/public/manifest.json": "4826538618dbdc1836363709611823b287845c897f034e1660e7bb1bac4904d0",
+    "kntr-mobile/ios/App/App.xcodeproj/project.pbxproj": "cc95d43269da1a42d6893a30b100ebd34518bb8925b09b7a73871459df4610bc",
+    "kntr-mobile/ios/App/App.xcodeproj/project.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist": "dfa0f9bb85b95ccba9c6811adadf8cb407fb5d52088e89db83ebc308ec448542",
+    "kntr-mobile/ios/App/CapApp-SPM/.gitignore": "4b958e2b4dd57319aadef2551153c74b9cb5ffe9f89d6e3e491122a94913f016",
+    "kntr-mobile/ios/App/CapApp-SPM/Package.swift": "8df3cd7f9cc3626dbafa932aa2bcad70203952aa5118496a73e3fb719895f9bb",
+    "kntr-mobile/ios/App/CapApp-SPM/README.md": "42c535861f4a866e35f85764ed6af1ea046d6a409bf9852ecb00e5d292a1626e",
+    "kntr-mobile/ios/App/CapApp-SPM/Sources/CapApp-SPM/CapApp-SPM.swift": "70bf9dafddc35e3877dfb133a996f5be7ccd1e132897a98fdbf4869ff605ece9",
+    "kntr-mobile/ios/capacitor-cordova-ios-plugins/CordovaPluginsResources.podspec": "6ace787f88f8c8da88526ed2ecdf0b9bd659cdb64f56bd5e73a684e0d26b7e06",
+    "kntr-mobile/ios/capacitor-cordova-ios-plugins/resources/.gitkeep": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+    "kntr-mobile/ios/capacitor-cordova-ios-plugins/sources/.gitkeep": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+    "kntr-mobile/ios/debug.xcconfig": "4838938a72b913b99cfda54a43bbe73f05893071dc6e3702b0adc44794b64272",
+    "kntr-mobile/package-lock.json": "e9098113fc43e89070c6ed5f44ed303688147cfff3d27858947569bcac49b5cb",
+    "kntr-mobile/package.json": "53d8922301c7945d40a060d889819a547afc926139e473f36871e12e1e436f6b",
+    "kntr-mobile/resources/icon.png": "5f4c6b0948740077d9d3240fe99f36277bfbe08febbf8c27dd5ea1794a00ff6b",
+    "kntr-mobile/resources/splash.png": "bc6dfdf5b8830020c1506cc3d2a373283382fb8a83e94bcfb3dce2f182a51784",
+    "kntr-mobile/store-listing/app-store-listing-ar.md": "e59f8e334790422fd5b531ad7313549d89a871e18b9c7404d5522ab252ba9b08",
+    "kntr-mobile/store-listing/play-store-listing-ar.md": "02916ddbad9063c7532c2910bea6f9dcc8b90d8a78ba15eadf3c46b0b341d56f",
+    "kntr-mobile/store-listing/privacy-policy.html": "3c55e143e876525f40b2b0e7aef9c8abf8ab4a4d9eb150001edaff9524f6e030",
+    "kntr-mobile/store-listing/terms-of-service.html": "e9437d914b0f1488bf124bf5e82af096a8a7de1a9ee875ec4d52ca2d632f9e5a",
+    "kntr-mobile/www/index.html": "33795981a1e29da44a97b31af595ce108e25fc4eb96eace0a2415ac3637d985f",
+    "kntr-mobile/www/manifest.json": "4826538618dbdc1836363709611823b287845c897f034e1660e7bb1bac4904d0"
+  }
+}

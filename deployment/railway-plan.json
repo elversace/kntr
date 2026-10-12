@@ -1,0 +1,55 @@
+{
+  "purpose": "Reviewable deployment settings, not an executable Railway config file",
+  "status": "blocked_by_free_plan_resource_limit",
+  "project": {
+    "name": "KNTR-Test",
+    "environment": "staging",
+    "public": false
+  },
+  "database": {
+    "name": "Postgres",
+    "template": "postgres",
+    "version": 18,
+    "network": "private",
+    "persistent_mount": "/var/lib/postgresql/data"
+  },
+  "api": {
+    "name": "kntr-api",
+    "root_directory": "kntr-package/kntr-backend",
+    "builder": "RAILPACK",
+    "build_command": "npm ci",
+    "pre_deploy_command": [
+      "npm run db:prepare"
+    ],
+    "start_command": "npm start",
+    "healthcheck_path": "/ready",
+    "healthcheck_timeout_seconds": 120,
+    "restart_policy": "ON_FAILURE",
+    "max_restart_retries": 3,
+    "replicas": 1,
+    "persistent_mount": "/data",
+    "variables": {
+      "NODE_ENV": "production",
+      "RAILPACK_NODE_VERSION": "24",
+      "DATABASE_URL": "${{Postgres.DATABASE_URL}}",
+      "DB_SSL": "disable",
+      "ALLOWED_ORIGINS": "capacitor://localhost,https://localhost,http://localhost",
+      "TRUST_PROXY": "1",
+      "UPLOAD_PATH": "/data/uploads",
+      "MAX_FILE_SIZE": "5242880",
+      "QR_EXPIRY_MINUTES": "60"
+    },
+    "secret_variables_to_generate_privately": [
+      "JWT_SECRET",
+      "JWT_REFRESH_SECRET"
+    ]
+  },
+  "source": {
+    "owner": "elversace",
+    "visibility": "private",
+    "repository": "elversace/kntr"
+  },
+  "deployment_completed": false,
+  "public_api_url": null,
+  "active_test_environment": "GitHub Codespaces (configuration prepared; free quota confirmation required)"
+}

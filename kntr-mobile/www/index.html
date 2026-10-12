@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>kntr — كنتر</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0D1B24; --surface:#142935; --surface-2:#1A3340; --hairline:#24404D;
+    --ink:#EDEDE5; --ink-dim:#93A8B2;
+    --amber:#E8A33D; --teal:#2FA88C; --coral:#E5573F;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{background:var(--bg); color:var(--ink); font-family:'IBM Plex Sans Arabic',sans-serif; min-height:100vh;}
+  h1,h2,h3{font-family:'Almarai',sans-serif;}
+  .hidden{display:none !important;}
+  input,select{width:100%; background:var(--bg); border:1px solid var(--hairline); color:var(--ink); padding:11px 14px; border-radius:9px; margin-bottom:9px; font-family:inherit; font-size:13.5px;}
+  button{border:none; border-radius:9px; padding:11px 16px; font-weight:700; cursor:pointer; font-family:inherit; font-size:13.5px;}
+
+  /* ── Login ── */
+  .login-wrap{min-height:100vh; display:flex; align-items:center; justify-content:center; padding:20px;}
+  .login-box{background:var(--surface); border:1px solid var(--hairline); border-radius:16px; padding:26px; width:100%; max-width:380px;}
+  .login-box .mark{width:44px; height:44px; border-radius:11px; background:linear-gradient(135deg,var(--amber),var(--coral)); display:flex; align-items:center; justify-content:center; font-weight:800; color:#0D1B24; font-family:'Almarai'; font-size:18px; margin-bottom:14px;}
+  .login-box h2{font-size:19px; margin-bottom:4px;}
+  .login-box p{color:var(--ink-dim); font-size:12.5px; margin-bottom:18px;}
+  .login-box button.primary{width:100%; background:var(--amber); color:#0D1B24; margin-top:4px;}
+  .login-err{color:var(--coral); font-size:12px; margin-top:8px; min-height:14px;}
+  .adv{margin-top:12px;}
+  .adv input{font-size:11px; text-align:center; color:var(--ink-dim); margin-bottom:0;}
+  .quick-fill{display:flex; gap:6px; margin-top:10px;}
+  .quick-fill button{flex:1; background:var(--surface-2); color:var(--ink-dim); font-size:11px; padding:7px; border:1px solid var(--hairline);}
+
+  /* ── App shell ── */
+  .app{max-width:480px; margin:0 auto; min-height:100vh;}
+  .topbar{display:flex; justify-content:space-between; align-items:center; padding:16px 18px 10px;}
+  .topbar .who{font-weight:800; font-size:16px;}
+  .topbar .role-tag{font-size:11px; color:var(--ink-dim);}
+  .logout-btn{background:var(--surface-2); color:var(--ink-dim); border:1px solid var(--hairline); font-size:12px; padding:7px 13px;}
+
+  .tabs{display:flex; gap:8px; padding:0 18px 14px;}
+  .tab-btn{flex:1; background:var(--surface); color:var(--ink-dim); border:1px solid var(--hairline); padding:10px; font-size:13px;}
+  .tab-btn.active{background:var(--teal); color:#0D1B24; border-color:var(--teal);}
+
+  .section-title{padding:0 18px 8px; color:var(--ink-dim); font-size:12px; font-weight:600; display:flex; justify-content:space-between;}
+  .section-title button{background:none; border:none; color:var(--amber); font-size:11.5px; padding:0;}
+
+  /* ── Cards / shared ── */
+  .panel{background:var(--surface); border:1px solid var(--hairline); border-radius:12px; padding:16px; margin:0 18px 14px;}
+  .panel h3{font-size:14px; margin-bottom:12px;}
+  .field-row{display:grid; grid-template-columns:1fr 1fr; gap:8px;}
+  label{font-size:11px; color:var(--ink-dim); display:block; margin-bottom:4px;}
+  .empty{color:var(--ink-dim); text-align:center; padding:24px 0; font-size:13px;}
+
+  /* customer: waybill */
+  .waybill{background:var(--surface-2); border:1px solid var(--amber); border-radius:12px; padding:16px; margin:0 18px 14px;}
+  .wb-row{display:flex; justify-content:space-between; font-size:12.5px; padding:5px 0; color:var(--ink-dim);}
+  .wb-row b{color:var(--ink);}
+  .wb-total{display:flex; justify-content:space-between; align-items:center; padding-top:10px; margin-top:4px; border-top:1px dashed var(--hairline);}
+  .wb-total .amt{font-size:22px; font-weight:800; color:var(--amber); font-family:'Almarai';}
+  .wb-msg{font-size:12px; text-align:center; margin-top:8px; min-height:14px;}
+
+  /* order list */
+  .mini-order{background:var(--surface); border:1px solid var(--hairline); border-radius:10px; padding:12px 14px; margin:0 18px 8px; display:flex; justify-content:space-between; align-items:center; cursor:pointer; font-size:13px;}
+  .mini-order .st{font-size:11px; color:var(--ink-dim);}
+  .badge{display:inline-block; padding:3px 9px; border-radius:20px; font-size:11px; font-weight:700;}
+  .b-pending{background:rgba(232,163,61,.15); color:var(--amber);}
+  .b-accepted,.b-in_transit{background:rgba(47,168,140,.15); color:var(--teal);}
+  .b-delivered{background:rgba(255,255,255,.08); color:var(--ink-dim);}
+  .b-cancelled{background:rgba(229,87,63,.15); color:var(--coral);}
+
+  /* tracking card */
+  .card{background:var(--surface); border:1px solid var(--hairline); border-radius:14px; padding:18px; margin:0 18px 14px;}
+  .order-id{font-size:12px; color:var(--ink-dim);}
+  .status-title{font-size:19px; font-weight:800; margin:4px 0 16px;}
+  .route .track{position:relative; height:4px; background:var(--hairline); border-radius:4px; margin:24px 6px;}
+  .route .fill{position:absolute; top:0; right:0; height:100%; background:linear-gradient(90deg,var(--teal),var(--amber)); border-radius:4px; transition:width .5s;}
+  .route .van{position:absolute; top:-12px; font-size:18px; transition:right .5s; transform:translateX(50%);}
+  .route .labels{display:flex; justify-content:space-between; font-size:10px; color:var(--ink-dim);}
+  .route .labels span.active{color:var(--teal); font-weight:700;}
+  .addr-block{display:flex; gap:10px; padding:10px 0; border-top:1px dashed var(--hairline); font-size:12.5px;}
+  .addr-block:first-of-type{border-top:none;}
+  .dot-ic{width:8px; height:8px; border-radius:50%; margin-top:5px; flex:none;}
+  .dot-ic.p{background:var(--teal);} .dot-ic.d{background:var(--coral);}
+  .addr-block .l{font-size:10.5px; color:var(--ink-dim);}
+  .driver-chip{display:flex; align-items:center; gap:10px; margin-top:12px; padding:10px; background:var(--surface-2); border-radius:10px;}
+  .driver-chip .av{width:34px; height:34px; border-radius:50%; background:var(--amber); display:flex; align-items:center; justify-content:center; font-weight:800; color:#0D1B24; flex:none;}
+  .price-row{display:flex; justify-content:space-between; align-items:center; padding-top:12px; margin-top:6px; border-top:1px solid var(--hairline);}
+  .price-row .amt{font-size:19px; font-weight:800; font-family:'Almarai';}
+  .stars{font-size:24px; letter-spacing:4px; cursor:pointer; text-align:center; display:block; margin-top:10px;}
+  .stars span{opacity:.3;} .stars span.on{opacity:1;}
+  .back-link{background:none; color:var(--ink-dim); font-size:12px; text-decoration:underline; padding:0 18px 10px; display:block;}
+
+  /* driver: gauge */
+  .gauge-wrap{display:flex; align-items:center; gap:16px; padding:6px 18px 4px;}
+  .gauge{width:88px; height:88px; border-radius:50%; position:relative; display:flex; align-items:center; justify-content:center;
+    background:conic-gradient(var(--amber) calc(var(--pct,0)*1%), var(--surface-2) 0); flex:none;}
+  .gauge::before{content:''; position:absolute; inset:7px; border-radius:50%; background:var(--bg);}
+  .gauge .val{position:relative; font-family:'Almarai'; font-weight:800; font-size:14px; text-align:center;}
+  .gauge .val small{display:block; font-size:9px; color:var(--ink-dim); font-weight:400;}
+  .gauge-meta .row{display:flex; justify-content:space-between; font-size:12px; color:var(--ink-dim); padding:3px 0;}
+  .gauge-meta .row b{color:var(--ink);}
+  .avail-toggle{display:flex; gap:8px; padding:10px 18px 4px;}
+  .avail-toggle button{flex:1; background:var(--surface); color:var(--ink-dim); border:1px solid var(--hairline);}
+  .avail-toggle button.active{background:var(--teal); color:#0D1B24; border-color:var(--teal);}
+  .order-card .top{display:flex; justify-content:space-between; margin-bottom:6px;}
+  .order-card .price{font-family:'Almarai'; font-weight:800; color:var(--amber); font-size:15px;}
+  .order-card .meta{display:flex; gap:8px; margin-top:6px; font-size:10.5px; color:var(--ink-dim);}
+  .actions{margin-top:10px; display:flex; gap:8px;}
+  .btn-block{width:100%;}
+  .btn-accept{background:var(--teal); color:#0D1B24;}
+  .btn-primary{background:var(--amber); color:#0D1B24;}
+  .progress{display:flex; align-items:center; gap:4px; margin-bottom:12px;}
+  .progress .dot{width:8px; height:8px; border-radius:50%; background:var(--hairline);}
+  .progress .dot.done{background:var(--teal);}
+  .progress .seg{flex:1; height:2px; background:var(--hairline);}
+  .progress .seg.done{background:var(--teal);}
+  .qr-box{text-align:center; margin-top:10px;}
+  .qr-box img{width:130px; border-radius:8px; margin:8px 0;}
+  .delivery-confirm{margin-top:16px; padding-top:14px; border-top:1px solid var(--hairline);}
+  .delivery-confirm p,.qr-box p{font-size:12px; color:var(--ink-dim); margin-bottom:10px; line-height:1.7;}
+  .delivery-check{display:flex; align-items:flex-start; gap:8px; margin:10px 0; font-size:12px; color:var(--ink); line-height:1.7;}
+  .delivery-check input{width:18px; height:18px; padding:0; margin:2px 0 0; flex:none;}
+  .delivery-message{font-size:12px; min-height:18px; margin-top:8px; color:var(--coral);}
+  .qr-box code{display:block; overflow-wrap:anywhere; margin-bottom:12px; font-size:12px; color:var(--ink);}
+  button:disabled{opacity:.6; cursor:wait;}
+</style>
+</head>
+<body>
+
+<div class="login-wrap" id="loginWrap">
+  <div class="login-box">
+    <div class="mark">ك</div>
+    <h2>kntr — كنتر</h2>
+    <p>سجّل دخولك — عميل أو سائق، نفس التطبيق</p>
+    <input id="email" placeholder="البريد الإلكتروني" value="sara@example.ly">
+    <input id="password" type="password" placeholder="كلمة المرور" value="Passw0rd123">
+    <button class="primary" onclick="login()">دخول</button>
+    <div class="login-err" id="loginErr"></div>
+    <div class="quick-fill">
+      <button onclick="fill('sara@example.ly')">تجربة كعميل</button>
+      <button onclick="fill('omar@example.ly')">تجربة كسائق</button>
+    </div>
+    <div class="adv"><input id="apiBase" value="http://localhost:3000/v1" title="عنوان الـ API"></div>
+  </div>
+</div>
+
+<div class="app hidden" id="appShell">
+  <div class="topbar">
+    <div><div class="who" id="whoName"></div><div class="role-tag" id="roleTag"></div></div>
+    <button class="logout-btn" onclick="logout()">خروج</button>
+  </div>
+
+  <!-- ============ CUSTOMER VIEW ============ -->
+  <div id="customerView" class="hidden">
+    <div class="section-title"><span>رصيد المحفظة المتاح</span><b id="customerWalletBalance">—</b></div>
+    <div class="tabs">
+      <button class="tab-btn active" id="tabNew" onclick="switchTab('new')">طلب جديد</button>
+      <button class="tab-btn" id="tabMine" onclick="switchTab('mine')">طلباتي</button>
+    </div>
+
+    <div id="tabNewBody">
+      <div class="panel">
+        <h3>بيانات الشحنة</h3>
+        <label>عنوان الاستلام</label>
+        <div style="display:flex; gap:6px;">
+          <input id="pAddr" value="طرابلس - سوق الجمعة" style="flex:1;">
+          <button type="button" onclick="useMyLocation()" title="استخدم موقعي الحالي" style="flex:none; background:var(--surface-2); color:var(--amber); border:1px solid var(--hairline); padding:0 12px;">📍</button>
+        </div>
+        <div class="field-row">
+          <div><label>lat</label><input id="pLat" value="32.8872"></div>
+          <div><label>lng</label><input id="pLng" value="13.1913"></div>
+        </div>
+        <label style="margin-top:6px;">عنوان التسليم</label>
+        <input id="dAddr" value="طرابلس - باب بن غشير">
+        <div class="field-row">
+          <div><label>lat</label><input id="dLat" value="32.8500"></div>
+          <div><label>lng</label><input id="dLng" value="13.2000"></div>
+        </div>
+        <div class="field-row" style="margin-top:6px;">
+          <div><label>المركبة</label>
+            <select id="vType" onchange="estimate()">
+              <option value="motorcycle">دراجة نارية</option>
+              <option value="car">سيارة</option>
+              <option value="van">فان</option>
+              <option value="truck">شاحنة</option>
+            </select>
+          </div>
+          <div><label>الأولوية</label>
+            <select id="priority" onchange="estimate()">
+              <option value="standard">عادي</option>
+              <option value="priority">أولوية</option>
+              <option value="urgent">مستعجل</option>
+            </select>
+          </div>
+        </div>
+        <label for="paymentMethod">طريقة الدفع</label>
+        <select id="paymentMethod">
+          <option value="cash">نقدًا عند التسليم</option>
+          <option value="wallet">المحفظة</option>
+        </select>
+        <p style="font-size:11px;color:var(--ink-dim);margin-bottom:10px;">عند اختيار المحفظة، يُخصم مبلغ الطلب عند تأكيد الطلب.</p>
+        <button class="btn-block" style="background:var(--surface-2); color:var(--ink); border:1px solid var(--hairline);" onclick="estimate()">تحديث السعر</button>
+      </div>
+      <div class="waybill">
+        <h3 style="margin-bottom:2px;">بوليصة الشحن</h3>
+        <div class="wb-row"><span>المسافة</span><b id="wbDist">—</b></div>
+        <div class="wb-row"><span>السعر الأساسي</span><b id="wbBase">—</b></div>
+        <div class="wb-row"><span>خصم العميل</span><b id="wbDisc">—</b></div>
+        <div class="wb-row"><span>ض.ق.م</span><b id="wbVat">—</b></div>
+        <div class="wb-total"><span>الإجمالي</span><span class="amt" id="wbTotal">—</span></div>
+        <button id="confirmOrderBtn" class="btn-block btn-primary" style="margin-top:10px;" onclick="createOrder()">تأكيد الطلب</button>
+        <div class="wb-msg" id="wbMsg"></div>
+      </div>
+    </div>
+
+    <div id="tabMineBody" class="hidden">
+      <div id="myOrdersList"></div>
+      <div id="trackResult"></div>
+    </div>
+  </div>
+
+  <!-- ============ DRIVER VIEW ============ -->
+  <div id="driverView" class="hidden">
+    <div class="gauge-wrap">
+      <div class="gauge" id="gauge" style="--pct:0"><div class="val" id="gaugeVal">—<small>تقييم</small></div></div>
+      <div class="gauge-meta">
+        <div class="row"><span>الرحلات</span><b id="mTrips">0</b></div>
+        <div class="row"><span>إجمالي الأرباح</span><b id="mEarnings">0 د.ل</b></div>
+      </div>
+    </div>
+    <div class="avail-toggle">
+      <button id="btnAvail" onclick="setAvail('available')">متاح</button>
+      <button id="btnBusy" onclick="setAvail('offline')">غير متاح</button>
+    </div>
+    <div id="activeOrderBox"></div>
+    <div class="section-title"><span>الطلبات المتاحة</span><button onclick="loadDriverOrders()">تحديث</button></div>
+    <div id="driverFeed"></div>
+  </div>
+</div>
+
+<script>
+let TOKEN=null, PROFILE=null, ACTIVE_ORDER=null, CURRENT_TRACK=null;
+let AUTH_VERSION=0, logoutPending=false;
+function sameSession(version){ return version===AUTH_VERSION && TOKEN!==null; }
+function esc(s){ return String(s??'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function api(){ return document.getElementById('apiBase').value.replace(/\/$/,''); }
+function fill(email){ document.getElementById('email').value=email; document.getElementById('password').value='Passw0rd123'; }
+function useMyLocation(){
+  const version=AUTH_VERSION;
+  if(!navigator.geolocation){ alert('الموقع الجغرافي غير مدعوم على هذا الجهاز'); return; }
+  navigator.geolocation.getCurrentPosition(
+    pos=>{
+      if(!sameSession(version)) return;
+      document.getElementById('pLat').value = pos.coords.latitude.toFixed(6);
+      document.getElementById('pLng').value = pos.coords.longitude.toFixed(6);
+      estimate();
+    },
+    err=>{ if(sameSession(version)) alert('تعذّر الوصول للموقع — تأكد من إذن الموقع الجغرافي للتطبيق'); },
+    {enableHighAccuracy:true, timeout:8000}
+  );
+}
+
+async function login(){
+  if(logoutPending) return;
+  const version=AUTH_VERSION;
+  const email=document.getElementById('email').value, password=document.getElementById('password').value;
+  const err=document.getElementById('loginErr'); err.textContent='';
+  try{
+    const res=await fetch(api()+'/auth/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,password})});
+    const data=await res.json();
+    if(version!==AUTH_VERSION || logoutPending) return;
+    if(!data.success){ err.textContent=data.error?.message||'فشل الدخول'; return; }
+    if(!['customer','driver'].includes(data.data.user.role)){ err.textContent='هذا الحساب غير مدعوم بهذا التطبيق'; return; }
+    AUTH_VERSION+=1;
+    const loggedVersion=AUTH_VERSION;
+    TOKEN=data.data.tokens.access_token; PROFILE=data.data.user;
+    document.getElementById('loginWrap').classList.add('hidden');
+    document.getElementById('appShell').classList.remove('hidden');
+    document.getElementById('whoName').textContent=PROFILE.full_name_ar;
+    document.getElementById('roleTag').textContent = PROFILE.role==='customer' ? 'حساب عميل' : 'حساب سائق';
+    if(PROFILE.role==='customer'){
+      document.getElementById('customerView').classList.remove('hidden');
+      await refreshCustomerWallet();
+      if(!sameSession(loggedVersion)) return;
+      estimate();
+    } else {
+      document.getElementById('driverView').classList.remove('hidden');
+      refreshDriverProfile();
+    }
+  }catch(e){ if(version===AUTH_VERSION && !logoutPending) err.textContent='تعذّر الاتصال بالسيرفر — تحقق من عنوان الـ API'; }
+}
+async function logout(){
+  if(logoutPending) return;
+  logoutPending=true;
+  const token=TOKEN, base=api();
+  AUTH_VERSION+=1;
+  TOKEN=null; PROFILE=null; ACTIVE_ORDER=null; CURRENT_TRACK=null;
+  orderCreatePending=false; deliveryConfirmPending=false; selectedStars=0;
+  for(const id of ['whoName','roleTag','myOrdersList','trackResult','activeOrderBox','driverFeed','wbMsg']) document.getElementById(id).textContent='';
+  for(const id of ['pAddr','pLat','pLng','dAddr','dLat','dLng','email','password']) document.getElementById(id).value='';
+  for(const id of ['wbDist','wbBase','wbDisc','wbVat','wbTotal','customerWalletBalance']) document.getElementById(id).textContent='—';
+  document.getElementById('vType').value='motorcycle';
+  document.getElementById('priority').value='standard';
+  document.getElementById('paymentMethod').value='cash';
+  document.getElementById('tabNew').classList.add('active');
+  document.getElementById('tabMine').classList.remove('active');
+  document.getElementById('tabNewBody').classList.remove('hidden');
+  document.getElementById('tabMineBody').classList.add('hidden');
+  document.getElementById('confirmOrderBtn').disabled=false;
+  document.getElementById('mTrips').textContent='0';
+  document.getElementById('mEarnings').textContent='0 د.ل';
+  document.getElementById('gaugeVal').innerHTML='—<small>تقييم</small>';
+  document.getElementById('gauge').style.setProperty('--pct',0);
+  document.getElementById('btnAvail').classList.remove('active');
+  document.getElementById('btnBusy').classList.remove('active');
+  document.getElementById('appShell').classList.add('hidden');
+  document.getElementById('customerView').classList.add('hidden');
+  document.getElementById('driverView').classList.add('hidden');
+  document.getElementById('loginWrap').classList.remove('hidden');
+  const msg=document.getElementById('loginErr');
+  msg.textContent=token ? 'جارِ إنهاء الجلسة...' : '';
+  try{
+    if(token){
+      const response=await fetch(base+'/auth/logout',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify({})});
+      const result=await response.json();
+      msg.textContent=response.ok && result.success ? '' : 'تم الخروج محليًا؛ تعذّر إلغاء الجلسة على الخادم';
+    }
+  }catch(e){ msg.textContent='تم الخروج محليًا؛ تعذّر إلغاء الجلسة على الخادم'; }
+  finally{ logoutPending=false; }
+}
+async function authFetch(path,opts={}){
+  opts.headers=Object.assign({'Content-Type':'application/json','Authorization':'Bearer '+TOKEN},opts.headers||{});
+  const res=await fetch(api()+path,opts); return res.json();
+}
+
+/* ---------- CUSTOMER ---------- */
+async function refreshCustomerWallet(){
+  if(PROFILE?.role!=='customer') return;
+  const version=AUTH_VERSION;
+  const customerId=PROFILE.id, balance=document.getElementById('customerWalletBalance');
+  balance.textContent='جارِ التحديث...';
+  try{
+    const d=await authFetch('/auth/me');
+    if(!sameSession(version) || PROFILE?.role!=='customer' || PROFILE.id!==customerId) return;
+    if(!d.success || d.data.id!==customerId){ balance.textContent='تعذّر تحديث الرصيد'; return; }
+    const amount=Number(d.data.wallet_balance??0);
+    balance.textContent=Number.isFinite(amount) ? amount.toFixed(2)+' د.ل' : 'تعذّر تحديث الرصيد';
+  }catch(e){
+    if(sameSession(version) && PROFILE?.role==='customer' && PROFILE.id===customerId) balance.textContent='تعذّر الاتصال لتحديث الرصيد';
+  }
+}
+function switchTab(t){
+  document.getElementById('tabNew').classList.toggle('active', t==='new');
+  document.getElementById('tabMine').classList.toggle('active', t==='mine');
+  document.getElementById('tabNewBody').classList.toggle('hidden', t!=='new');
+  document.getElementById('tabMineBody').classList.toggle('hidden', t!=='mine');
+  if(t==='mine') loadMyOrders();
+}
+async function estimate(){
+  const version=AUTH_VERSION;
+  const q=new URLSearchParams({
+    pickup_lat:document.getElementById('pLat').value, pickup_lng:document.getElementById('pLng').value,
+    dropoff_lat:document.getElementById('dLat').value, dropoff_lng:document.getElementById('dLng').value,
+    vehicle_type:document.getElementById('vType').value, priority:document.getElementById('priority').value,
+  });
+  const d=await authFetch('/orders/estimate?'+q.toString());
+  if(!sameSession(version)) return;
+  if(!d.success){ document.getElementById('wbMsg').textContent=d.error?.message||'تعذّر حساب السعر'; return; }
+  document.getElementById('wbDist').textContent=d.data.distance+' كم';
+  document.getElementById('wbBase').textContent=d.data.basePrice+' د.ل';
+  document.getElementById('wbDisc').textContent='-'+d.data.customerDiscount+' د.ل';
+  document.getElementById('wbVat').textContent=d.data.vatAmount+' د.ل';
+  document.getElementById('wbTotal').textContent=d.data.finalPrice+' د.ل';
+  document.getElementById('wbMsg').textContent='';
+}
+let orderCreatePending=false;
+async function createOrder(){
+  if(orderCreatePending) return;
+  const version=AUTH_VERSION;
+  const msg=document.getElementById('wbMsg'), button=document.getElementById('confirmOrderBtn');
+  const paymentMethod=document.getElementById('paymentMethod').value;
+  if(!['cash','wallet'].includes(paymentMethod)){ msg.textContent='اختر طريقة دفع متاحة'; return; }
+  orderCreatePending=true; button.disabled=true;
+  msg.style.color='var(--ink-dim)'; msg.textContent='جارِ إنشاء الطلب...';
+  try{
+    const payload={
+      pickup:{address:document.getElementById('pAddr').value, lat:parseFloat(document.getElementById('pLat').value), lng:parseFloat(document.getElementById('pLng').value)},
+      dropoff:{address:document.getElementById('dAddr').value, lat:parseFloat(document.getElementById('dLat').value), lng:parseFloat(document.getElementById('dLng').value)},
+      vehicle_type:document.getElementById('vType').value, priority:document.getElementById('priority').value, payment_method:paymentMethod,
+    };
+    const d=await authFetch('/orders',{method:'POST', body:JSON.stringify(payload)});
+    if(!sameSession(version)) return;
+    msg.style.color = d.success ? 'var(--teal)' : 'var(--coral)';
+    msg.textContent = d.success ? ('تم إنشاء الطلب '+d.data.order_id+' ✓') : (d.error?.message||'فشل إنشاء الطلب');
+    if(d.success) await refreshCustomerWallet();
+  }catch(e){
+    if(!sameSession(version)) return;
+    msg.style.color='var(--coral)'; msg.textContent='تعذّر الاتصال. تحقق من طلباتك قبل إعادة المحاولة';
+  }finally{
+    if(sameSession(version)){ orderCreatePending=false; button.disabled=false; }
+  }
+}
+const stLbl={pending:'بانتظار سائق', accepted:'مقبول', in_transit:'في الطريق', delivered:'تم التسليم', cancelled:'ملغي'};
+async function loadMyOrders(){
+  const version=AUTH_VERSION;
+  const box=document.getElementById('myOrdersList');
+  refreshCustomerWallet();
+  document.getElementById('trackResult').innerHTML='';
+  const d=await authFetch('/orders?limit=10');
+  if(!sameSession(version)) return;
+  if(!d.success || !d.data.length){ box.innerHTML='<div class="empty">لا توجد طلبات بعد</div>'; return; }
+  box.innerHTML=d.data.map(o=>`<div class="mini-order" onclick="showOrder('${o.id}')"><span>${o.id}</span><span class="badge b-${o.status}">${stLbl[o.status]||o.status}</span></div>`).join('');
+}
+async function showOrder(id){
+  const version=AUTH_VERSION;
+  const result=document.getElementById('trackResult');
+  result.innerHTML='<div class="empty">جارِ التحميل...</div>';
+  const d=await authFetch('/orders/'+id);
+  if(!sameSession(version)) return;
+  if(!d.success){ result.innerHTML='<div class="empty">'+ (d.error?.message||'خطأ') +'</div>'; return; }
+  CURRENT_TRACK=d.data; renderTrack(d.data);
+}
+const stageMap={pending:0, accepted:1, in_transit:2, delivered:3};
+const stageLabels=['بانتظار سائق','تم القبول','في الطريق','تم التسليم'];
+function renderTrack(o){
+  const result=document.getElementById('trackResult');
+  if(o.status==='cancelled'){ result.innerHTML=`<div class="card"><div class="order-id">${o.id}</div><div class="status-title" style="color:var(--coral)">تم إلغاء الطلب</div></div>`; return; }
+  const stage=stageMap[o.status]??0, pct=(stage/3)*100;
+  const labels=stageLabels.map((l,i)=>`<span class="${i<=stage?'active':''}">${l}</span>`).join('');
+  let driverHtml = o.driver_name ? `<div class="driver-chip"><div class="av">${esc(o.driver_name[0])}</div><div><b>${esc(o.driver_name)}</b><div style="font-size:11px;color:var(--ink-dim);">${esc(o.driver_vehicle_type)||''} · ${esc(o.plate_number)||''}</div></div></div>` : '';
+  let rateHtml='';
+  let receiptHtml='';
+  if(PROFILE?.role==='customer' && o.customer_id===PROFILE.id && o.status==='in_transit'){
+    const cashHtml=o.payment_method==='cash' ? `<label class="delivery-check"><input id="cashPaid" type="checkbox"><span>أؤكد أنني دفعت للسائق مبلغ ${esc(o.final_price)} د.ل نقدًا</span></label>` : '';
+    receiptHtml=`<div class="delivery-confirm"><h3>تأكيد استلام الطلب</h3><p>بعد استلام طلبك، أدخل رمز التسليم المعروض لدى السائق أو الصق محتوى رمز QR.</p><label for="deliveryCode">رمز التسليم</label><input id="deliveryCode" dir="ltr" autocomplete="off" spellcheck="false" placeholder="رمز التسليم أو محتوى QR"><label class="delivery-check"><input id="receivedDelivery" type="checkbox"><span>أؤكد أنني استلمت هذا الطلب</span></label>${cashHtml}<button id="confirmReceiptBtn" class="btn-block btn-accept" onclick="confirmCustomerDelivery()">تأكيد الاستلام</button><div id="deliveryConfirmMsg" class="delivery-message" role="status" aria-live="polite"></div></div>`;
+  }
+  if(o.status==='delivered' && o.rating==null){
+    rateHtml=`<div class="stars" id="stars">${[1,2,3,4,5].map(n=>`<span onclick="setStar(${n})" data-n="${n}">★</span>`).join('')}</div><button class="btn-block btn-primary" style="margin-top:8px;" onclick="submitRating()">إرسال التقييم</button>`;
+  } else if(o.status==='delivered'){
+    rateHtml=`<div style="text-align:center; margin-top:8px; font-size:12.5px; color:var(--ink-dim);">تقييمك: ${'★'.repeat(o.rating)}${'☆'.repeat(5-o.rating)}</div>`;
+  }
+  result.innerHTML=`
+    <div class="card">
+      <div class="order-id">${o.id}</div>
+      <div class="status-title">${stageLabels[stage]}</div>
+      <div class="route"><div class="track"><div class="fill" style="width:${pct}%"></div><div class="van" style="right:${pct}%">🛵</div></div><div class="labels">${labels}</div></div>
+      <div class="addr-block"><div class="dot-ic p"></div><div><div class="l">من</div>${esc(o.pickup_address)}</div></div>
+      <div class="addr-block"><div class="dot-ic d"></div><div><div class="l">إلى</div>${esc(o.dropoff_address)}</div></div>
+      ${driverHtml}
+      <div class="price-row"><span>الإجمالي</span><div class="amt">${o.final_price} د.ل</div></div>
+      ${receiptHtml}
+      ${rateHtml}
+    </div>`;
+}
+let deliveryConfirmPending=false;
+function parseDeliveryCode(value,orderId){
+  const raw=String(value||'').trim();
+  if(/^[a-fA-F0-9]{32}$/.test(raw)) return raw.toUpperCase();
+  const payload=/^QUICKSHIP:(ORD-\d{5,16}):([a-fA-F0-9]{32})$/.exec(raw);
+  if(payload && payload[1]===orderId) return payload[2].toUpperCase();
+  return null;
+}
+async function confirmCustomerDelivery(){
+  const msg=document.getElementById('deliveryConfirmMsg');
+  if(!msg || deliveryConfirmPending) return;
+  msg.textContent='';
+  if(PROFILE?.role!=='customer' || CURRENT_TRACK?.customer_id!==PROFILE.id || CURRENT_TRACK?.status!=='in_transit'){
+    msg.textContent='يمكن تأكيد استلام طلبك الجاري فقط'; return;
+  }
+  const orderId=CURRENT_TRACK.id;
+  const version=AUTH_VERSION;
+  const code=parseDeliveryCode(document.getElementById('deliveryCode').value,orderId);
+  if(!code){ msg.textContent='أدخل رمزًا صحيحًا يخص هذا الطلب'; return; }
+  if(!document.getElementById('receivedDelivery').checked){
+    msg.textContent='أكد استلام الطلب أولًا'; return;
+  }
+  const payload={qr_code:code,received:true,cash_paid:false};
+  if(CURRENT_TRACK.payment_method==='cash'){
+    if(!document.getElementById('cashPaid')?.checked){
+      msg.textContent='أكد دفع المبلغ النقدي للسائق أولًا'; return;
+    }
+    payload.cash_paid=true;
+  }
+  const button=document.getElementById('confirmReceiptBtn');
+  deliveryConfirmPending=true; button.disabled=true;
+  let confirmed=false;
+  try{
+    const d=await authFetch('/orders/'+orderId+'/verify-qr',{method:'POST',body:JSON.stringify(payload)});
+    if(!sameSession(version)) return;
+    if(!d.success){ msg.textContent=d.error?.message||'تعذّر تأكيد الاستلام'; return; }
+    confirmed=true;
+    msg.style.color='var(--teal)'; msg.textContent='تم تأكيد الاستلام، جارِ تحديث الطلب...';
+    const updated=await authFetch('/orders/'+orderId);
+    if(!sameSession(version)) return;
+    if(!updated.success){ msg.textContent='تم تأكيد الاستلام. افتح الطلب مجددًا لتحديث حالته'; return; }
+    if(CURRENT_TRACK?.id===orderId){ CURRENT_TRACK=updated.data; renderTrack(updated.data); }
+  }catch(e){
+    if(!sameSession(version)) return;
+    msg.textContent=confirmed ? 'تم تأكيد الاستلام. تعذّر تحديث الحالة؛ افتح الطلب مجددًا' : 'تعذّر الاتصال. تحقق من حالة الطلب قبل إعادة المحاولة';
+  }finally{
+    if(sameSession(version)){ deliveryConfirmPending=false; button.disabled=confirmed; }
+  }
+}
+let selectedStars=0;
+function setStar(n){ selectedStars=n; document.querySelectorAll('#stars span').forEach(s=>s.classList.toggle('on', +s.dataset.n<=n)); }
+async function submitRating(){
+  const version=AUTH_VERSION;
+  if(!selectedStars){ alert('اختر عدد النجوم'); return; }
+  const d=await authFetch('/orders/'+CURRENT_TRACK.id+'/rate',{method:'POST', body:JSON.stringify({rating:selectedStars})});
+  if(!sameSession(version)) return;
+  if(!d.success){ alert(d.error?.message||'فشل'); return; }
+  CURRENT_TRACK.rating=selectedStars; renderTrack(CURRENT_TRACK);
+}
+
+/* ---------- DRIVER ---------- */
+async function refreshDriverProfile(){
+  const version=AUTH_VERSION;
+  const d=await authFetch('/auth/me');
+  if(!sameSession(version)) return;
+  if(!d.success) return;
+  const p=d.data;
+  document.getElementById('mTrips').textContent=p.total_trips??0;
+  document.getElementById('mEarnings').textContent=(p.total_earnings??0)+' د.ل';
+  const rating=parseFloat(p.rating||5);
+  document.getElementById('gaugeVal').innerHTML=rating.toFixed(1)+'<small>تقييم</small>';
+  document.getElementById('gauge').style.setProperty('--pct', Math.min(100, rating*20));
+  document.getElementById('btnAvail').classList.toggle('active', p.availability==='available');
+  document.getElementById('btnBusy').classList.toggle('active', p.availability!=='available');
+  const feed=document.getElementById('driverFeed');
+  if(p.driver_status!=='approved'){ feed.innerHTML='<div class="empty">حسابك بانتظار اعتماد الإدارة</div>'; }
+  else if(p.availability==='available'){ loadDriverOrders(); }
+  else{ feed.innerHTML='<div class="empty">اضبط حالتك على "متاح" لعرض الطلبات</div>'; }
+}
+async function setAvail(status){
+  const version=AUTH_VERSION;
+  const d=await authFetch('/drivers/availability',{method:'PATCH', body:JSON.stringify({status})});
+  if(!sameSession(version)) return;
+  if(!d.success){ alert(d.error?.message||'فشل'); return; }
+  refreshDriverProfile();
+}
+async function loadDriverOrders(){
+  const version=AUTH_VERSION;
+  const feed=document.getElementById('driverFeed');
+  feed.innerHTML='<div class="empty">جارِ التحميل...</div>';
+  const d=await authFetch('/drivers/orders');
+  if(!sameSession(version)) return;
+  if(!d.success || !d.data.length){ feed.innerHTML='<div class="empty">لا توجد طلبات متاحة الآن</div>'; return; }
+  feed.innerHTML=d.data.map(o=>`
+    <div class="panel order-card">
+      <div class="top"><div><div style="font-size:10px;color:var(--ink-dim);">استلام</div>${esc(o.pickup_address)}</div><div class="price">${o.final_price} د.ل</div></div>
+      <div style="font-size:10px;color:var(--ink-dim);">تسليم</div>${esc(o.dropoff_address)}
+      <div class="meta"><span>${o.distance} كم</span><span>${o.vehicle_type}</span><span>${o.priority}</span></div>
+      <div class="actions"><button class="btn-block btn-accept" onclick="acceptOrder('${o.id}')">قبول الطلب</button></div>
+    </div>`).join('');
+}
+async function acceptOrder(id){
+  const version=AUTH_VERSION;
+  const d=await authFetch('/drivers/orders/'+id+'/accept',{method:'POST', body:JSON.stringify({})});
+  if(!sameSession(version)) return;
+  if(!d.success){ alert(d.error?.message||'تعذّر القبول'); return; }
+  ACTIVE_ORDER={id, status:'accepted'}; renderActive(); loadDriverOrders(); refreshDriverProfile();
+}
+const steps=['accepted','in_transit','delivered'];
+function renderActive(){
+  const box=document.getElementById('activeOrderBox');
+  if(!ACTIVE_ORDER){ box.innerHTML=''; return; }
+  const idx=steps.indexOf(ACTIVE_ORDER.status);
+  const dots=steps.map((s,i)=>`<div class="dot ${i<=idx?'done':''}"></div>${i<steps.length-1?`<div class="seg ${i<idx?'done':''}"></div>`:''}`).join('');
+  let action='';
+  if(ACTIVE_ORDER.status==='accepted') action=`<button class="btn-block btn-primary" onclick="advance('in_transit')">بدء التوصيل</button>`;
+  else if(ACTIVE_ORDER.status==='in_transit') action=`<button id="generateQRBtn" class="btn-block btn-primary" onclick="generateQR()">عرض رمز التسليم</button><button id="refreshDeliveryBtn" class="btn-block btn-accept" style="margin-top:8px;" onclick="refreshDeliveryStatus()">تحديث حالة التسليم</button>`;
+  box.innerHTML=`<div class="panel" style="border-color:var(--amber);"><h3>الطلب النشط: ${ACTIVE_ORDER.id}</h3><div class="progress">${dots}</div>${action}<div id="qrBox"></div><div id="activeOrderMsg" class="delivery-message" role="status" aria-live="polite"></div></div>`;
+}
+async function advance(status){
+  const version=AUTH_VERSION;
+  const d=await authFetch('/orders/'+ACTIVE_ORDER.id+'/status',{method:'PATCH', body:JSON.stringify({status})});
+  if(!sameSession(version)) return;
+  if(!d.success){ alert(d.error?.message||'فشل'); return; }
+  ACTIVE_ORDER.status=status; renderActive();
+}
+async function generateQR(){
+  if(PROFILE?.role!=='driver' || ACTIVE_ORDER?.status!=='in_transit') return;
+  const version=AUTH_VERSION;
+  const orderId=ACTIVE_ORDER.id;
+  const button=document.getElementById('generateQRBtn'), msg=document.getElementById('activeOrderMsg');
+  if(button.disabled) return;
+  button.disabled=true; msg.textContent='';
+  try{
+    const d=await authFetch('/orders/'+orderId+'/generate-qr',{method:'POST'});
+    if(!sameSession(version)) return;
+    if(!d.success){ msg.textContent=d.error?.message||'تعذّر إنشاء رمز التسليم'; return; }
+    if(ACTIVE_ORDER?.id!==orderId) return;
+    document.getElementById('qrBox').innerHTML=`<div class="qr-box"><img src="${esc(d.data.qr_image)}" alt="رمز تأكيد استلام الطلب"><code dir="ltr">${esc(d.data.qr_code)}</code><p>اعرض الرمز للعميل بعد تسليم الطلب. يجب أن يؤكد العميل الاستلام من حسابه، وأن يؤكد دفع المبلغ إذا كان الدفع نقدًا.</p></div>`;
+  }catch(e){ if(sameSession(version)) msg.textContent='تعذّر الاتصال. حاول عرض رمز التسليم مجددًا'; }
+  finally{ button.disabled=false; }
+}
+async function refreshDeliveryStatus(){
+  if(PROFILE?.role!=='driver' || !ACTIVE_ORDER) return;
+  const version=AUTH_VERSION;
+  const orderId=ACTIVE_ORDER.id;
+  const button=document.getElementById('refreshDeliveryBtn'), msg=document.getElementById('activeOrderMsg');
+  if(button.disabled) return;
+  button.disabled=true; msg.textContent='';
+  try{
+    const d=await authFetch('/orders/'+orderId);
+    if(!sameSession(version)) return;
+    if(!d.success){ msg.textContent=d.error?.message||'تعذّر تحديث حالة التسليم'; return; }
+    if(ACTIVE_ORDER?.id!==orderId) return;
+    if(['delivered','cancelled'].includes(d.data.status)){
+      ACTIVE_ORDER=null; renderActive();
+      document.getElementById('activeOrderBox').innerHTML=`<div class="panel">${d.data.status==='delivered'?'أكد العميل استلام الطلب ✓':'تم إلغاء الطلب'}</div>`;
+      try{ await refreshDriverProfile(); }
+      catch(e){ if(sameSession(version)) document.getElementById('activeOrderBox').innerHTML+='<div class="empty">تعذّر تحديث ملفك. اضغط تحديث الطلبات عند عودة الاتصال</div>'; }
+    }else{
+      if(ACTIVE_ORDER.status!==d.data.status){ ACTIVE_ORDER.status=d.data.status; renderActive(); }
+      document.getElementById('activeOrderMsg').textContent='لم يؤكد العميل الاستلام بعد';
+    }
+  }catch(e){ if(sameSession(version)) msg.textContent='تعذّر الاتصال. حاول تحديث حالة التسليم مجددًا'; }
+  finally{ button.disabled=false; }
+}
+</script>
+</body>
+</html>

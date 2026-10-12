@@ -1,0 +1,255 @@
+{
+  "environment": {
+    "node": "v24.19.0",
+    "database": "PostgreSQL 18.4, fresh isolated data directory",
+    "backend": "/workspace/kntr-fixed/kntr-package/kntr-backend",
+    "runDir": "/workspace/kntr-fixed/verification/step1-run-lQT7pq",
+    "dbPort": 32885,
+    "appPort": 34613,
+    "postgis": "Optional extension omitted; application geo calculation uses JS Haversine"
+  },
+  "checks": [
+    {
+      "name": "Database role changes remove permissions from stale admin token",
+      "status": "passed",
+      "evidence": {
+        "denied": 2,
+        "databaseRoleRespected": true
+      }
+    },
+    {
+      "name": "REST unauthenticated reads and mutations require authentication",
+      "status": "passed",
+      "evidence": {
+        "denied": 5,
+        "http": 401
+      }
+    },
+    {
+      "name": "Other customer cannot read, cancel or alter owner order",
+      "status": "passed",
+      "evidence": {
+        "denied": 5,
+        "http": 403,
+        "stateUnchanged": true
+      }
+    },
+    {
+      "name": "Pending, rejected and suspended drivers cannot bypass approval",
+      "status": "passed",
+      "evidence": {
+        "denied": 6,
+        "stateUnchanged": true
+      }
+    },
+    {
+      "name": "Approved driver cannot accept a mismatched vehicle order",
+      "status": "passed",
+      "evidence": {
+        "denied": 2,
+        "stateUnchanged": true
+      }
+    },
+    {
+      "name": "Driver cannot accept using another driver vehicle ID",
+      "status": "passed",
+      "evidence": {
+        "denied": 2,
+        "stateUnchanged": true
+      }
+    },
+    {
+      "name": "Approved alternative acceptance assigns driver and sets busy",
+      "status": "passed",
+      "evidence": {
+        "order": "ORD-00001",
+        "status": "accepted",
+        "driverBusy": true
+      }
+    },
+    {
+      "name": "Only assigned driver can read, start or cancel assigned order",
+      "status": "passed",
+      "evidence": {
+        "denied": 6,
+        "authorizedReadAndStart": true
+      }
+    },
+    {
+      "name": "Correct QR cannot be used by unrelated customer or driver",
+      "status": "passed",
+      "evidence": {
+        "denied": 4,
+        "realCorrectQRCode": true,
+        "stateUnchanged": true
+      }
+    },
+    {
+      "name": "Finance, audit and corporate roles cannot mutate another order",
+      "status": "passed",
+      "evidence": {
+        "denied": 12,
+        "stateUnchanged": true
+      }
+    },
+    {
+      "name": "Busy driver cannot take another order or set available while active",
+      "status": "passed",
+      "evidence": {
+        "extra": "ORD-00003",
+        "rejectedAdditionalAccepts": 2,
+        "preventedManualAvailabilityBypass": true
+      }
+    },
+    {
+      "name": "Socket no token and invalid token connections are rejected",
+      "status": "passed",
+      "evidence": {
+        "rejectedConnections": 2
+      }
+    },
+    {
+      "name": "Owner and assigned driver can track; other accounts cannot",
+      "status": "passed",
+      "evidence": {
+        "allowed": 2,
+        "denied": 2
+      }
+    },
+    {
+      "name": "Cross-user chat and cross-driver location cannot reach order room",
+      "status": "passed",
+      "evidence": {
+        "denied": 3,
+        "wrongDriverLocationUnchanged": true
+      }
+    },
+    {
+      "name": "Assigned driver broadcasts location and owner can chat",
+      "status": "passed",
+      "evidence": {
+        "driverLocationReceived": true,
+        "ownerChatReceived": true
+      }
+    },
+    {
+      "name": "Vehicle feeds reject wrong type, customers and pending drivers",
+      "status": "passed",
+      "evidence": {
+        "deniedSocketJoins": 3,
+        "approvedVehicleFeedWorks": true,
+        "deniedWrongRESTVehicleFeed": true
+      }
+    },
+    {
+      "name": "Malformed socket inputs cannot crash server or mutate location",
+      "status": "passed",
+      "evidence": {
+        "malformedPayloads": 24,
+        "serverHealthy": true,
+        "locationUnchanged": true
+      }
+    },
+    {
+      "name": "Concurrent refresh has one winner, rotates token and disconnects idle socket",
+      "status": "passed",
+      "evidence": {
+        "concurrentResponses": [
+          200,
+          401
+        ],
+        "tokenRotated": true,
+        "oldSocketDisconnected": true,
+        "oldTokenRevoked": true,
+        "freshSocketTrackingWorks": true
+      }
+    },
+    {
+      "name": "Password change revokes other sessions and disconnects their idle sockets",
+      "status": "passed",
+      "evidence": {
+        "otherSessionDisconnectedAndRevoked": true,
+        "currentSessionPreserved": true
+      }
+    },
+    {
+      "name": "Generic cancel follows cancellation fields, fee and driver release",
+      "status": "passed",
+      "evidence": {
+        "genericCancelOrder": "ORD-00001",
+        "acceptedFee": 5,
+        "pendingFee": 0,
+        "driverReleased": true
+      }
+    },
+    {
+      "name": "Same driver simultaneous accepts assign at most one order",
+      "status": "passed",
+      "evidence": {
+        "responseStatuses": [
+          200,
+          400
+        ],
+        "acceptedCount": 1,
+        "assignedDriverCancellationWorks": true
+      }
+    },
+    {
+      "name": "Two drivers simultaneously accepting one order produce one winner",
+      "status": "passed",
+      "evidence": {
+        "responseStatuses": [
+          200,
+          409
+        ],
+        "oneWinningDriver": true,
+        "losingDriverStillAvailable": true
+      }
+    },
+    {
+      "name": "Logout disconnects an idle subscribed socket and revokes its token",
+      "status": "passed",
+      "evidence": {
+        "idleSubscribedSocketDisconnected": true,
+        "RESTAndSocketTokenRevoked": true
+      }
+    },
+    {
+      "name": "Acceptance revokes vehicle feed; suspension disconnects idle tracking socket",
+      "status": "passed",
+      "evidence": {
+        "busyDriverFeedRevoked": true,
+        "idleSubscribedSocketDisconnected": true,
+        "suspendedUserBlocked": true
+      }
+    },
+    {
+      "name": "Driver rejection disconnects idle subscribed socket and denies further mutation",
+      "status": "passed",
+      "evidence": {
+        "idleSubscribedSocketDisconnected": true,
+        "rejectedDriverRESTAndTrackingDenied": true
+      }
+    }
+  ],
+  "summary": {
+    "passed": 25,
+    "failed": 0,
+    "success": true
+  },
+  "source_sha256": {
+    "kntr-package/kntr-backend/src/app.js": "c331bcc195e7fd1d2636dfd1f9951bf2df2af60735163d7b5fd6fd85b66c7dae",
+    "kntr-package/kntr-backend/src/services/socketService.js": "25f7b6188e0715060a74272748062af3d41c2a7e843ad12b4951980bdd5f7978",
+    "kntr-package/kntr-backend/src/controllers/ordersController.js": "e7476cb14a2e968eb98f1aba0c5073c2fc2904439f271d36e56695d174246798",
+    "kntr-package/kntr-backend/src/controllers/driversController.js": "0a03737268e45509fbee0209e7a94f4aa86da8d9c4ee21441e4c45bf4750a1c2",
+    "kntr-package/kntr-backend/src/controllers/authController.js": "e59489d06c057d194cdd728e0770fee870ad0908735ad24b64ce14d54908804d",
+    "kntr-package/kntr-backend/src/controllers/adminController.js": "b1bfdec3caadac063b3118b1584c6ca328ad915a92d15ad7fa7f3efe45a6e382",
+    "kntr-package/kntr-backend/src/config/database.js": "0ef97b1b25a3c007f9beb3fe1c0e386e0caa4e58ba2f62ecee4f39e7e85ee47f",
+    "kntr-package/kntr-backend/src/utils/helpers.js": "32c25526fee32a8058455d98a00795e472776702524f88930877522bc74857e7",
+    "kntr-package/kntr-backend/src/utils/jwt.js": "ad99704fbeb9d8bc7f582dfc81ae0a96f9190673667c9e093277c79827849d1a",
+    "kntr-package/kntr-backend/src/utils/orderAccess.js": "cadd5ca9a746ecc100b221edc9da3ed52ec5984b88beaf9acc5f90e02c1a3b77",
+    "kntr-package/kntr-backend/src/routes/index.js": "f6612ddc3b8d4496d3dbac727b85d82bd41f8f98dfa7c5152a69b3b0ab99e2ac",
+    "kntr-package/kntr-backend/src/middleware/auth.js": "9470806d807e61eb0f6c95163f1b4f73268feed0d26a3b7d8dc4d4801fae4de4",
+    "kntr-package/kntr-backend/src/middleware/errorHandler.js": "363f06f05e76ec97d0f06f25c2d43275037d770f43da5dd0d9881e41f8ba43c9"
+  }
+}

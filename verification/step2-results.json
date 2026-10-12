@@ -1,0 +1,250 @@
+{
+  "environment": {
+    "node": "v24.19.0",
+    "database": "PostgreSQL 18.4, fresh isolated data directory",
+    "backend": "/workspace/kntr-startup/kntr-package/kntr-backend",
+    "runDir": "/workspace/kntr-startup/verification/step2-run-L2GH0V",
+    "dbPort": 33741,
+    "appPort": 46415,
+    "postgis": "Current schema requires no PostGIS extension; these tests do not verify PostGIS or geospatial SQL"
+  },
+  "checks": [
+    {
+      "name": "Pending, accepted and cancelled orders cannot be confirmed or regenerate QR",
+      "status": "passed",
+      "evidence": {
+        "statesRejected": [
+          "pending",
+          "accepted",
+          "cancelled"
+        ],
+        "stateUnchanged": true
+      }
+    },
+    {
+      "name": "Only assigned driver generates QR; only owning customer confirms it",
+      "status": "passed",
+      "evidence": {
+        "deniedGenerators": 5,
+        "deniedConfirmers": 5,
+        "assignedDriverCannotSelfConfirm": true,
+        "stateUnchanged": true
+      }
+    },
+    {
+      "name": "Ordinary order reads, lists and pending feeds never expose QR secrets",
+      "status": "passed",
+      "evidence": {
+        "verifiedResponses": 7,
+        "activeAndLegacyPendingSecretsHidden": true
+      }
+    },
+    {
+      "name": "Unexpired QR generation retry returns same token and timestamps",
+      "status": "passed",
+      "evidence": {
+        "sameToken": true,
+        "sameLifetime": true,
+        "noMutation": true
+      }
+    },
+    {
+      "name": "Malformed and wrong QR codes fail without changing delivery or accounting",
+      "status": "passed",
+      "evidence": {
+        "rejectedInputs": 8,
+        "stateUnchanged": true
+      }
+    },
+    {
+      "name": "Receipt and cash confirmation require explicit boolean true",
+      "status": "passed",
+      "evidence": {
+        "rejectedInputs": 10,
+        "receiptCode": "RECEIPT_REQUIRED",
+        "cashCode": "CASH_CONFIRMATION_REQUIRED",
+        "stateUnchanged": true
+      }
+    },
+    {
+      "name": "Missing, future and expired generation times cannot confirm delivery",
+      "status": "passed",
+      "evidence": {
+        "invalidGenerationTimesRejected": 3,
+        "stateUnchanged": true
+      }
+    },
+    {
+      "name": "Direct delivered status cannot bypass customer QR confirmation",
+      "status": "passed",
+      "evidence": {
+        "deniedBypasses": 6,
+        "stateUnchanged": true
+      }
+    },
+    {
+      "name": "Customer confirms cash delivery once; sequential replay changes nothing",
+      "status": "passed",
+      "evidence": {
+        "oneTrip": true,
+        "oneCustomerOrder": true,
+        "oneCompletedPayment": true,
+        "earningsExact": true,
+        "driverAvailable": true,
+        "sequentialReplayRejected": true,
+        "deliveredRegenerationRejected": true
+      }
+    },
+    {
+      "name": "Eight simultaneous confirmations commit exactly one delivery and payment",
+      "status": "passed",
+      "evidence": {
+        "responseStatuses": [
+          409,
+          200,
+          409,
+          409,
+          409,
+          409,
+          409,
+          409
+        ],
+        "oneTrip": true,
+        "oneCustomerOrder": true,
+        "oneCompletedPayment": true,
+        "earningsExact": true,
+        "driverAvailable": true
+      }
+    },
+    {
+      "name": "QR generation racing confirmation cannot rotate or double-confirm delivery",
+      "status": "passed",
+      "evidence": {
+        "generationHttp": 200,
+        "confirmationHttp": 200,
+        "oneTrip": true,
+        "oneCustomerOrder": true,
+        "oneCompletedPayment": true,
+        "earningsExact": true,
+        "driverAvailable": true
+      }
+    },
+    {
+      "name": "Confirmation racing cash cancellation has one winner and no double accounting or refund",
+      "status": "passed",
+      "evidence": {
+        "races": [
+          {
+            "state": "delivered",
+            "responseStatuses": [
+              200,
+              400
+            ]
+          },
+          {
+            "state": "cancelled",
+            "responseStatuses": [
+              200,
+              409
+            ]
+          },
+          {
+            "state": "delivered",
+            "responseStatuses": [
+              200,
+              400
+            ]
+          }
+        ],
+        "exactlyOneWinnerPerRace": true,
+        "noCashRefund": true
+      }
+    },
+    {
+      "name": "QR expiry is checked after the delivery row lock wait",
+      "status": "passed",
+      "evidence": {
+        "observedVerificationBlockedOnOrderLock": true,
+        "lockHeldAcrossExpiry": true,
+        "expiredAfterWaitRejected": true,
+        "accountingUnchanged": true
+      }
+    },
+    {
+      "name": "Concurrent confirmation and replay emit each delivered event exactly once",
+      "status": "passed",
+      "evidence": {
+        "events": {
+          "delivered": 1,
+          "status": 1
+        },
+        "authenticatedCustomerTracking": true,
+        "replayEmittedNoEvent": true,
+        "oneTrip": true,
+        "oneCustomerOrder": true,
+        "oneCompletedPayment": true,
+        "earningsExact": true,
+        "driverAvailable": true
+      }
+    },
+    {
+      "name": "Noncash paid flag without matching confirmed ledger cannot deliver",
+      "status": "passed",
+      "evidence": {
+        "paidFlagAloneRejected": true,
+        "wrongCustomerLedgerRejected": true,
+        "cashFlagCannotApproveCard": true
+      }
+    },
+    {
+      "name": "Forced ledger failure rolls back all delivery and accounting changes",
+      "status": "passed",
+      "evidence": {
+        "rollbackLeftEveryFieldUnchanged": true,
+        "sameQRRetryWorks": true,
+        "oneTrip": true,
+        "oneCustomerOrder": true,
+        "oneCompletedPayment": true,
+        "earningsExact": true,
+        "driverAvailable": true
+      }
+    },
+    {
+      "name": "Forced customer_stats failure rolls back all delivery and accounting changes",
+      "status": "passed",
+      "evidence": {
+        "rollbackLeftEveryFieldUnchanged": true,
+        "sameQRRetryWorks": true,
+        "oneTrip": true,
+        "oneCustomerOrder": true,
+        "oneCompletedPayment": true,
+        "earningsExact": true,
+        "driverAvailable": true
+      }
+    },
+    {
+      "name": "Schema prevents duplicate completed payment and refund ledger events",
+      "status": "passed",
+      "evidence": {
+        "paymentDuplicateSQLCode": "23505",
+        "refundDuplicateSQLCode": "23505"
+      }
+    },
+    {
+      "name": "Migration001 is idempotent and blocks historical duplicate ledger without deleting it",
+      "status": "passed",
+      "evidence": {
+        "migratedLegacyWithoutIndex": true,
+        "repeatedMigrationIdempotent": true,
+        "duplicateHistoryBlocked": true,
+        "allHistoricalRowsPreserved": 2,
+        "failedMigrationRolledBack": true
+      }
+    }
+  ],
+  "summary": {
+    "passed": 19,
+    "failed": 0,
+    "success": true
+  }
+}

@@ -1,0 +1,213 @@
+{
+  "environment": {
+    "node": "v24.19.0",
+    "database": "PostgreSQL 18.4, fresh isolated data directory",
+    "backend": "/workspace/kntr-startup/kntr-package/kntr-backend",
+    "runDir": "/workspace/kntr-startup/verification/startup-run-ROr57B",
+    "dbPort": 45449,
+    "appPort": 45061,
+    "postgis": "Current schema requires no PostGIS extension; these tests do not verify PostGIS or geospatial SQL",
+    "coverage": "Actual isolated PostgreSQL, HTTP and WebSocket requests; no API or database mocks"
+  },
+  "checks": [
+    {
+      "name": "Runtime defaults and strict production configuration accept explicit native origins",
+      "status": "passed",
+      "evidence": {
+        "defaultPort": 3000,
+        "proxyDefault": 0,
+        "exactNormalizedOrigins": [
+          "https://localhost",
+          "capacitor://localhost",
+          "https://app.example.com"
+        ],
+        "validBounds": true
+      }
+    },
+    {
+      "name": "Runtime rejects weak secrets, unsafe origins, invalid ports and unbounded proxy trust without echoing secrets",
+      "status": "passed",
+      "evidence": {
+        "rejectedConfigurations": 32,
+        "secretsNotEchoed": true,
+        "noBooleanProxyTrust": true,
+        "wildcardProductionRejected": true
+      }
+    },
+    {
+      "name": "Upload startup creates a private writable directory and rejects file or symlink targets",
+      "status": "passed",
+      "evidence": {
+        "privateDirectoryMode": "0700",
+        "writableProbeCleaned": true,
+        "persistentFilePreserved": true,
+        "fileAndSymlinkRejected": true
+      }
+    },
+    {
+      "name": "Database URL takes precedence and connects to the real PostgreSQL database",
+      "status": "passed",
+      "evidence": {
+        "urlPrecedence": true,
+        "independentDbVariablesIgnored": true,
+        "actualConnection": true,
+        "sslExplicitlyDisabledForIsolatedTestDatabase": true
+      }
+    },
+    {
+      "name": "Database configuration rejects malformed ports and TLS downgrade settings without exposing URL credentials",
+      "status": "passed",
+      "evidence": {
+        "rejectedConfigurations": 18,
+        "tlsVerificationOptionsValidated": true,
+        "tlsHandshakeTested": false,
+        "credentialsNotEchoed": true
+      }
+    },
+    {
+      "name": "Preparing an empty database installs the schema and migrations exactly once and preserves persistent data",
+      "status": "passed",
+      "evidence": {
+        "readyTables": 25,
+        "appliedMigrations": [
+          "001_delivery_integrity.sql",
+          "002_payment_integrity.sql",
+          "003_document_integrity.sql"
+        ],
+        "repeatedRuns": 3,
+        "persistentUserId": "56d6f4c3-68e1-4e02-bfdb-30b8126c9ca9",
+        "seedRowsNotDuplicated": true,
+        "persistentDataUnchanged": true
+      }
+    },
+    {
+      "name": "A partially populated database is rejected without overwriting objects or creating application tables",
+      "status": "passed",
+      "evidence": {
+        "preparationRejected": true,
+        "originalObjectAndDataPreserved": true,
+        "noPartialApplicationSchema": true
+      }
+    },
+    {
+      "name": "Recorded migration checksum changes fail closed and leave application data unchanged",
+      "status": "passed",
+      "evidence": {
+        "alteredLedgerRejected": true,
+        "settingsUnchanged": true,
+        "checksumNotSilentlyRewritten": true,
+        "restoredLedgerReady": true
+      }
+    },
+    {
+      "name": "Administrator bootstrap requires explicit strong credentials and rejects invalid inputs without echoing passwords",
+      "status": "passed",
+      "evidence": {
+        "normalizedEmail": "startup.admin@example.com",
+        "rejectedConfigurations": 11,
+        "credentialsNotEchoed": true
+      }
+    },
+    {
+      "name": "Administrator bootstrap creates a usable account; duplicates preserve the existing account and cannot promote a customer",
+      "status": "passed",
+      "evidence": {
+        "accountCreatedWithHashedPassword": true,
+        "actualLoginSucceeded": true,
+        "duplicateDidNotResetPassword": true,
+        "customerEmailAndPhoneCollisionsCannotPromoteRole": true
+      }
+    },
+    {
+      "name": "Gmail administrator aliases use the public login normalization and cannot create or overwrite a duplicate canonical account",
+      "status": "passed",
+      "evidence": {
+        "canonicalEmail": "startupadmin@gmail.com",
+        "actualAliasAndCanonicalLoginsSucceeded": 2,
+        "duplicateAliasRejected": true,
+        "existingAccountUnchanged": true,
+        "noDuplicateUser": true
+      }
+    },
+    {
+      "name": "Production rejects incomplete configuration before it listens and does not print provided secrets",
+      "status": "passed",
+      "evidence": {
+        "nonzeroExitBeforeListen": true,
+        "healthEndpointUnreachable": true,
+        "secretsNotPrinted": true
+      }
+    },
+    {
+      "name": "Configured production serves liveness and real schema readiness without leaking database details",
+      "status": "passed",
+      "evidence": {
+        "productionStarted": true,
+        "healthStatus": 200,
+        "readinessStatus": 200,
+        "actualDatabaseSchemaChecked": true
+      }
+    },
+    {
+      "name": "Production HTTP preflight admits only configured Android, iOS and web origins with credentials",
+      "status": "passed",
+      "evidence": {
+        "exactAllowedOrigins": [
+          "https://localhost",
+          "capacitor://localhost",
+          "https://app.example.com"
+        ],
+        "rejectedOrigins": 3,
+        "credentialedNativePreflight": true
+      }
+    },
+    {
+      "name": "Production applies native origin restrictions to actual WebSocket upgrades and still requires a valid session",
+      "status": "passed",
+      "evidence": {
+        "allowedAuthenticatedNativeUpgrades": 2,
+        "forbiddenOriginUpgradesDenied": 2,
+        "anonymousAllowedOriginDenied": true,
+        "actualWebSocketTransport": true
+      }
+    },
+    {
+      "name": "Readiness detects a missing application table, leaves liveness up and recovers when the schema is restored",
+      "status": "passed",
+      "evidence": {
+        "missingSchemaReady503": true,
+        "liveness200DuringOutage": true,
+        "schemaRecoveryReady200": true
+      }
+    },
+    {
+      "name": "Database connection loss produces readiness 503 while liveness stays 200 and both servers recover without restart",
+      "status": "passed",
+      "evidence": {
+        "databaseConnectionsActuallyTerminated": true,
+        "readiness503WhileUnavailable": true,
+        "liveness200DuringLoss": true,
+        "productionAndTestServersRecoveredReady200": true,
+        "noRestartRequired": true
+      }
+    }
+  ],
+  "sourceHashes": {
+    "schema.sql": "95621f0041e0ee415e95f73d71d2494b888ced368fe49acdf65843fc16274550",
+    "src/app.js": "9f5b730d98aa303f110a21086501a4487baa4bff2a5e44ecb4da25813c15e30a",
+    "src/config/runtime.js": "27428504082e751b2fa1a4ed07a511c8510756213a6a15de07c18400f629ab35",
+    "src/config/database.js": "b73c6c9c227d72ba436c6c35a657fdd2ccd0f5aaace6e9bb416b7689962c0644",
+    "src/config/databaseOptions.js": "8a62f0baf0daa67225f346d03a19ab68e2e71d5d784e9fae452a03ed2567491a",
+    "src/scripts/prepare.js": "abd44416f81cdb67c3f410aba69f7ab171943522465e1ed30aebaa98937cea71",
+    "src/scripts/createAdmin.js": "a22bfde3c0b41a4ce78db0bd9a9d225961176eeb502416f60e14986347ae294f",
+    "src/services/socketService.js": "25f7b6188e0715060a74272748062af3d41c2a7e843ad12b4951980bdd5f7978",
+    "migrations/001_delivery_integrity.sql": "f539d9e8e46017ca217f3a26823a894261f4483018ccd6ed828b4f475cfdb891",
+    "migrations/002_payment_integrity.sql": "4222594cdefc28cd9c633a3afb80f9e5b4232f12ee25e6b6e49ef43f2a3423d3",
+    "migrations/003_document_integrity.sql": "067163bd86e0cf1e68640029793161da7f6f429904078fff5937a4a3ed1023cb"
+  },
+  "summary": {
+    "passed": 17,
+    "failed": 0,
+    "success": true
+  }
+}

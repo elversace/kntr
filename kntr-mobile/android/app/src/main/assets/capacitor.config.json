@@ -1,0 +1,21 @@
+{
+	"appId": "ly.kntr.app",
+	"appName": "kntr",
+	"webDir": "www",
+	"backgroundColor": "#0D1B24",
+	"plugins": {
+		"SplashScreen": {
+			"launchShowDuration": 1200,
+			"backgroundColor": "#0D1B24",
+			"androidSplashResourceName": "splash",
+			"showSpinner": false
+		},
+		"PushNotifications": {
+			"presentationOptions": [
+				"badge",
+				"sound",
+				"alert"
+			]
+		}
+	}
+}

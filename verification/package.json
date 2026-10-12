@@ -1,0 +1,28 @@
+{
+  "name": "kntr-verification",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Isolated PostgreSQL and API verification for the KNTR fixes",
+  "scripts": {
+    "test": "npm run test:step1 && npm run test:step2 && npm run test:step3 && npm run test:step4",
+    "test:step1": "node step1-tests.cjs",
+    "test:step2": "node step2-tests.cjs",
+    "test:step3": "node step3-tests.cjs",
+    "test:step4": "node step4-tests.cjs",
+    "test:startup": "node startup-tests.cjs"
+  },
+  "dependencies": {
+    "@embedded-postgres/linux-x64": "18.4.0-beta.17",
+    "pg": "8.23.1",
+    "socket.io-client": "4.8.4"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "os": [
+    "linux"
+  ],
+  "cpu": [
+    "x64"
+  ]
+}

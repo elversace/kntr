@@ -1,0 +1,240 @@
+{
+  "environment": {
+    "node": "v24.19.0",
+    "database": "PostgreSQL 18.4, fresh isolated data directory",
+    "backend": "/workspace/kntr-startup/kntr-package/kntr-backend",
+    "runDir": "/workspace/kntr-startup/verification/step1-run-gAQBR9",
+    "dbPort": 45083,
+    "appPort": 36069,
+    "postgis": "Current schema requires no PostGIS extension; these tests do not verify PostGIS or geospatial SQL"
+  },
+  "checks": [
+    {
+      "name": "Database role changes remove permissions from stale admin token",
+      "status": "passed",
+      "evidence": {
+        "denied": 2,
+        "databaseRoleRespected": true
+      }
+    },
+    {
+      "name": "REST unauthenticated reads and mutations require authentication",
+      "status": "passed",
+      "evidence": {
+        "denied": 5,
+        "http": 401
+      }
+    },
+    {
+      "name": "Other customer cannot read, cancel or alter owner order",
+      "status": "passed",
+      "evidence": {
+        "denied": 5,
+        "http": 403,
+        "stateUnchanged": true
+      }
+    },
+    {
+      "name": "Pending, rejected and suspended drivers cannot bypass approval",
+      "status": "passed",
+      "evidence": {
+        "denied": 6,
+        "stateUnchanged": true
+      }
+    },
+    {
+      "name": "Approved driver cannot accept a mismatched vehicle order",
+      "status": "passed",
+      "evidence": {
+        "denied": 2,
+        "stateUnchanged": true
+      }
+    },
+    {
+      "name": "Driver cannot accept using another driver vehicle ID",
+      "status": "passed",
+      "evidence": {
+        "denied": 2,
+        "stateUnchanged": true
+      }
+    },
+    {
+      "name": "Approved alternative acceptance assigns driver and sets busy",
+      "status": "passed",
+      "evidence": {
+        "order": "ORD-00001",
+        "status": "accepted",
+        "driverBusy": true
+      }
+    },
+    {
+      "name": "Only assigned driver can read, start or cancel assigned order",
+      "status": "passed",
+      "evidence": {
+        "denied": 6,
+        "authorizedReadAndStart": true
+      }
+    },
+    {
+      "name": "Correct QR cannot be used by unrelated customer or driver",
+      "status": "passed",
+      "evidence": {
+        "denied": 4,
+        "realCorrectQRCode": true,
+        "stateUnchanged": true
+      }
+    },
+    {
+      "name": "Finance, audit and corporate roles cannot mutate another order",
+      "status": "passed",
+      "evidence": {
+        "denied": 12,
+        "stateUnchanged": true
+      }
+    },
+    {
+      "name": "Busy driver cannot take another order or set available while active",
+      "status": "passed",
+      "evidence": {
+        "extra": "ORD-00003",
+        "rejectedAdditionalAccepts": 2,
+        "preventedManualAvailabilityBypass": true
+      }
+    },
+    {
+      "name": "Socket no token and invalid token connections are rejected",
+      "status": "passed",
+      "evidence": {
+        "rejectedConnections": 2
+      }
+    },
+    {
+      "name": "Owner and assigned driver can track; other accounts cannot",
+      "status": "passed",
+      "evidence": {
+        "allowed": 2,
+        "denied": 2
+      }
+    },
+    {
+      "name": "Cross-user chat and cross-driver location cannot reach order room",
+      "status": "passed",
+      "evidence": {
+        "denied": 3,
+        "wrongDriverLocationUnchanged": true
+      }
+    },
+    {
+      "name": "Assigned driver broadcasts location and owner can chat",
+      "status": "passed",
+      "evidence": {
+        "driverLocationReceived": true,
+        "ownerChatReceived": true
+      }
+    },
+    {
+      "name": "Vehicle feeds reject wrong type, customers and pending drivers",
+      "status": "passed",
+      "evidence": {
+        "deniedSocketJoins": 3,
+        "approvedVehicleFeedWorks": true,
+        "deniedWrongRESTVehicleFeed": true
+      }
+    },
+    {
+      "name": "Malformed socket inputs cannot crash server or mutate location",
+      "status": "passed",
+      "evidence": {
+        "malformedPayloads": 24,
+        "serverHealthy": true,
+        "locationUnchanged": true
+      }
+    },
+    {
+      "name": "Concurrent refresh has one winner, rotates token and disconnects idle socket",
+      "status": "passed",
+      "evidence": {
+        "concurrentResponses": [
+          200,
+          401
+        ],
+        "tokenRotated": true,
+        "oldSocketDisconnected": true,
+        "oldTokenRevoked": true,
+        "freshSocketTrackingWorks": true
+      }
+    },
+    {
+      "name": "Password change revokes other sessions and disconnects their idle sockets",
+      "status": "passed",
+      "evidence": {
+        "otherSessionDisconnectedAndRevoked": true,
+        "currentSessionPreserved": true
+      }
+    },
+    {
+      "name": "Generic cancel follows cancellation fields, fee and driver release",
+      "status": "passed",
+      "evidence": {
+        "genericCancelOrder": "ORD-00001",
+        "acceptedFee": 5,
+        "pendingFee": 0,
+        "driverReleased": true
+      }
+    },
+    {
+      "name": "Same driver simultaneous accepts assign at most one order",
+      "status": "passed",
+      "evidence": {
+        "responseStatuses": [
+          200,
+          400
+        ],
+        "acceptedCount": 1,
+        "assignedDriverCancellationWorks": true
+      }
+    },
+    {
+      "name": "Two drivers simultaneously accepting one order produce one winner",
+      "status": "passed",
+      "evidence": {
+        "responseStatuses": [
+          200,
+          409
+        ],
+        "oneWinningDriver": true,
+        "losingDriverStillAvailable": true
+      }
+    },
+    {
+      "name": "Logout disconnects an idle subscribed socket and revokes its token",
+      "status": "passed",
+      "evidence": {
+        "idleSubscribedSocketDisconnected": true,
+        "RESTAndSocketTokenRevoked": true
+      }
+    },
+    {
+      "name": "Acceptance revokes vehicle feed; suspension disconnects idle tracking socket",
+      "status": "passed",
+      "evidence": {
+        "busyDriverFeedRevoked": true,
+        "idleSubscribedSocketDisconnected": true,
+        "suspendedUserBlocked": true
+      }
+    },
+    {
+      "name": "Driver rejection disconnects idle subscribed socket and denies further mutation",
+      "status": "passed",
+      "evidence": {
+        "idleSubscribedSocketDisconnected": true,
+        "rejectedDriverRESTAndTrackingDenied": true
+      }
+    }
+  ],
+  "summary": {
+    "passed": 25,
+    "failed": 0,
+    "success": true
+  }
+}

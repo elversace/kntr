@@ -1,0 +1,39 @@
+{
+  "summary": {
+    "passed": 29,
+    "failed": 0,
+    "success": true
+  },
+  "files": [
+    "kntr-package/kntr-backend/src/app.js",
+    "kntr-package/kntr-backend/src/scripts/prepare.js",
+    "kntr-package/kntr-backend/src/scripts/upgrade.js",
+    "kntr-package/kntr-backend/src/scripts/createAdmin.js",
+    "kntr-package/kntr-backend/src/services/paymentService.js",
+    "kntr-package/kntr-backend/src/services/deliveryService.js",
+    "kntr-package/kntr-backend/src/services/socketService.js",
+    "kntr-package/kntr-backend/src/controllers/ordersController.js",
+    "kntr-package/kntr-backend/src/controllers/driversController.js",
+    "kntr-package/kntr-backend/src/controllers/authController.js",
+    "kntr-package/kntr-backend/src/controllers/adminController.js",
+    "kntr-package/kntr-backend/src/config/databaseOptions.js",
+    "kntr-package/kntr-backend/src/config/runtime.js",
+    "kntr-package/kntr-backend/src/config/database.js",
+    "kntr-package/kntr-backend/src/utils/helpers.js",
+    "kntr-package/kntr-backend/src/utils/jwt.js",
+    "kntr-package/kntr-backend/src/utils/orderAccess.js",
+    "kntr-package/kntr-backend/src/utils/documentStorage.js",
+    "kntr-package/kntr-backend/src/routes/index.js",
+    "kntr-package/kntr-backend/src/middleware/auth.js",
+    "kntr-package/kntr-backend/src/middleware/errorHandler.js",
+    "kntr-package/kntr-backend/src/middleware/documentUpload.js",
+    "verification/step2-tests.cjs",
+    "verification/harness.cjs",
+    "verification/endtoend-tests.cjs",
+    "verification/step1-tests.cjs",
+    "verification/step4-tests.cjs",
+    "verification/startup-tests.cjs",
+    "verification/step3-tests.cjs"
+  ],
+  "failures": []
+}

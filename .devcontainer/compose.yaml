@@ -1,0 +1,44 @@
+services:
+  app:
+    image: mcr.microsoft.com/devcontainers/javascript-node:1-24-bookworm
+    init: true
+    command: ["sleep", "infinity"]
+    working_dir: /workspaces/kntr
+    env_file:
+      - app.env
+    environment:
+      NODE_ENV: production
+      PORT: "3000"
+      TRUST_PROXY: "1"
+      DB_HOST: db
+      DB_PORT: "5432"
+      DB_NAME: kntr
+      DB_USER: kntr
+      DB_SSL: disable
+      UPLOAD_PATH: /workspaces/kntr/.runtime/uploads
+      ALLOWED_ORIGINS: capacitor://localhost,http://localhost,https://localhost,http://localhost:3000,http://127.0.0.1:3000
+    volumes:
+      - ..:/workspaces/kntr:cached
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: postgres:18-bookworm
+    env_file:
+      - db.env
+    environment:
+      POSTGRES_USER: kntr
+      POSTGRES_DB: kntr
+    volumes:
+      # PostgreSQL 18 stores versioned PGDATA below this parent directory.
+      - postgres-data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U kntr -d kntr"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+      start_period: 10s
+
+volumes:
+  postgres-data:
