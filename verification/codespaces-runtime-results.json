@@ -1,0 +1,121 @@
+{
+  "checks": [
+    {
+      "name": "health",
+      "status": 200,
+      "production": true
+    },
+    {
+      "name": "readiness",
+      "status": 200,
+      "databaseSchemaReady": true
+    },
+    {
+      "name": "unauthenticated /v1/auth/me",
+      "status": 401,
+      "error_code": "UNAUTHORIZED"
+    },
+    {
+      "name": "unauthenticated /v1/orders",
+      "status": 401,
+      "error_code": "UNAUTHORIZED"
+    },
+    {
+      "name": "unauthenticated /v1/admin/statistics",
+      "status": 401,
+      "error_code": "UNAUTHORIZED"
+    },
+    {
+      "name": "invalid token",
+      "status": 401,
+      "error_code": "TOKEN_INVALID"
+    },
+    {
+      "name": "native origin preflight",
+      "status": 204,
+      "origin": "capacitor://localhost"
+    },
+    {
+      "name": "denied origin",
+      "status": 403,
+      "error_code": "ORIGIN_NOT_ALLOWED"
+    },
+    {
+      "name": "private runtime storage",
+      "passed": true
+    },
+    {
+      "name": "migration ledger",
+      "migrations": 3,
+      "postgres_version": "18.6 (Debian 18.6-1.pgdg12+2)"
+    },
+    {
+      "name": "repeat start preserves running process",
+      "passed": true
+    },
+    {
+      "name": "stop terminates owned API",
+      "passed": true
+    },
+    {
+      "name": "restart restores readiness and preserved schema",
+      "passed": true
+    }
+  ],
+  "passed": true,
+  "node_version": "v24.21.0",
+  "npm_version": "11.19.0",
+  "scope": "Isolated Docker Compose runtime; not the user Codespace HTTPS endpoint",
+  "summary": {
+    "passed": 13,
+    "failed": 0,
+    "success": true
+  },
+  "checked_at_utc": "2026-10-12T17:12:02.238873+00:00",
+  "configuration_sha256": {
+    ".devcontainer/compose.yaml": "aa2e244bdeb1e5f278e6b6d6b961e292cfe52921692212f1ff90c267c5c855af",
+    ".devcontainer/devcontainer.json": "98accd7bb42e57d0cc044b1cc91974f3d1e4490c5742a656bab7a0627041f31c",
+    ".devcontainer/initialize.sh": "1907239ea9fbdd42d081198b9b3f64d6876e3cc679267d32916804e7a9f2196c",
+    ".devcontainer/setup.sh": "357655db2b7ba768bda91df379f35a1047b6afd1bcc81f848fb7293a8a63c0c0",
+    ".devcontainer/start.sh": "642568bacc41c853994f28160f70d2844b165893bce4e6c411b40398f9bda094",
+    ".devcontainer/stop.sh": "c9f88e6cc3ed734471f959c8b23ba504263822fa45ad5ff8d142b8ef8a0f2ac2"
+  },
+  "fixed_image": "mcr.microsoft.com/devcontainers/javascript-node:24-bookworm",
+  "registry_and_image_config": {
+    "image": "mcr.microsoft.com/devcontainers/javascript-node:24-bookworm",
+    "linux_amd64_manifest": "sha256:debdf8431fb4bd2c0aa4a06c01839679a9690a4f44d86be7b4e1482eca5227f2",
+    "config_digest": "sha256:1a9a72f4b38c0b0071e4ea93ad19fabb4784ca93aec8d7eaa0c36eca2868830f",
+    "user": "root",
+    "entrypoint": [
+      "docker-entrypoint.sh"
+    ],
+    "cmd": [
+      "node"
+    ],
+    "runtime_environment": [
+      "PATH=/usr/local/share/nvm/current/bin:/usr/local/share/npm-global/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+      "NODE_VERSION=24.21.0",
+      "NVM_DIR=/usr/local/share/nvm",
+      "NVM_SYMLINK_CURRENT=true"
+    ],
+    "layer_count": 19
+  },
+  "setup": {
+    "exit_code": 0,
+    "fresh_schema_initialized": true,
+    "migrations_applied": 3,
+    "production_dependencies_audit_vulnerabilities": 0
+  },
+  "start": {
+    "exit_code": 0
+  },
+  "previous_tag": "mcr.microsoft.com/devcontainers/javascript-node:1-24-bookworm",
+  "previous_tag_exists_in_registry": false,
+  "published_imagefix_commit": "42fafd659fe75cf15eaf473ecc445ad397fce502",
+  "tested_application_tree": "8a9cfc0fc0a3dd51a0c05bc699bbd3aa1ad101f9",
+  "prior_application_source_hashes_matched": 177,
+  "proxy_ca_mounted_read_only": true,
+  "tls_verification_enabled": true,
+  "private_test_resources_cleaned": true,
+  "real_codespace_https_verified": false
+}
