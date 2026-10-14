@@ -1,0 +1,67 @@
+{
+  "checked_at_utc": "2026-10-14T12:31:45.230828+00:00",
+  "scope": "Official Dev Container CLI in an isolated local workspace; not the user Codespace",
+  "devcontainer_cli_version": "0.89.0",
+  "node_version": "v24.21.0",
+  "npm_version": "11.19.0",
+  "summary": {
+    "passed": 7,
+    "failed": 0,
+    "success": true
+  },
+  "checks": [
+    {
+      "name": "official CLI up succeeds",
+      "passed": true
+    },
+    {
+      "name": "initializeCommand completes with private secret files",
+      "passed": true
+    },
+    {
+      "name": "remoteUser and workspace are configured correctly",
+      "passed": true
+    },
+    {
+      "name": "postCreateCommand installs dependencies and prepares PostgreSQL",
+      "passed": true
+    },
+    {
+      "name": "postStartCommand starts the API",
+      "passed": true
+    },
+    {
+      "name": "readiness answers HTTP 200 with expected service",
+      "passed": true
+    },
+    {
+      "name": "runtime files and upload directory remain private",
+      "passed": true
+    }
+  ],
+  "readiness": {
+    "status": 200,
+    "body": {
+      "status": "ok",
+      "service": "kntr API"
+    }
+  },
+  "configuration_sha256": {
+    ".devcontainer/compose.yaml": "aa2e244bdeb1e5f278e6b6d6b961e292cfe52921692212f1ff90c267c5c855af",
+    ".devcontainer/devcontainer.json": "98accd7bb42e57d0cc044b1cc91974f3d1e4490c5742a656bab7a0627041f31c",
+    ".devcontainer/initialize.sh": "1907239ea9fbdd42d081198b9b3f64d6876e3cc679267d32916804e7a9f2196c",
+    ".devcontainer/setup.sh": "3b3dfd450b2e684db7935175e444291d65857d882b03e28f6daf034b66e96286",
+    ".devcontainer/start.sh": "219d6f089bf6d1167bf6c79e2b1c491e210dd07c43ab22d2528fd0c30bf8ccee",
+    ".devcontainer/stop.sh": "c9f88e6cc3ed734471f959c8b23ba504263822fa45ad5ff8d142b8ef8a0f2ac2"
+  },
+  "test_only_overrides": [
+    "isolated Compose project name",
+    "read-only managed proxy CA and NODE_EXTRA_CA_CERTS"
+  ],
+  "host_buildx_cache_in_workspace": true,
+  "credentials_or_proxy_guards_modified": false,
+  "prior_direct_compose_report": "verification/codespaces-runtime-results.json",
+  "real_codespace_https_verified": false,
+  "native_builds_verified": false,
+  "test_resources_cleaned": true
+}
