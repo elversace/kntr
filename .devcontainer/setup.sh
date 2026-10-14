@@ -6,6 +6,18 @@ kntr_workspace_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
 kntr_backend_dir="${kntr_workspace_dir}/kntr-package/kntr-backend"
 kntr_runtime_dir="${kntr_workspace_dir}/.runtime"
 
+kntr_require_runtime() {
+  if command -v node >/dev/null 2>&1 && command -v npm >/dev/null 2>&1 &&
+     node --version >/dev/null 2>&1 && npm --version >/dev/null 2>&1; then
+    return 0
+  fi
+  printf '%s\n' \
+    'Node.js and npm must both be available before KNTR can be prepared or started.' \
+    'In Codespaces, run git pull --ff-only, then use Codespaces: Rebuild Container.' \
+    'Rebuilding applies the Node 24 and private PostgreSQL configuration; forwarding port 3000 alone does not start the API.' >&2
+  return 1
+}
+
 kntr_prepare_storage() {
   if [[ -L "${kntr_runtime_dir}" || -L "${kntr_runtime_dir}/uploads" ]]; then
     printf '%s\n' 'Runtime storage must be an ordinary private directory.' >&2
@@ -61,6 +73,7 @@ NODE
 }
 
 if [[ "${BASH_SOURCE[0]}" == "$0" ]]; then
+  kntr_require_runtime
   kntr_prepare_storage
   kntr_add_forwarded_origin
   cd -- "${kntr_backend_dir}"

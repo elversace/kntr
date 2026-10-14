@@ -1,0 +1,65 @@
+{
+  "checked_at_utc": "2026-10-14T10:46:35.371051+00:00",
+  "scope": "Bash startup guard and early failure behavior; no deployment or database changes",
+  "summary": {
+    "passed": 10,
+    "failed": 0,
+    "success": true
+  },
+  "checks": [
+    {
+      "name": "setup.sh: missing_node fails before setup side effects",
+      "passed": true
+    },
+    {
+      "name": "start.sh: missing_node fails before setup side effects",
+      "passed": true
+    },
+    {
+      "name": "setup.sh: missing_npm fails before setup side effects",
+      "passed": true
+    },
+    {
+      "name": "start.sh: missing_npm fails before setup side effects",
+      "passed": true
+    },
+    {
+      "name": "setup.sh: broken_node fails before setup side effects",
+      "passed": true
+    },
+    {
+      "name": "start.sh: broken_node fails before setup side effects",
+      "passed": true
+    },
+    {
+      "name": "setup.sh: broken_npm fails before setup side effects",
+      "passed": true
+    },
+    {
+      "name": "start.sh: broken_npm fails before setup side effects",
+      "passed": true
+    },
+    {
+      "name": "working Node and npm pass the runtime check",
+      "passed": true
+    },
+    {
+      "name": "sourcing setup defines functions without preparing storage or requiring tools",
+      "passed": true
+    }
+  ],
+  "syntax_and_whitespace_checks_passed": true,
+  "node_version": "v24.19.0",
+  "npm_version": "11.9.0",
+  "configuration_sha256": {
+    ".devcontainer/compose.yaml": "aa2e244bdeb1e5f278e6b6d6b961e292cfe52921692212f1ff90c267c5c855af",
+    ".devcontainer/devcontainer.json": "98accd7bb42e57d0cc044b1cc91974f3d1e4490c5742a656bab7a0627041f31c",
+    ".devcontainer/initialize.sh": "1907239ea9fbdd42d081198b9b3f64d6876e3cc679267d32916804e7a9f2196c",
+    ".devcontainer/setup.sh": "3b3dfd450b2e684db7935175e444291d65857d882b03e28f6daf034b66e96286",
+    ".devcontainer/start.sh": "219d6f089bf6d1167bf6c79e2b1c491e210dd07c43ab22d2528fd0c30bf8ccee",
+    ".devcontainer/stop.sh": "c9f88e6cc3ed734471f959c8b23ba504263822fa45ad5ff8d142b8ef8a0f2ac2"
+  },
+  "prior_container_runtime_report": "verification/codespaces-runtime-results.json",
+  "prior_container_runtime_checks_rerun": false,
+  "real_codespace_https_verified": false
+}

@@ -3,6 +3,7 @@ set -Eeuo pipefail
 umask 077
 source "$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)/setup.sh"
 
+kntr_require_runtime
 kntr_prepare_storage
 kntr_add_forwarded_origin
 kntr_pid_file="${kntr_runtime_dir}/api.pid"
