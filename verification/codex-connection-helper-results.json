@@ -1,0 +1,64 @@
+{
+  "checked_at_utc": "2026-10-15T09:17:24.679176+00:00",
+  "scope": "Isolated mocked helper paths; official CLI 0.162.1 help compatibility inspected separately. No real authentication or remote daemon was started.",
+  "passed": 11,
+  "failed": 0,
+  "checks": [
+    {
+      "name": "outside Codespaces exits before invoking tools",
+      "passed": true
+    },
+    {
+      "name": "invalid Codespace name exits before invoking tools",
+      "passed": true
+    },
+    {
+      "name": "help is available without side effects",
+      "passed": true
+    },
+    {
+      "name": "invalid option exits before invoking tools",
+      "passed": true
+    },
+    {
+      "name": "runtime failure prevents installation and connection",
+      "passed": true
+    },
+    {
+      "name": "check mode does not install a missing CLI",
+      "passed": true
+    },
+    {
+      "name": "check mode does not log in or start Remote",
+      "passed": true
+    },
+    {
+      "name": "authenticated connection requests configured access and pairing",
+      "passed": true
+    },
+    {
+      "name": "missing authentication invokes official device login before Remote",
+      "passed": true
+    },
+    {
+      "name": "unsupported Remote stops before login or service startup",
+      "passed": true
+    },
+    {
+      "name": "missing CLI installs pinned official package before connection",
+      "passed": true
+    }
+  ],
+  "source_sha256": {
+    ".devcontainer/connect-codex.sh": "ede8168a8c981617d664e5070bb88b93330d363367dd2bb40fae24356d6fd7cc",
+    ".devcontainer/setup.sh": "3b3dfd450b2e684db7935175e444291d65857d882b03e28f6daf034b66e96286"
+  },
+  "official_cli_version_checked": "0.162.1",
+  "official_commands_help_checked": [
+    "remote-control start",
+    "remote-control pair",
+    "login --device-auth"
+  ],
+  "codespace_connection_established": false,
+  "kntr_login_performed": false
+}

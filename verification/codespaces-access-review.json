@@ -1,0 +1,38 @@
+{
+  "checked_at_utc": "2026-10-15T09:02:12.593784+00:00",
+  "chatgpt_github_permission_mode": "full_access",
+  "codespace_execution_access_confirmed": false,
+  "checks": [
+    {
+      "path": "apps/chatgpt-codex-connector",
+      "exit_code": 0,
+      "app_slug": "chatgpt-codex-connector",
+      "permissions": {
+        "actions": "write",
+        "checks": "read",
+        "contents": "write",
+        "emails": "read",
+        "issues": "write",
+        "metadata": "read",
+        "pull_requests": "write",
+        "statuses": "read",
+        "workflows": "write"
+      },
+      "message": null
+    },
+    {
+      "path": "user/codespaces/supreme-palm-tree-69wxxwr95qvhx6q5",
+      "exit_code": 1,
+      "name": null,
+      "state": null,
+      "status": "403",
+      "message": "Resource not accessible by integration",
+      "stderr": "gh: Resource not accessible by integration (HTTP 403)\n"
+    }
+  ],
+  "chatgpt_github_permission_readback": "Allow all actions",
+  "github_app_defines_codespaces_permission": false,
+  "owner_codex_remote_connection_prepared": true,
+  "owner_codex_remote_connection_established": false,
+  "accounts_or_kntr_logins_performed": false
+}

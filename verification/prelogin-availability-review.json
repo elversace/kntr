@@ -1,0 +1,31 @@
+{
+  "checked_at_utc": "2026-10-15T09:07:29.694164+00:00",
+  "checks": [
+    {
+      "path": "/health",
+      "status": 200,
+      "json": {
+        "status": "ok",
+        "service": "kntr API",
+        "version": "1.0.0",
+        "environment": "production",
+        "timestamp": "2026-10-15T09:07:29.558Z"
+      },
+      "kntr_verified": true
+    },
+    {
+      "path": "/ready",
+      "status": 200,
+      "json": {
+        "status": "ok",
+        "service": "kntr API"
+      },
+      "kntr_verified": true
+    }
+  ],
+  "ready": true,
+  "login_performed": false,
+  "accounts_created": false,
+  "api_origin": "https://supreme-palm-tree-69wxxwr95qvhx6q5-3000.app.github.dev",
+  "scope": "External unauthenticated GET availability check of health and readiness only; no KNTR login or data mutation."
+}
