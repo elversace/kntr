@@ -1,0 +1,63 @@
+{
+  "verified_at_utc": "2026-10-15T21:45:27.715046+00:00",
+  "scope": "Hosted HTML login implementation verified on actual isolated HTTP/API/PostgreSQL/Chromium. Historical and mocked scopes kept distinct.",
+  "source_sha256": {
+    "kntr-package/kntr-backend/src/app.js": "a0803946c337517c50bb5b219e5e58876e71dfd7e5742a7d22c2fb9131f654a1",
+    "kntr-package/frontend/kntr-app.html": "8845fe4e8a0e70774f1a55149b05d060a2cfe257f48848b1e975a6465d3f00bb",
+    "kntr-package/frontend/kntr-admin-dashboard.html": "f40d487f5967ddbf881ce05ab01012f4777562bd21b80eb5aad6cd612df4b62f",
+    "kntr-mobile/www/index.html": "61d4dd4ad408ae0e93ca4234da2b69a447e6afa42f0f9439967ce08e0eb38df1",
+    "kntr-mobile/android/app/src/main/assets/public/index.html": "61d4dd4ad408ae0e93ca4234da2b69a447e6afa42f0f9439967ce08e0eb38df1",
+    "kntr-mobile/ios/App/App/public/index.html": "61d4dd4ad408ae0e93ca4234da2b69a447e6afa42f0f9439967ce08e0eb38df1"
+  },
+  "results": {
+    "hosted-auth-results.json": {
+      "passed": 3,
+      "failed": 0,
+      "success": true
+    },
+    "hosted-auth-browser-results.json": {
+      "success": true,
+      "passed": 11,
+      "failed": 0
+    },
+    "endtoend-results.json": {
+      "passed": 3,
+      "failed": 0,
+      "success": true
+    },
+    "step2-browser-results.json": {
+      "passed": 48,
+      "failed": 0,
+      "success": true,
+      "api_mocked": true,
+      "native_runtime_tested": false
+    },
+    "step3-browser-results.json": {
+      "passed": 44,
+      "failed": 0,
+      "success": true,
+      "api_mocked": true,
+      "payment_provider_tested": false,
+      "native_runtime_tested": false
+    }
+  },
+  "real_html_and_api_mocked": false,
+  "real_delivery_flows": [
+    "cash",
+    "wallet"
+  ],
+  "wallet_debited_once": true,
+  "cash_wallet_debit": false,
+  "hosted_api_login_verified": false,
+  "hosted_accounts_created": 0,
+  "hosted_readiness_observation": {
+    "status": 404,
+    "ready": false,
+    "checked_at_utc": "2026-10-15T21:45:09.414115+00:00",
+    "url": "https://supreme-palm-tree-69wxxwr95qvhx6q5-3000.app.github.dev/ready",
+    "user_reported_startup_succeeded": true,
+    "user_reported_port_public": true
+  },
+  "native_android_ios_verified": false,
+  "external_payment_provider_tested": false
+}

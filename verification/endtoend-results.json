@@ -3,9 +3,9 @@
     "node": "v24.19.0",
     "database": "PostgreSQL 18.4, fresh isolated data directory",
     "backend": "/workspace/kntr-startup/kntr-package/kntr-backend",
-    "runDir": "/workspace/kntr-startup/verification/endtoend-run-QNTYhP",
-    "dbPort": 38957,
-    "appPort": 42783,
+    "runDir": "/workspace/kntr-startup/verification/endtoend-run-9Nzy4k",
+    "dbPort": 40011,
+    "appPort": 40335,
     "postgis": "Current schema requires no PostGIS extension; these tests do not verify PostGIS or geospatial SQL"
   },
   "checks": [

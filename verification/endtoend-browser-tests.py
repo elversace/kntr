@@ -1,8 +1,8 @@
 """Real Chromium + real isolated API integration for cash and wallet delivery.
 
-Only the local HTML page is fulfilled from disk. All requests to the supplied
-localhost API continue to the actual server. External font requests are blocked.
-No API response is mocked; no native runtime or external payment provider is used.
+The HTML and API are both served by the actual local server. External font
+requests are blocked. No HTML/API response is mocked; no native runtime or
+external payment provider is used.
 """
 
 import hashlib
@@ -37,9 +37,9 @@ def login(page, api, account, results):
     try:
         page.wait_for_function('(id) => PROFILE && PROFILE.id === id', arg=account['id'])
         if account['role'] == 'customer':
-            page.wait_for_function("document.getElementById('customerWalletBalance').textContent.includes('100.00')")
+            page.wait_for_function("() => (document.getElementById('customerWalletBalance').textContent.includes('100.00'))")
         else:
-            page.wait_for_function("document.getElementById('btnAvail').classList.contains('active')")
+            page.wait_for_function("() => (document.getElementById('btnAvail').classList.contains('active'))")
     except Exception:
         results['login_failure'] = {
             'role': account['role'], 'page_url': page.url,
@@ -84,7 +84,7 @@ def delivery_flow(customer, driver, api, payment, results):
     with driver.expect_response(response_for(api, f'/orders/{order_id}/status', 'PATCH')) as started:
         driver.get_by_role('button', name='بدء التوصيل', exact=True).click()
     assert started.value.status == 200 and started.value.json()['success']
-    driver.wait_for_function("ACTIVE_ORDER.status === 'in_transit'")
+    driver.wait_for_function("() => (ACTIVE_ORDER.status === 'in_transit')")
     with driver.expect_response(response_for(api, f'/orders/{order_id}/generate-qr', 'POST')) as generated:
         driver.locator('#generateQRBtn').click()
     assert generated.value.status == 200 and generated.value.json()['success']
@@ -111,8 +111,8 @@ def delivery_flow(customer, driver, api, payment, results):
     with driver.expect_response(response_for(api, f'/orders/{order_id}', 'GET')) as refreshed:
         driver.locator('#refreshDeliveryBtn').click()
     assert refreshed.value.status == 200 and refreshed.value.json()['data']['status'] == 'delivered'
-    driver.wait_for_function("ACTIVE_ORDER === null && document.getElementById('btnAvail').classList.contains('active')")
-    driver.wait_for_function("!document.getElementById('driverFeed').textContent.includes('جارِ التحميل')")
+    driver.wait_for_function("() => (ACTIVE_ORDER === null && document.getElementById('btnAvail').classList.contains('active'))")
+    driver.wait_for_function("() => (!document.getElementById('driverFeed').textContent.includes('جارِ التحميل'))")
     assert driver.locator('#activeOrderBox').inner_text().strip(), 'Driver delivery completion not displayed'
     after_delivery = wallet_amount(customer)
     assert after_delivery == after_create, 'Displayed wallet changed again during delivery'
@@ -137,14 +137,15 @@ def main(config_path):
     base = config['base'].rstrip('/')
     assert urlparse(base).hostname in {'localhost', '127.0.0.1', '::1'}, 'Integration requires a local isolated API'
     api = base + '/v1'
-    page_url = base + '/kntr-app.html'
+    page_url = base + '/app'
     source = ROOT / 'kntr-package/frontend/kntr-app.html'
     results = {
         'verification': 'Actual Chromium connected to real isolated KNTR API and PostgreSQL; API responses are not mocked',
         'timestamp_utc': datetime.now(timezone.utc).isoformat(),
         'source': str(source), 'source_sha256': hashlib.sha256(source.read_bytes()).hexdigest(),
         'api_base': api, 'page_url': page_url, 'actualBackend': True, 'apiMocked': False, 'native': False,
-        'limitations': 'Covers full HTML cash/wallet delivery flows with the HTML injected on the local API origin. No cross-origin deployment, Android/iOS runtime, physical cash transfer, external payment provider or production service is verified.',
+        'htmlMocked': False,
+        'limitations': 'Covers full HTML cash/wallet delivery flows with HTML and API served by the real isolated HTTP server. No cross-origin deployment, Android/iOS runtime, physical cash transfer, external payment provider or production service is verified.',
         'flows': [], 'api_requests': [], 'api_responses': [], 'request_failures': [],
         'console': [], 'blocked_external_urls': [], 'page_errors': [], 'dialogs': [],
     }
@@ -160,9 +161,7 @@ def main(config_path):
             for role in ['customer', 'driver']:
                 context = browser.new_context(viewport={'width': 430, 'height': 932}, service_workers='block')
                 def route_request(route):
-                    if route.request.url == page_url:
-                        route.fulfill(status=200, content_type='text/html', body=source.read_text())
-                    elif route.request.url.startswith(api + '/'):
+                    if route.request.url.startswith(base + '/'):
                         route.continue_()
                     else:
                         results['blocked_external_urls'].append(route.request.url)

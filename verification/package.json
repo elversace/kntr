@@ -9,7 +9,9 @@
     "test:step2": "node step2-tests.cjs",
     "test:step3": "node step3-tests.cjs",
     "test:step4": "node step4-tests.cjs",
-    "test:startup": "node startup-tests.cjs"
+    "test:startup": "node startup-tests.cjs",
+    "test:hosted-auth": "node hosted-auth-tests.cjs",
+    "test:endtoend": "node endtoend-tests.cjs"
   },
   "dependencies": {
     "@embedded-postgres/linux-x64": "18.4.0-beta.17",

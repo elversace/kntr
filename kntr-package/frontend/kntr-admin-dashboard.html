@@ -94,7 +94,7 @@
     </div>
     <div class="cfg">
       <div class="pulse" id="pulse"></div>
-      <input id="apiBase" value="http://localhost:3000/v1" title="عنوان الـ API">
+      <input id="apiBase" value="/v1" dir="ltr" title="عنوان الـ API">
       <button onclick="logout()" id="logoutBtn" class="hidden">خروج</button>
     </div>
   </header>
@@ -102,10 +102,14 @@
   <div class="login-box" id="loginBox">
     <h2>تسجيل دخول المشرف</h2>
     <p>ادخل بيانات حساب admin للوصول للوحة التحكم</p>
-    <input id="email" placeholder="البريد الإلكتروني" value="admin@quickship.ly">
-    <input id="password" type="password" placeholder="كلمة المرور" value="Passw0rd123">
-    <button onclick="login()">دخول</button>
-    <div class="login-err" id="loginErr"></div>
+    <form id="adminLoginForm" onsubmit="event.preventDefault(); login()">
+      <label for="email">البريد الإلكتروني</label>
+      <input id="email" type="email" autocomplete="username" inputmode="email" placeholder="البريد الإلكتروني" required>
+      <label for="password">كلمة المرور</label>
+      <input id="password" type="password" autocomplete="current-password" placeholder="كلمة المرور" required>
+      <button id="adminLoginBtn" type="submit">دخول</button>
+    </form>
+    <div class="login-err" id="loginErr" role="status" aria-live="polite"></div>
   </div>
 
   <div id="dash" class="hidden">
@@ -132,52 +136,100 @@
 
 <script>
 let TOKEN = null;
+let AUTH_VERSION=0, loginPending=false, logoutPending=false;
+function sameSession(version){ return version===AUTH_VERSION && TOKEN!==null; }
 
 function esc(s){ return String(s??'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
-function api(){ return document.getElementById('apiBase').value.replace(/\/$/,''); }
+function api(){ return document.getElementById('apiBase').value.trim().replace(/\/$/,''); }
 
 async function login(){
-  const email = document.getElementById('email').value;
-  const password = document.getElementById('password').value;
-  const err = document.getElementById('loginErr');
-  err.textContent = '';
+  if(loginPending || logoutPending) return;
+  const version=AUTH_VERSION, base=api();
+  const email=document.getElementById('email').value.trim();
+  const password=document.getElementById('password').value;
+  const err=document.getElementById('loginErr'); err.textContent='';
+  loginPending=true;
+  document.getElementById('adminLoginBtn').disabled=true;
+  document.getElementById('apiBase').disabled=true;
   try{
-    const res = await fetch(api()+'/auth/login', {
-      method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({email, password})
+    const res=await fetch(base+'/auth/login',{
+      method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,password}),
     });
-    const data = await res.json();
-    if(!data.success){ err.textContent = data.error?.message || 'فشل الدخول'; return; }
-    if(data.data.user.role !== 'admin'){ err.textContent = 'هذا الحساب ليس حساب مشرف'; return; }
-    TOKEN = data.data.tokens.access_token;
-    document.getElementById('who').textContent = data.data.user.full_name_ar;
+    const data=await res.json();
+    if(version!==AUTH_VERSION || logoutPending){
+      const token=data.data?.tokens?.access_token;
+      if(data.success && token) await fetch(base+'/auth/logout',{method:'POST',headers:{'Authorization':'Bearer '+token}}).catch(()=>{});
+      return;
+    }
+    if(!res.ok || !data.success){ err.textContent=data.error?.code==='INVALID_CREDENTIALS'?'البريد الإلكتروني أو كلمة المرور غير صحيحة':(data.error?.message || 'فشل الدخول'); return; }
+    if(data.data?.user?.role!=='admin'){
+      err.textContent='هذا الحساب ليس حساب مشرف';
+      const token=data.data?.tokens?.access_token;
+      if(token) await fetch(base+'/auth/logout',{method:'POST',headers:{'Authorization':'Bearer '+token}}).catch(()=>{});
+      return;
+    }
+    AUTH_VERSION+=1;
+    TOKEN=data.data.tokens.access_token;
+    document.getElementById('password').value='';
+    document.getElementById('who').textContent=data.data.user.full_name_ar;
     document.getElementById('loginBox').classList.add('hidden');
     document.getElementById('dash').classList.remove('hidden');
     document.getElementById('logoutBtn').classList.remove('hidden');
     document.getElementById('pulse').classList.add('on');
     refreshAll();
-  }catch(e){
-    err.textContent = 'تعذّر الاتصال بالسيرفر — تحقق من عنوان الـ API';
+  }catch(e){ if(version===AUTH_VERSION && !logoutPending) err.textContent='تعذّر الاتصال بالسيرفر — تحقق من عنوان الـ API'; }
+  finally{
+    loginPending=false;
+    document.getElementById('adminLoginBtn').disabled=logoutPending;
+    document.getElementById('apiBase').disabled=TOKEN!==null || logoutPending;
   }
 }
 
-function logout(){
-  TOKEN = null;
+async function logout(){
+  if(logoutPending) return;
+  logoutPending=true;
+  const token=TOKEN, base=api();
+  AUTH_VERSION+=1;
+  TOKEN=null;
   document.getElementById('dash').classList.add('hidden');
   document.getElementById('loginBox').classList.remove('hidden');
   document.getElementById('logoutBtn').classList.add('hidden');
   document.getElementById('pulse').classList.remove('on');
+  document.getElementById('who').textContent='غير متصل';
+  for(const id of ['email','password']) document.getElementById(id).value='';
+  for(const id of ['statsBox','driversList']) document.getElementById(id).textContent='';
+  document.querySelector('#ordersTable tbody').textContent='';
+  document.getElementById('adminLoginBtn').disabled=true;
+  document.getElementById('apiBase').disabled=true;
+  const err=document.getElementById('loginErr');
+  err.textContent=token?'جارِ إنهاء الجلسة...':'';
+  try{
+    if(token){
+      const res=await fetch(base+'/auth/logout',{method:'POST',headers:{'Authorization':'Bearer '+token}});
+      const data=await res.json();
+      err.textContent=res.ok && data.success?'':'تم الخروج محليًا؛ تعذّر إلغاء الجلسة على الخادم';
+    }
+  }catch(e){ err.textContent='تم الخروج محليًا؛ تعذّر إلغاء الجلسة على الخادم'; }
+  finally{
+    logoutPending=false;
+    document.getElementById('adminLoginBtn').disabled=loginPending;
+    document.getElementById('apiBase').disabled=false;
+  }
 }
 
 async function authFetch(path, opts={}){
   opts.headers = Object.assign({'Content-Type':'application/json','Authorization':'Bearer '+TOKEN}, opts.headers||{});
-  const res = await fetch(api()+path, opts);
-  return res.json();
+  try{
+    const res=await fetch(api()+path,opts);
+    return await res.json();
+  }catch(e){ return {success:false,error:{code:'CONNECTION_FAILED',message:'تعذّر الاتصال بالخادم'}}; }
 }
 
 async function loadStats(){
+  const version=AUTH_VERSION;
   const box = document.getElementById('statsBox');
   const d = await authFetch('/admin/statistics');
+  if(!sameSession(version)) return;
   if(!d.success){ box.innerHTML = '<div class="empty">تعذّر تحميل الإحصائيات</div>'; return; }
   const s = d.data || {};
   const cards = [
@@ -191,9 +243,11 @@ async function loadStats(){
 }
 
 async function loadDrivers(){
+  const version=AUTH_VERSION;
   const box = document.getElementById('driversList');
   box.innerHTML = '<div class="empty">جارِ التحميل...</div>';
   const d = await authFetch('/admin/drivers/pending');
+  if(!sameSession(version)) return;
   if(!d.success || !d.data || !d.data.length){ box.innerHTML = '<div class="empty">لا يوجد سائقون بانتظار الاعتماد</div>'; return; }
   box.innerHTML = d.data.map(dr=>`
     <div class="drv-row">
@@ -209,21 +263,29 @@ async function loadDrivers(){
 }
 
 async function approveDriver(id){
-  await authFetch('/admin/drivers/'+id+'/approve', {method:'POST'});
+  const version=AUTH_VERSION;
+  const d=await authFetch('/admin/drivers/'+id+'/approve', {method:'POST'});
+  if(!sameSession(version)) return;
+  if(!d.success){ alert(d.error?.message || 'تعذّر اعتماد السائق'); return; }
   loadDrivers(); loadStats();
 }
 async function rejectDriver(id){
+  const version=AUTH_VERSION;
   const reason = prompt('سبب الرفض:', 'مستندات غير مكتملة');
   if(reason===null) return;
-  await authFetch('/admin/drivers/'+id+'/reject', {method:'POST', body: JSON.stringify({reason})});
+  const d=await authFetch('/admin/drivers/'+id+'/reject', {method:'POST', body: JSON.stringify({reason})});
+  if(!sameSession(version)) return;
+  if(!d.success){ alert(d.error?.message || 'تعذّر رفض السائق'); return; }
   loadDrivers(); loadStats();
 }
 
 const statusLabel = {pending:'قيد الانتظار', accepted:'مقبول', in_transit:'في الطريق', delivered:'تم التسليم', cancelled:'ملغي'};
 async function loadOrders(){
+  const version=AUTH_VERSION;
   const tbody = document.querySelector('#ordersTable tbody');
   tbody.innerHTML = '<tr><td colspan="5" class="empty">جارِ التحميل...</td></tr>';
   const d = await authFetch('/orders?limit=15');
+  if(!sameSession(version)) return;
   if(!d.success || !d.data || !d.data.length){ tbody.innerHTML = '<tr><td colspan="5" class="empty">لا توجد طلبات بعد</td></tr>'; return; }
   tbody.innerHTML = d.data.map(o=>`
     <tr>

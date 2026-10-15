@@ -14,7 +14,7 @@ The GitHub plugin's ChatGPT approval mode was changed to Allow all actions at th
 
 The requested Codex Remote defaults disable sandboxing and approval prompts on its host; they do not technically restrict execution to KNTR. Keep actions within the owner's KNTR authorization and verify the effective Remote session policy after pairing. Do not infer it from daemon startup alone.
 
-The current review precedes KNTR account login, account creation, and delivery/payment tests. Complete the operational and execution-access checkpoint before moving to those tests. Authentication to Codex for connecting an execution host is separate from KNTR application authentication.
+The owner has completed the pre-login review, explicitly dropped the remote-connection/permission work, and authorized continuing KNTR login and test-account flows on the current hosted API. Do not reopen the remote-access discussion or treat that connection as a prerequisite. Use synthetic test data and keep credentials/tokens out of tracked evidence. Preserve existing accounts and data. Authentication to Codex is separate from KNTR application authentication.
 
 Keep verification scopes distinct: earlier isolated backend tests, Docker/Dev Container lifecycle checks, live unauthenticated HTTPS checks, authenticated delivery/payment flows, and native Android/iOS builds. Do not add historical test counts together or claim unperformed tests passed.
 

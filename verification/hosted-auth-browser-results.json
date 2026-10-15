@@ -1,0 +1,162 @@
+{
+  "checked_at_utc": "2026-10-15T21:40:50.075518+00:00",
+  "scope": "Real Chromium and real isolated server HTML/API/PostgreSQL; not a hosted Codespaces or native-device check.",
+  "apiMocked": false,
+  "htmlMocked": false,
+  "native": false,
+  "checks": [
+    {
+      "name": "customer password confirmation prevents a bad registration request",
+      "passed": true
+    },
+    {
+      "name": "customer registration reaches its real authenticated view",
+      "passed": true
+    },
+    {
+      "name": "customer logout revokes the server session",
+      "passed": true
+    },
+    {
+      "name": "customer can log in again with its registered password",
+      "passed": true
+    },
+    {
+      "name": "driver password confirmation prevents a bad registration request",
+      "passed": true
+    },
+    {
+      "name": "driver registration reaches its real authenticated view",
+      "passed": true
+    },
+    {
+      "name": "driver logout revokes the server session",
+      "passed": true
+    },
+    {
+      "name": "driver can log in again with its registered password",
+      "passed": true
+    },
+    {
+      "name": "Incorrect password remains on the login page with a useful error",
+      "passed": true
+    },
+    {
+      "name": "Administrator logs in through the served dashboard and loads real statistics",
+      "passed": true
+    },
+    {
+      "name": "Administrator logout revokes its server session",
+      "passed": true
+    }
+  ],
+  "page_errors": [],
+  "api_responses": [
+    {
+      "path": "/v1/auth/register",
+      "status": 201,
+      "method": "POST"
+    },
+    {
+      "path": "/v1/auth/me",
+      "status": 200,
+      "method": "GET"
+    },
+    {
+      "path": "/v1/orders/estimate",
+      "status": 200,
+      "method": "GET"
+    },
+    {
+      "path": "/v1/auth/logout",
+      "status": 200,
+      "method": "POST"
+    },
+    {
+      "path": "/v1/auth/login",
+      "status": 200,
+      "method": "POST"
+    },
+    {
+      "path": "/v1/auth/me",
+      "status": 200,
+      "method": "GET"
+    },
+    {
+      "path": "/v1/orders/estimate",
+      "status": 400,
+      "method": "GET"
+    },
+    {
+      "path": "/v1/auth/logout",
+      "status": 200,
+      "method": "POST"
+    },
+    {
+      "path": "/v1/auth/register",
+      "status": 201,
+      "method": "POST"
+    },
+    {
+      "path": "/v1/auth/me",
+      "status": 200,
+      "method": "GET"
+    },
+    {
+      "path": "/v1/auth/logout",
+      "status": 200,
+      "method": "POST"
+    },
+    {
+      "path": "/v1/auth/login",
+      "status": 200,
+      "method": "POST"
+    },
+    {
+      "path": "/v1/auth/me",
+      "status": 200,
+      "method": "GET"
+    },
+    {
+      "path": "/v1/auth/logout",
+      "status": 200,
+      "method": "POST"
+    },
+    {
+      "path": "/v1/auth/login",
+      "status": 401,
+      "method": "POST"
+    },
+    {
+      "path": "/v1/auth/login",
+      "status": 200,
+      "method": "POST"
+    },
+    {
+      "path": "/v1/admin/drivers/pending",
+      "status": 200,
+      "method": "GET"
+    },
+    {
+      "path": "/v1/orders",
+      "status": 200,
+      "method": "GET"
+    },
+    {
+      "path": "/v1/admin/statistics",
+      "status": 200,
+      "method": "GET"
+    },
+    {
+      "path": "/v1/auth/logout",
+      "status": 200,
+      "method": "POST"
+    }
+  ],
+  "browser_version": "154.0.8037.57",
+  "summary": {
+    "success": true,
+    "passed": 11,
+    "failed": 0
+  }
+}

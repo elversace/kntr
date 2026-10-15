@@ -29,8 +29,9 @@
   .login-err{color:var(--coral); font-size:12px; margin-top:8px; min-height:14px;}
   .adv{margin-top:12px;}
   .adv input{font-size:11px; text-align:center; color:var(--ink-dim); margin-bottom:0;}
-  .quick-fill{display:flex; gap:6px; margin-top:10px;}
-  .quick-fill button{flex:1; background:var(--surface-2); color:var(--ink-dim); font-size:11px; padding:7px; border:1px solid var(--hairline);}
+  .auth-switch{width:100%; margin-top:10px; background:var(--surface-2); color:var(--ink); border:1px solid var(--hairline);}
+  .login-box fieldset{border:0; padding:0; min-width:0;}
+  .login-box .auth-hint{font-size:11px; line-height:1.7; margin-bottom:10px;}
 
   /* ── App shell ── */
   .app{max-width:480px; margin:0 auto; min-height:100vh;}
@@ -133,16 +134,29 @@
   <div class="login-box">
     <div class="mark">ك</div>
     <h2>kntr — كنتر</h2>
-    <p>سجّل دخولك — عميل أو سائق، نفس التطبيق</p>
-    <input id="email" placeholder="البريد الإلكتروني" value="sara@example.ly">
-    <input id="password" type="password" placeholder="كلمة المرور" value="Passw0rd123">
-    <button class="primary" onclick="login()">دخول</button>
-    <div class="login-err" id="loginErr"></div>
-    <div class="quick-fill">
-      <button onclick="fill('sara@example.ly')">تجربة كعميل</button>
-      <button onclick="fill('omar@example.ly')">تجربة كسائق</button>
-    </div>
-    <div class="adv"><input id="apiBase" value="http://localhost:3000/v1" title="عنوان الـ API"></div>
+    <p id="authIntro">سجّل دخولك — عميل أو سائق، نفس التطبيق</p>
+    <form id="authForm" onsubmit="submitAuth(event)">
+      <label for="email">البريد الإلكتروني</label>
+      <input id="email" type="email" autocomplete="username" inputmode="email" placeholder="name@example.com" required>
+      <label for="password">كلمة المرور</label>
+      <input id="password" type="password" autocomplete="current-password" required>
+      <fieldset id="registerFields" class="hidden" disabled>
+        <p class="auth-hint">استخدم 8 أحرف على الأقل، تتضمن حرفًا إنجليزيًا كبيرًا وصغيرًا ورقمًا.</p>
+        <label for="passwordConfirm">تأكيد كلمة المرور</label>
+        <input id="passwordConfirm" type="password" autocomplete="new-password" required>
+        <label for="fullName">الاسم الكامل بالعربية</label>
+        <input id="fullName" autocomplete="name" minlength="2" maxlength="255" required>
+        <label for="phone">رقم الهاتف مع رمز الدولة</label>
+        <input id="phone" type="tel" autocomplete="tel" inputmode="tel" placeholder="+218912345678" pattern="\+?[0-9]{10,15}" required>
+        <label for="registerRole">نوع الحساب</label>
+        <select id="registerRole"><option value="customer">عميل</option><option value="driver">سائق</option></select>
+        <p class="auth-hint">حساب السائق يحتاج اعتماد الإدارة قبل استقبال الطلبات.</p>
+      </fieldset>
+      <button id="authSubmit" type="submit" class="primary">دخول</button>
+    </form>
+    <div class="login-err" id="loginErr" role="status" aria-live="polite"></div>
+    <button id="authModeBtn" type="button" class="auth-switch" onclick="setAuthMode(authMode==='login'?'register':'login')">إنشاء حساب جديد</button>
+    <div class="adv"><label for="apiBase">عنوان API</label><input id="apiBase" value="/v1" dir="ltr" title="عنوان الـ API"></div>
   </div>
 </div>
 
@@ -223,6 +237,7 @@
 
   <!-- ============ DRIVER VIEW ============ -->
   <div id="driverView" class="hidden">
+    <div id="driverApproval" class="panel hidden" role="status" aria-live="polite"></div>
     <div class="gauge-wrap">
       <div class="gauge" id="gauge" style="--pct:0"><div class="val" id="gaugeVal">—<small>تقييم</small></div></div>
       <div class="gauge-meta">
@@ -242,11 +257,43 @@
 
 <script>
 let TOKEN=null, PROFILE=null, ACTIVE_ORDER=null, CURRENT_TRACK=null;
-let AUTH_VERSION=0, logoutPending=false;
+let AUTH_VERSION=0, logoutPending=false, authPending=false, authMode='login';
 function sameSession(version){ return version===AUTH_VERSION && TOKEN!==null; }
 function esc(s){ return String(s??'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
-function api(){ return document.getElementById('apiBase').value.replace(/\/$/,''); }
-function fill(email){ document.getElementById('email').value=email; document.getElementById('password').value='Passw0rd123'; }
+function api(){ return document.getElementById('apiBase').value.trim().replace(/\/$/,''); }
+const nativeApp=window.Capacitor?.isNativePlatform?.() || ['capacitor:','ionic:','file:'].includes(location.protocol);
+if(nativeApp) document.getElementById('apiBase').value='http://localhost:3000/v1';
+function setAuthMode(mode,reset=false){
+  if(!reset && (authPending || logoutPending)) return;
+  authMode=mode==='register'?'register':'login';
+  const registering=authMode==='register';
+  document.getElementById('registerFields').classList.toggle('hidden',!registering);
+  document.getElementById('registerFields').disabled=!registering;
+  document.getElementById('authIntro').textContent=registering?'أنشئ حسابك كعميل أو سائق':'سجّل دخولك — عميل أو سائق، نفس التطبيق';
+  document.getElementById('authSubmit').textContent=registering?'إنشاء الحساب':'دخول';
+  document.getElementById('authModeBtn').textContent=registering?'لدي حساب — تسجيل الدخول':'إنشاء حساب جديد';
+  const password=document.getElementById('password');
+  password.autocomplete=registering?'new-password':'current-password';
+  if(registering){ password.minLength=8; password.pattern='(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).{8,}'; }
+  else{ password.removeAttribute('minlength'); password.removeAttribute('pattern'); }
+  document.getElementById('passwordConfirm').value='';
+  document.getElementById('loginErr').textContent='';
+}
+function submitAuth(event){
+  event.preventDefault();
+  if(authMode==='register') register(); else login();
+}
+function setAuthBusy(busy){
+  authPending=busy;
+  for(const id of ['authSubmit','authModeBtn','apiBase']) document.getElementById(id).disabled=busy;
+}
+function authError(data){
+  const code=data?.error?.code;
+  if(['DUPLICATE_USER','DUPLICATE_ENTRY'].includes(code)) return 'البريد الإلكتروني أو رقم الهاتف مستخدم بالفعل';
+  if(code==='INVALID_CREDENTIALS') return 'البريد الإلكتروني أو كلمة المرور غير صحيحة';
+  if(code==='TOO_MANY_ATTEMPTS') return 'محاولات كثيرة. انتظر 15 دقيقة ثم حاول مجددًا';
+  return data?.error?.message || 'تعذّر إكمال الطلب';
+}
 function useMyLocation(){
   const version=AUTH_VERSION;
   if(!navigator.geolocation){ alert('الموقع الجغرافي غير مدعوم على هذا الجهاز'); return; }
@@ -262,34 +309,66 @@ function useMyLocation(){
   );
 }
 
-async function login(){
-  if(logoutPending) return;
+async function startSession(session){
+  AUTH_VERSION+=1;
   const version=AUTH_VERSION;
-  const email=document.getElementById('email').value, password=document.getElementById('password').value;
+  TOKEN=session.tokens.access_token; PROFILE=session.user;
+  document.getElementById('password').value='';
+  document.getElementById('passwordConfirm').value='';
+  document.getElementById('loginWrap').classList.add('hidden');
+  document.getElementById('appShell').classList.remove('hidden');
+  document.getElementById('whoName').textContent=PROFILE.full_name_ar;
+  document.getElementById('roleTag').textContent=PROFILE.role==='customer'?'حساب عميل':'حساب سائق';
+  if(PROFILE.role==='customer'){
+    document.getElementById('customerView').classList.remove('hidden');
+    await refreshCustomerWallet();
+    if(!sameSession(version)) return;
+    try{ await estimate(); }
+    catch(e){ if(sameSession(version)) document.getElementById('wbMsg').textContent='تعذّر الاتصال لحساب السعر. حاول التحديث'; }
+  }else{
+    document.getElementById('driverView').classList.remove('hidden');
+    showDriverApproval(PROFILE.driver_status || 'pending');
+    try{ await refreshDriverProfile(); }
+    catch(e){ if(sameSession(version)) document.getElementById('driverFeed').textContent='تعذّر تحديث الملف. حاول التحديث عند عودة الاتصال'; }
+  }
+}
+async function authenticate(path,payload){
+  if(logoutPending || authPending) return;
+  const version=AUTH_VERSION, base=api();
   const err=document.getElementById('loginErr'); err.textContent='';
+  setAuthBusy(true);
   try{
-    const res=await fetch(api()+'/auth/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,password})});
+    const res=await fetch(base+path,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
     const data=await res.json();
-    if(version!==AUTH_VERSION || logoutPending) return;
-    if(!data.success){ err.textContent=data.error?.message||'فشل الدخول'; return; }
-    if(!['customer','driver'].includes(data.data.user.role)){ err.textContent='هذا الحساب غير مدعوم بهذا التطبيق'; return; }
-    AUTH_VERSION+=1;
-    const loggedVersion=AUTH_VERSION;
-    TOKEN=data.data.tokens.access_token; PROFILE=data.data.user;
-    document.getElementById('loginWrap').classList.add('hidden');
-    document.getElementById('appShell').classList.remove('hidden');
-    document.getElementById('whoName').textContent=PROFILE.full_name_ar;
-    document.getElementById('roleTag').textContent = PROFILE.role==='customer' ? 'حساب عميل' : 'حساب سائق';
-    if(PROFILE.role==='customer'){
-      document.getElementById('customerView').classList.remove('hidden');
-      await refreshCustomerWallet();
-      if(!sameSession(loggedVersion)) return;
-      estimate();
-    } else {
-      document.getElementById('driverView').classList.remove('hidden');
-      refreshDriverProfile();
+    if(version!==AUTH_VERSION || logoutPending){
+      const token=data.data?.tokens?.access_token;
+      if(data.success && token) await fetch(base+'/auth/logout',{method:'POST',headers:{'Authorization':'Bearer '+token}}).catch(()=>{});
+      return;
     }
+    if(!res.ok || !data.success){ err.textContent=authError(data); return; }
+    if(!['customer','driver'].includes(data.data?.user?.role)){
+      err.textContent='هذا الحساب غير مدعوم بهذا التطبيق؛ استخدم واجهة حسابك المناسبة';
+      const token=data.data?.tokens?.access_token;
+      if(token) await fetch(base+'/auth/logout',{method:'POST',headers:{'Authorization':'Bearer '+token}}).catch(()=>{});
+      return;
+    }
+    await startSession(data.data);
   }catch(e){ if(version===AUTH_VERSION && !logoutPending) err.textContent='تعذّر الاتصال بالسيرفر — تحقق من عنوان الـ API'; }
+  finally{ setAuthBusy(false); }
+}
+async function login(){
+  return authenticate('/auth/login',{
+    email:document.getElementById('email').value.trim(), password:document.getElementById('password').value,
+  });
+}
+async function register(){
+  const password=document.getElementById('password').value;
+  if(password!==document.getElementById('passwordConfirm').value){ document.getElementById('loginErr').textContent='كلمتا المرور غير متطابقتين'; return; }
+  return authenticate('/auth/register',{
+    role:document.getElementById('registerRole').value,
+    email:document.getElementById('email').value.trim(), phone:document.getElementById('phone').value.trim(),
+    password, full_name_ar:document.getElementById('fullName').value.trim(), preferred_language:'ar',
+  });
 }
 async function logout(){
   if(logoutPending) return;
@@ -299,7 +378,7 @@ async function logout(){
   TOKEN=null; PROFILE=null; ACTIVE_ORDER=null; CURRENT_TRACK=null;
   orderCreatePending=false; deliveryConfirmPending=false; selectedStars=0;
   for(const id of ['whoName','roleTag','myOrdersList','trackResult','activeOrderBox','driverFeed','wbMsg']) document.getElementById(id).textContent='';
-  for(const id of ['pAddr','pLat','pLng','dAddr','dLat','dLng','email','password']) document.getElementById(id).value='';
+  for(const id of ['pAddr','pLat','pLng','dAddr','dLat','dLng','email','password','passwordConfirm','fullName','phone']) document.getElementById(id).value='';
   for(const id of ['wbDist','wbBase','wbDisc','wbVat','wbTotal','customerWalletBalance']) document.getElementById(id).textContent='—';
   document.getElementById('vType').value='motorcycle';
   document.getElementById('priority').value='standard';
@@ -315,6 +394,10 @@ async function logout(){
   document.getElementById('gauge').style.setProperty('--pct',0);
   document.getElementById('btnAvail').classList.remove('active');
   document.getElementById('btnBusy').classList.remove('active');
+  document.getElementById('driverApproval').classList.add('hidden');
+  document.getElementById('driverApproval').textContent='';
+  document.getElementById('btnAvail').disabled=false;
+  document.getElementById('btnBusy').disabled=false;
   document.getElementById('appShell').classList.add('hidden');
   document.getElementById('customerView').classList.add('hidden');
   document.getElementById('driverView').classList.add('hidden');
@@ -328,7 +411,10 @@ async function logout(){
       msg.textContent=response.ok && result.success ? '' : 'تم الخروج محليًا؛ تعذّر إلغاء الجلسة على الخادم';
     }
   }catch(e){ msg.textContent='تم الخروج محليًا؛ تعذّر إلغاء الجلسة على الخادم'; }
-  finally{ logoutPending=false; }
+  finally{
+    logoutPending=false;
+    const message=msg.textContent; setAuthMode('login',true); msg.textContent=message;
+  }
 }
 async function authFetch(path,opts={}){
   opts.headers=Object.assign({'Content-Type':'application/json','Authorization':'Bearer '+TOKEN},opts.headers||{});
@@ -515,12 +601,24 @@ async function submitRating(){
 }
 
 /* ---------- DRIVER ---------- */
+function showDriverApproval(status){
+  const approved=status==='approved';
+  const box=document.getElementById('driverApproval');
+  box.classList.toggle('hidden',approved);
+  const labels={pending:'حسابك بانتظار اعتماد الإدارة. يمكنك تسجيل الدخول، وتحتاج إلى اعتماد الحساب ومركبة مفعلة قبل استقبال الطلبات.',rejected:'لم تعتمد الإدارة حساب السائق. تواصل مع الدعم لاستكمال المتطلبات.',suspended:'حساب السائق موقوف. تواصل مع الدعم.'};
+  box.textContent=approved?'':(labels[status] || 'تعذّر تأكيد اعتماد حساب السائق. حدّث الملف أو تواصل مع الدعم.');
+  document.getElementById('btnAvail').disabled=!approved;
+  document.getElementById('btnBusy').disabled=!approved;
+  if(!approved) document.getElementById('driverFeed').textContent=box.textContent;
+}
 async function refreshDriverProfile(){
   const version=AUTH_VERSION;
   const d=await authFetch('/auth/me');
   if(!sameSession(version)) return;
   if(!d.success) return;
   const p=d.data;
+  PROFILE={...PROFILE,...p};
+  showDriverApproval(p.driver_status);
   document.getElementById('mTrips').textContent=p.total_trips??0;
   document.getElementById('mEarnings').textContent=(p.total_earnings??0)+' د.ل';
   const rating=parseFloat(p.rating||5);
@@ -529,7 +627,7 @@ async function refreshDriverProfile(){
   document.getElementById('btnAvail').classList.toggle('active', p.availability==='available');
   document.getElementById('btnBusy').classList.toggle('active', p.availability!=='available');
   const feed=document.getElementById('driverFeed');
-  if(p.driver_status!=='approved'){ feed.innerHTML='<div class="empty">حسابك بانتظار اعتماد الإدارة</div>'; }
+  if(p.driver_status!=='approved') return;
   else if(p.availability==='available'){ loadDriverOrders(); }
   else{ feed.innerHTML='<div class="empty">اضبط حالتك على "متاح" لعرض الطلبات</div>'; }
 }
@@ -542,6 +640,7 @@ async function setAvail(status){
 }
 async function loadDriverOrders(){
   const version=AUTH_VERSION;
+  if(PROFILE?.driver_status && PROFILE.driver_status!=='approved'){ await refreshDriverProfile(); return; }
   const feed=document.getElementById('driverFeed');
   feed.innerHTML='<div class="empty">جارِ التحميل...</div>';
   const d=await authFetch('/drivers/orders');

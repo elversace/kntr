@@ -1,0 +1,42 @@
+{
+  "run_id": "20261015201528-78340e",
+  "checked_at_utc": "2026-10-15T20:15:28.861794+00:00",
+  "api_origin": "https://supreme-palm-tree-69wxxwr95qvhx6q5-3000.app.github.dev",
+  "scope": "Real hosted HTTPS API registration/login/session/password/role checks using two synthetic accounts; no browser/native runtime or delivery payment verified.",
+  "checks": [
+    {
+      "name": "Hosted database readiness before mutations",
+      "method": "GET",
+      "path": "/ready",
+      "expected_status": 200,
+      "status": 404,
+      "error_code": null,
+      "passed": false,
+      "outcome": "blocked_hosting"
+    }
+  ],
+  "limited_auth_calls": 0,
+  "accounts_created": [],
+  "delivery_flow_verified": false,
+  "native_builds_verified": false,
+  "summary": {
+    "passed": 0,
+    "failed": 0,
+    "blocked": 1,
+    "success": false
+  },
+  "error": "Hosted database readiness before mutations failed: status=404 code=None",
+  "blocked_by": "Hosted API URL returned HTTP 404 before registration; current forwarded URL or workspace availability needs confirmation.",
+  "application_auth_failure_confirmed": false,
+  "latest_readiness_observation": {
+    "status": 404,
+    "ready": false,
+    "checked_at_utc": "2026-10-15T21:45:09.414115+00:00",
+    "url": "https://supreme-palm-tree-69wxxwr95qvhx6q5-3000.app.github.dev/ready",
+    "user_reported_startup_succeeded": true,
+    "user_reported_port_public": true
+  },
+  "user_reported_local_startup_succeeded": true,
+  "user_reported_port_public": true,
+  "limitation": "User terminal confirms local readiness; external URL did not return verified KNTR readiness in this run. No hosted accounts or authenticated requests were created."
+}

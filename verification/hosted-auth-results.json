@@ -1,0 +1,57 @@
+{
+  "environment": {
+    "node": "v24.19.0",
+    "database": "PostgreSQL 18.4, fresh isolated data directory",
+    "backend": "/workspace/kntr-startup/kntr-package/kntr-backend",
+    "runDir": "/workspace/kntr-startup/verification/hosted-auth-run-tvbYNh",
+    "dbPort": 35435,
+    "appPort": 36999,
+    "postgis": "Current schema requires no PostGIS extension; these tests do not verify PostGIS or geospatial SQL"
+  },
+  "checks": [
+    {
+      "name": "Public application aliases and administrator document are served with scoped CSP and no cache",
+      "status": "passed",
+      "evidence": {
+        "aliases": [
+          "/",
+          "/app",
+          "/admin"
+        ],
+        "APIHelmetPolicyPreserved": true
+      }
+    },
+    {
+      "name": "HTML serving does not expose repository files, environment files or uploads",
+      "status": "passed",
+      "evidence": {
+        "protectedPathsChecked": 6
+      }
+    },
+    {
+      "name": "Chromium registers customers and pending drivers, logs in and revokes logout sessions through served pages",
+      "status": "passed",
+      "evidence": {
+        "checks": 11,
+        "realBackend": true,
+        "realHTMLRoutes": true,
+        "browser_version": "154.0.8037.57",
+        "native": false
+      }
+    }
+  ],
+  "scope": "Real isolated PostgreSQL, HTTP server and Chromium; production HTML routes with no API or HTML mocking. Not the user Codespace or a native build.",
+  "source_sha256": {
+    "kntr-package/kntr-backend/src/app.js": "a0803946c337517c50bb5b219e5e58876e71dfd7e5742a7d22c2fb9131f654a1",
+    "kntr-package/frontend/kntr-app.html": "8845fe4e8a0e70774f1a55149b05d060a2cfe257f48848b1e975a6465d3f00bb",
+    "kntr-package/frontend/kntr-admin-dashboard.html": "f40d487f5967ddbf881ce05ab01012f4777562bd21b80eb5aad6cd612df4b62f",
+    "kntr-mobile/www/index.html": "61d4dd4ad408ae0e93ca4234da2b69a447e6afa42f0f9439967ce08e0eb38df1",
+    "kntr-mobile/android/app/src/main/assets/public/index.html": "61d4dd4ad408ae0e93ca4234da2b69a447e6afa42f0f9439967ce08e0eb38df1",
+    "kntr-mobile/ios/App/App/public/index.html": "61d4dd4ad408ae0e93ca4234da2b69a447e6afa42f0f9439967ce08e0eb38df1"
+  },
+  "summary": {
+    "passed": 3,
+    "failed": 0,
+    "success": true
+  }
+}

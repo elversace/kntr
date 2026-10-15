@@ -2,28 +2,28 @@
   "verification": "Actual Chromium frontend; ALL API responses MOCKED",
   "limitations": "No backend, deployed service, Android or iOS runtime verification; native copies only tested as browser HTML.",
   "network": "Mock localhost page/API routes fulfilled in Playwright; every external request aborted; no external network.",
-  "timestamp_utc": "2026-10-11T18:38:38.469490+00:00",
+  "timestamp_utc": "2026-10-15T21:43:19.055766+00:00",
   "sources": [
     {
-      "path": "/workspace/kntr-fixed/kntr-package/frontend/kntr-app.html",
-      "sha256": "c7335e9967e84cee963d7d10ddfde22df71eed0744fad48b63b5324352880f30"
+      "path": "/workspace/kntr-startup/kntr-package/frontend/kntr-app.html",
+      "sha256": "8845fe4e8a0e70774f1a55149b05d060a2cfe257f48848b1e975a6465d3f00bb"
     },
     {
-      "path": "/workspace/kntr-fixed/kntr-mobile/www/index.html",
-      "sha256": "a681484b9a529aefeab94869122c0f8e3dd1847d4764fbe1f82203b3b0df7c7d"
+      "path": "/workspace/kntr-startup/kntr-mobile/www/index.html",
+      "sha256": "61d4dd4ad408ae0e93ca4234da2b69a447e6afa42f0f9439967ce08e0eb38df1"
     },
     {
-      "path": "/workspace/kntr-fixed/kntr-mobile/android/app/src/main/assets/public/index.html",
-      "sha256": "a681484b9a529aefeab94869122c0f8e3dd1847d4764fbe1f82203b3b0df7c7d"
+      "path": "/workspace/kntr-startup/kntr-mobile/android/app/src/main/assets/public/index.html",
+      "sha256": "61d4dd4ad408ae0e93ca4234da2b69a447e6afa42f0f9439967ce08e0eb38df1"
     },
     {
-      "path": "/workspace/kntr-fixed/kntr-mobile/ios/App/App/public/index.html",
-      "sha256": "a681484b9a529aefeab94869122c0f8e3dd1847d4764fbe1f82203b3b0df7c7d"
+      "path": "/workspace/kntr-startup/kntr-mobile/ios/App/App/public/index.html",
+      "sha256": "61d4dd4ad408ae0e93ca4234da2b69a447e6afa42f0f9439967ce08e0eb38df1"
     }
   ],
   "checks": [
     {
-      "source": "/workspace/kntr-fixed/kntr-package/frontend/kntr-app.html",
+      "source": "/workspace/kntr-startup/kntr-package/frontend/kntr-app.html",
       "name": "Inline JavaScript syntax",
       "status": "passed",
       "evidence": {
@@ -31,7 +31,7 @@
       }
     },
     {
-      "source": "/workspace/kntr-fixed/kntr-package/frontend/kntr-app.html",
+      "source": "/workspace/kntr-startup/kntr-package/frontend/kntr-app.html",
       "name": "Driver generates code and refreshes without self confirmation",
       "evidence": {
         "driver_self_confirm_absent": true,
@@ -98,7 +98,7 @@
       "dialogs": []
     },
     {
-      "source": "/workspace/kntr-fixed/kntr-package/frontend/kntr-app.html",
+      "source": "/workspace/kntr-startup/kntr-package/frontend/kntr-app.html",
       "name": "Owner receipt and cash acknowledgement block incomplete confirmation",
       "evidence": {
         "receipt_and_cash_required": true,
@@ -147,7 +147,7 @@
       "dialogs": []
     },
     {
-      "source": "/workspace/kntr-fixed/kntr-package/frontend/kntr-app.html",
+      "source": "/workspace/kntr-startup/kntr-package/frontend/kntr-app.html",
       "name": "Owner raw QR token confirms then reloads tracking",
       "evidence": {
         "input": "raw_code",
@@ -215,7 +215,7 @@
       "dialogs": []
     },
     {
-      "source": "/workspace/kntr-fixed/kntr-package/frontend/kntr-app.html",
+      "source": "/workspace/kntr-startup/kntr-package/frontend/kntr-app.html",
       "name": "Owner order-bound QR payload is parsed and confirms",
       "evidence": {
         "input": "order_bound_qr_payload",
@@ -283,7 +283,7 @@
       "dialogs": []
     },
     {
-      "source": "/workspace/kntr-fixed/kntr-package/frontend/kntr-app.html",
+      "source": "/workspace/kntr-startup/kntr-package/frontend/kntr-app.html",
       "name": "Different-order QR payload is rejected before API request",
       "evidence": {
         "different_order_payload_blocked_without_fetch": true
@@ -331,7 +331,7 @@
       "dialogs": []
     },
     {
-      "source": "/workspace/kntr-fixed/kntr-package/frontend/kntr-app.html",
+      "source": "/workspace/kntr-startup/kntr-package/frontend/kntr-app.html",
       "name": "Expired server QR response remains visible with transit status",
       "evidence": {
         "server_error_visible": true,
@@ -389,7 +389,7 @@
       "dialogs": []
     },
     {
-      "source": "/workspace/kntr-fixed/kntr-package/frontend/kntr-app.html",
+      "source": "/workspace/kntr-startup/kntr-package/frontend/kntr-app.html",
       "name": "Noncash confirmation requires receipt without cash checkbox",
       "evidence": {
         "cash_checkbox_absent": true,
@@ -457,7 +457,7 @@
       "dialogs": []
     },
     {
-      "source": "/workspace/kntr-fixed/kntr-package/frontend/kntr-app.html",
+      "source": "/workspace/kntr-startup/kntr-package/frontend/kntr-app.html",
       "name": "Another customer order has no receipt form",
       "evidence": {
         "order_status": "in_transit",
@@ -507,7 +507,7 @@
       "dialogs": []
     },
     {
-      "source": "/workspace/kntr-fixed/kntr-package/frontend/kntr-app.html",
+      "source": "/workspace/kntr-startup/kntr-package/frontend/kntr-app.html",
       "name": "Pending order has no receipt form",
       "evidence": {
         "order_status": "pending",
@@ -557,7 +557,7 @@
       "dialogs": []
     },
     {
-      "source": "/workspace/kntr-fixed/kntr-package/frontend/kntr-app.html",
+      "source": "/workspace/kntr-startup/kntr-package/frontend/kntr-app.html",
       "name": "Accepted order has no receipt form",
       "evidence": {
         "order_status": "accepted",
@@ -607,7 +607,7 @@
       "dialogs": []
     },
     {
-      "source": "/workspace/kntr-fixed/kntr-package/frontend/kntr-app.html",
+      "source": "/workspace/kntr-startup/kntr-package/frontend/kntr-app.html",
       "name": "Delivered order has no receipt form",
       "evidence": {
         "order_status": "delivered",
@@ -657,7 +657,7 @@
       "dialogs": []
     },
     {
-      "source": "/workspace/kntr-fixed/kntr-mobile/www/index.html",
+      "source": "/workspace/kntr-startup/kntr-mobile/www/index.html",
       "name": "Inline JavaScript syntax",
       "status": "passed",
       "evidence": {
@@ -665,7 +665,7 @@
       }
     },
     {
-      "source": "/workspace/kntr-fixed/kntr-mobile/www/index.html",
+      "source": "/workspace/kntr-startup/kntr-mobile/www/index.html",
       "name": "Driver generates code and refreshes without self confirmation",
       "evidence": {
         "driver_self_confirm_absent": true,
@@ -732,7 +732,7 @@
       "dialogs": []
     },
     {
-      "source": "/workspace/kntr-fixed/kntr-mobile/www/index.html",
+      "source": "/workspace/kntr-startup/kntr-mobile/www/index.html",
       "name": "Owner receipt and cash acknowledgement block incomplete confirmation",
       "evidence": {
         "receipt_and_cash_required": true,
@@ -781,7 +781,7 @@
       "dialogs": []
     },
     {
-      "source": "/workspace/kntr-fixed/kntr-mobile/www/index.html",
+      "source": "/workspace/kntr-startup/kntr-mobile/www/index.html",
       "name": "Owner raw QR token confirms then reloads tracking",
       "evidence": {
         "input": "raw_code",
@@ -849,7 +849,7 @@
       "dialogs": []
     },
     {
-      "source": "/workspace/kntr-fixed/kntr-mobile/www/index.html",
+      "source": "/workspace/kntr-startup/kntr-mobile/www/index.html",
       "name": "Owner order-bound QR payload is parsed and confirms",
       "evidence": {
         "input": "order_bound_qr_payload",
@@ -917,7 +917,7 @@
       "dialogs": []
     },
     {
-      "source": "/workspace/kntr-fixed/kntr-mobile/www/index.html",
+      "source": "/workspace/kntr-startup/kntr-mobile/www/index.html",
       "name": "Different-order QR payload is rejected before API request",
       "evidence": {
         "different_order_payload_blocked_without_fetch": true
@@ -965,7 +965,7 @@
       "dialogs": []
     },
     {
-      "source": "/workspace/kntr-fixed/kntr-mobile/www/index.html",
+      "source": "/workspace/kntr-startup/kntr-mobile/www/index.html",
       "name": "Expired server QR response remains visible with transit status",
       "evidence": {
         "server_error_visible": true,
@@ -1023,7 +1023,7 @@
       "dialogs": []
     },
     {
-      "source": "/workspace/kntr-fixed/kntr-mobile/www/index.html",
+      "source": "/workspace/kntr-startup/kntr-mobile/www/index.html",
       "name": "Noncash confirmation requires receipt without cash checkbox",
       "evidence": {
         "cash_checkbox_absent": true,
@@ -1091,7 +1091,7 @@
       "dialogs": []
     },
     {
-      "source": "/workspace/kntr-fixed/kntr-mobile/www/index.html",
+      "source": "/workspace/kntr-startup/kntr-mobile/www/index.html",
       "name": "Another customer order has no receipt form",
       "evidence": {
         "order_status": "in_transit",
@@ -1141,7 +1141,7 @@
       "dialogs": []
     },
     {
-      "source": "/workspace/kntr-fixed/kntr-mobile/www/index.html",
+      "source": "/workspace/kntr-startup/kntr-mobile/www/index.html",
       "name": "Pending order has no receipt form",
       "evidence": {
         "order_status": "pending",
@@ -1191,7 +1191,7 @@
       "dialogs": []
     },
     {
-      "source": "/workspace/kntr-fixed/kntr-mobile/www/index.html",
+      "source": "/workspace/kntr-startup/kntr-mobile/www/index.html",
       "name": "Accepted order has no receipt form",
       "evidence": {
         "order_status": "accepted",
@@ -1241,7 +1241,7 @@
       "dialogs": []
     },
     {
-      "source": "/workspace/kntr-fixed/kntr-mobile/www/index.html",
+      "source": "/workspace/kntr-startup/kntr-mobile/www/index.html",
       "name": "Delivered order has no receipt form",
       "evidence": {
         "order_status": "delivered",
@@ -1291,7 +1291,7 @@
       "dialogs": []
     },
     {
-      "source": "/workspace/kntr-fixed/kntr-mobile/android/app/src/main/assets/public/index.html",
+      "source": "/workspace/kntr-startup/kntr-mobile/android/app/src/main/assets/public/index.html",
       "name": "Inline JavaScript syntax",
       "status": "passed",
       "evidence": {
@@ -1299,7 +1299,7 @@
       }
     },
     {
-      "source": "/workspace/kntr-fixed/kntr-mobile/android/app/src/main/assets/public/index.html",
+      "source": "/workspace/kntr-startup/kntr-mobile/android/app/src/main/assets/public/index.html",
       "name": "Driver generates code and refreshes without self confirmation",
       "evidence": {
         "driver_self_confirm_absent": true,
@@ -1366,7 +1366,7 @@
       "dialogs": []
     },
     {
-      "source": "/workspace/kntr-fixed/kntr-mobile/android/app/src/main/assets/public/index.html",
+      "source": "/workspace/kntr-startup/kntr-mobile/android/app/src/main/assets/public/index.html",
       "name": "Owner receipt and cash acknowledgement block incomplete confirmation",
       "evidence": {
         "receipt_and_cash_required": true,
@@ -1415,7 +1415,7 @@
       "dialogs": []
     },
     {
-      "source": "/workspace/kntr-fixed/kntr-mobile/android/app/src/main/assets/public/index.html",
+      "source": "/workspace/kntr-startup/kntr-mobile/android/app/src/main/assets/public/index.html",
       "name": "Owner raw QR token confirms then reloads tracking",
       "evidence": {
         "input": "raw_code",
@@ -1483,7 +1483,7 @@
       "dialogs": []
     },
     {
-      "source": "/workspace/kntr-fixed/kntr-mobile/android/app/src/main/assets/public/index.html",
+      "source": "/workspace/kntr-startup/kntr-mobile/android/app/src/main/assets/public/index.html",
       "name": "Owner order-bound QR payload is parsed and confirms",
       "evidence": {
         "input": "order_bound_qr_payload",
@@ -1551,7 +1551,7 @@
       "dialogs": []
     },
     {
-      "source": "/workspace/kntr-fixed/kntr-mobile/android/app/src/main/assets/public/index.html",
+      "source": "/workspace/kntr-startup/kntr-mobile/android/app/src/main/assets/public/index.html",
       "name": "Different-order QR payload is rejected before API request",
       "evidence": {
         "different_order_payload_blocked_without_fetch": true
@@ -1599,7 +1599,7 @@
       "dialogs": []
     },
     {
-      "source": "/workspace/kntr-fixed/kntr-mobile/android/app/src/main/assets/public/index.html",
+      "source": "/workspace/kntr-startup/kntr-mobile/android/app/src/main/assets/public/index.html",
       "name": "Expired server QR response remains visible with transit status",
       "evidence": {
         "server_error_visible": true,
@@ -1657,7 +1657,7 @@
       "dialogs": []
     },
     {
-      "source": "/workspace/kntr-fixed/kntr-mobile/android/app/src/main/assets/public/index.html",
+      "source": "/workspace/kntr-startup/kntr-mobile/android/app/src/main/assets/public/index.html",
       "name": "Noncash confirmation requires receipt without cash checkbox",
       "evidence": {
         "cash_checkbox_absent": true,
@@ -1725,7 +1725,7 @@
       "dialogs": []
     },
     {
-      "source": "/workspace/kntr-fixed/kntr-mobile/android/app/src/main/assets/public/index.html",
+      "source": "/workspace/kntr-startup/kntr-mobile/android/app/src/main/assets/public/index.html",
       "name": "Another customer order has no receipt form",
       "evidence": {
         "order_status": "in_transit",
@@ -1775,7 +1775,7 @@
       "dialogs": []
     },
     {
-      "source": "/workspace/kntr-fixed/kntr-mobile/android/app/src/main/assets/public/index.html",
+      "source": "/workspace/kntr-startup/kntr-mobile/android/app/src/main/assets/public/index.html",
       "name": "Pending order has no receipt form",
       "evidence": {
         "order_status": "pending",
@@ -1825,7 +1825,7 @@
       "dialogs": []
     },
     {
-      "source": "/workspace/kntr-fixed/kntr-mobile/android/app/src/main/assets/public/index.html",
+      "source": "/workspace/kntr-startup/kntr-mobile/android/app/src/main/assets/public/index.html",
       "name": "Accepted order has no receipt form",
       "evidence": {
         "order_status": "accepted",
@@ -1875,7 +1875,7 @@
       "dialogs": []
     },
     {
-      "source": "/workspace/kntr-fixed/kntr-mobile/android/app/src/main/assets/public/index.html",
+      "source": "/workspace/kntr-startup/kntr-mobile/android/app/src/main/assets/public/index.html",
       "name": "Delivered order has no receipt form",
       "evidence": {
         "order_status": "delivered",
@@ -1925,7 +1925,7 @@
       "dialogs": []
     },
     {
-      "source": "/workspace/kntr-fixed/kntr-mobile/ios/App/App/public/index.html",
+      "source": "/workspace/kntr-startup/kntr-mobile/ios/App/App/public/index.html",
       "name": "Inline JavaScript syntax",
       "status": "passed",
       "evidence": {
@@ -1933,7 +1933,7 @@
       }
     },
     {
-      "source": "/workspace/kntr-fixed/kntr-mobile/ios/App/App/public/index.html",
+      "source": "/workspace/kntr-startup/kntr-mobile/ios/App/App/public/index.html",
       "name": "Driver generates code and refreshes without self confirmation",
       "evidence": {
         "driver_self_confirm_absent": true,
@@ -2000,7 +2000,7 @@
       "dialogs": []
     },
     {
-      "source": "/workspace/kntr-fixed/kntr-mobile/ios/App/App/public/index.html",
+      "source": "/workspace/kntr-startup/kntr-mobile/ios/App/App/public/index.html",
       "name": "Owner receipt and cash acknowledgement block incomplete confirmation",
       "evidence": {
         "receipt_and_cash_required": true,
@@ -2049,7 +2049,7 @@
       "dialogs": []
     },
     {
-      "source": "/workspace/kntr-fixed/kntr-mobile/ios/App/App/public/index.html",
+      "source": "/workspace/kntr-startup/kntr-mobile/ios/App/App/public/index.html",
       "name": "Owner raw QR token confirms then reloads tracking",
       "evidence": {
         "input": "raw_code",
@@ -2117,7 +2117,7 @@
       "dialogs": []
     },
     {
-      "source": "/workspace/kntr-fixed/kntr-mobile/ios/App/App/public/index.html",
+      "source": "/workspace/kntr-startup/kntr-mobile/ios/App/App/public/index.html",
       "name": "Owner order-bound QR payload is parsed and confirms",
       "evidence": {
         "input": "order_bound_qr_payload",
@@ -2185,7 +2185,7 @@
       "dialogs": []
     },
     {
-      "source": "/workspace/kntr-fixed/kntr-mobile/ios/App/App/public/index.html",
+      "source": "/workspace/kntr-startup/kntr-mobile/ios/App/App/public/index.html",
       "name": "Different-order QR payload is rejected before API request",
       "evidence": {
         "different_order_payload_blocked_without_fetch": true
@@ -2233,7 +2233,7 @@
       "dialogs": []
     },
     {
-      "source": "/workspace/kntr-fixed/kntr-mobile/ios/App/App/public/index.html",
+      "source": "/workspace/kntr-startup/kntr-mobile/ios/App/App/public/index.html",
       "name": "Expired server QR response remains visible with transit status",
       "evidence": {
         "server_error_visible": true,
@@ -2291,7 +2291,7 @@
       "dialogs": []
     },
     {
-      "source": "/workspace/kntr-fixed/kntr-mobile/ios/App/App/public/index.html",
+      "source": "/workspace/kntr-startup/kntr-mobile/ios/App/App/public/index.html",
       "name": "Noncash confirmation requires receipt without cash checkbox",
       "evidence": {
         "cash_checkbox_absent": true,
@@ -2359,7 +2359,7 @@
       "dialogs": []
     },
     {
-      "source": "/workspace/kntr-fixed/kntr-mobile/ios/App/App/public/index.html",
+      "source": "/workspace/kntr-startup/kntr-mobile/ios/App/App/public/index.html",
       "name": "Another customer order has no receipt form",
       "evidence": {
         "order_status": "in_transit",
@@ -2409,7 +2409,7 @@
       "dialogs": []
     },
     {
-      "source": "/workspace/kntr-fixed/kntr-mobile/ios/App/App/public/index.html",
+      "source": "/workspace/kntr-startup/kntr-mobile/ios/App/App/public/index.html",
       "name": "Pending order has no receipt form",
       "evidence": {
         "order_status": "pending",
@@ -2459,7 +2459,7 @@
       "dialogs": []
     },
     {
-      "source": "/workspace/kntr-fixed/kntr-mobile/ios/App/App/public/index.html",
+      "source": "/workspace/kntr-startup/kntr-mobile/ios/App/App/public/index.html",
       "name": "Accepted order has no receipt form",
       "evidence": {
         "order_status": "accepted",
@@ -2509,7 +2509,7 @@
       "dialogs": []
     },
     {
-      "source": "/workspace/kntr-fixed/kntr-mobile/ios/App/App/public/index.html",
+      "source": "/workspace/kntr-startup/kntr-mobile/ios/App/App/public/index.html",
       "name": "Delivered order has no receipt form",
       "evidence": {
         "order_status": "delivered",

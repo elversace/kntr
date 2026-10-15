@@ -12,6 +12,7 @@ try {
 
 const express = require('express');
 const http = require('http');
+const path = require('node:path');
 const { Server } = require('socket.io');
 const cors = require('cors');
 const helmet = require('helmet');
@@ -111,6 +112,35 @@ app.get('/ready', async (req, res) => {
     res.status(503).json({ status: 'unavailable', service: 'kntr API' });
   }
 });
+
+// Serve only the two public application documents, never the repository or
+// uploads directory. These existing pages use inline scripts/event handlers;
+// keep their policy scoped to HTML while API responses retain Helmet defaults.
+const frontendRoot = path.resolve(__dirname, '../../frontend');
+const frontendPolicy = helmet.contentSecurityPolicy({
+  directives: {
+    defaultSrc: ["'self'"],
+    scriptSrc: ["'self'", "'unsafe-inline'"],
+    scriptSrcAttr: ["'unsafe-inline'"],
+    styleSrc: ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
+    fontSrc: ["'self'", 'https://fonts.gstatic.com'],
+    imgSrc: ["'self'", 'data:'],
+    // The API field can point to another HTTPS test backend or local tooling.
+    connectSrc: ["'self'", 'https:', 'http://localhost:*', 'http://127.0.0.1:*'],
+    objectSrc: ["'none'"],
+    frameAncestors: ["'none'"],
+    formAction: ["'self'"],
+    upgradeInsecureRequests: null,
+  },
+});
+const serveFrontend = filename => (req, res, next) => {
+  res.setHeader('Cache-Control', 'no-store');
+  res.sendFile(filename, { root: frontendRoot, cacheControl: false }, err => {
+    if (err) next(err);
+  });
+};
+app.get(['/', '/app'], frontendPolicy, serveFrontend('kntr-app.html'));
+app.get('/admin', frontendPolicy, serveFrontend('kntr-admin-dashboard.html'));
 
 // ─── API Routes ───────────────────────────────────────────────
 app.use('/v1', routes);
