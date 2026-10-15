@@ -1,0 +1,144 @@
+{
+  "checked_at_utc": "2026-10-15T08:40:32.372953+00:00",
+  "api_origin": "https://supreme-palm-tree-69wxxwr95qvhx6q5-3000.app.github.dev",
+  "api_base": "https://supreme-palm-tree-69wxxwr95qvhx6q5-3000.app.github.dev/v1",
+  "scope": "Live public Codespaces HTTPS API; read-only unauthenticated requests",
+  "summary": {
+    "passed": 9,
+    "failed": 0,
+    "success": true
+  },
+  "checks": [
+    {
+      "name": "ready",
+      "path": "/ready",
+      "status": 200,
+      "json": {
+        "status": "ok",
+        "service": "kntr API"
+      },
+      "passed": true
+    },
+    {
+      "name": "health",
+      "path": "/health",
+      "status": 200,
+      "json": {
+        "status": "ok",
+        "service": "kntr API",
+        "version": "1.0.0",
+        "environment": "production",
+        "timestamp": "2026-10-15T08:36:30.108Z"
+      },
+      "passed": true
+    },
+    {
+      "name": "unauthenticated profile",
+      "path": "/v1/auth/me",
+      "status": 401,
+      "json": {
+        "success": false,
+        "error": {
+          "code": "UNAUTHORIZED",
+          "message": "Authorization token required"
+        },
+        "timestamp": "2026-10-15T08:40:31.099Z"
+      },
+      "passed": true
+    },
+    {
+      "name": "unauthenticated orders",
+      "path": "/v1/orders",
+      "status": 401,
+      "json": {
+        "success": false,
+        "error": {
+          "code": "UNAUTHORIZED",
+          "message": "Authorization token required"
+        },
+        "timestamp": "2026-10-15T08:40:30.986Z"
+      },
+      "passed": true
+    },
+    {
+      "name": "unauthenticated admin",
+      "path": "/v1/admin/statistics",
+      "status": 401,
+      "json": {
+        "success": false,
+        "error": {
+          "code": "UNAUTHORIZED",
+          "message": "Authorization token required"
+        },
+        "timestamp": "2026-10-15T08:40:30.868Z"
+      },
+      "passed": true
+    },
+    {
+      "name": "invalid access token",
+      "path": "/v1/auth/me",
+      "status": 401,
+      "json": {
+        "success": false,
+        "error": {
+          "code": "TOKEN_INVALID",
+          "message": "Invalid or expired token"
+        },
+        "timestamp": "2026-10-15T08:40:31.044Z"
+      },
+      "passed": true
+    },
+    {
+      "name": "native origin preflight",
+      "path": "/v1/auth/login",
+      "status": 204,
+      "json": null,
+      "passed": true,
+      "allow_origin": "capacitor://localhost",
+      "allow_credentials": "true"
+    },
+    {
+      "name": "forbidden origin",
+      "path": "/health",
+      "status": 403,
+      "json": {
+        "success": false,
+        "error": {
+          "code": "ORIGIN_NOT_ALLOWED",
+          "message": "Origin is not allowed"
+        }
+      },
+      "passed": true
+    },
+    {
+      "name": "read-only fare estimate",
+      "path": "/v1/orders/estimate?pickup_lat=32.8872&pickup_lng=13.1913&dropoff_lat=32.8922&dropoff_lng=13.2013&vehicle_type=car",
+      "status": 200,
+      "json": {
+        "success": true,
+        "data": {
+          "distance": 1.09,
+          "currency": "LYD",
+          "basePrice": 10,
+          "customerDiscount": 0,
+          "vatAmount": 1,
+          "totalPrice": 11,
+          "finalPrice": 11,
+          "driverEarnings": 8.2,
+          "commissionAmount": 1.8,
+          "vehicle_type": "car",
+          "priority": "standard"
+        },
+        "message": "Success",
+        "timestamp": "2026-10-15T08:40:32.291Z"
+      },
+      "passed": true
+    }
+  ],
+  "accounts_or_orders_created": false,
+  "live_authenticated_delivery_payment_flow_verified": false,
+  "native_android_ios_verified": false,
+  "published_repository_commit_at_test": "a8318cae81765e72d5f7dbbe774d54412544a201",
+  "reported_checkout_message": "Record successful official Dev Container lifecycle verification",
+  "server_git_commit_independently_read": false
+}
