@@ -40,9 +40,27 @@ const forwardedCodespaceOrigin = (() => {
 })();
 const allowedOrigins = new Set(runtime.allowedOrigins);
 if (forwardedCodespaceOrigin) allowedOrigins.add(forwardedCodespaceOrigin);
-const originAllowed = origin => !origin || runtime.wildcardOrigins || allowedOrigins.has(origin);
+const isMatchingForwardedCodespaceOrigin = (origin, request) => {
+  if (!origin || !request) return false;
+  let originUrl;
+  try { originUrl = new URL(origin); } catch { return false; }
+  if (originUrl.protocol !== 'https:' || originUrl.port ||
+      !/^[a-z0-9-]+-3000\.app\.github\.dev$/i.test(originUrl.hostname)) return false;
+  const forwardedHosts = [request.headers['x-forwarded-host'], request.headers.host]
+    .filter(Boolean)
+    .flatMap(value => String(value).split(','));
+  return forwardedHosts.some(value => {
+    try { return new URL(`https://${value.trim()}`).hostname === originUrl.hostname; }
+    catch { return false; }
+  });
+};
+const originAllowed = (origin, request) => !origin || runtime.wildcardOrigins ||
+  allowedOrigins.has(origin) || isMatchingForwardedCodespaceOrigin(origin, request);
 const corsOptions = {
-  origin: runtime.wildcardOrigins ? '*' : [...allowedOrigins],
+  // Express checks originAllowed before cors reflects it. Socket.IO has the
+  // same check in allowRequest below. This permits only a forwarded hostname
+  // that exactly matches the HTTPS Origin which reached this process.
+  origin: runtime.wildcardOrigins ? '*' : true,
   credentials: !runtime.wildcardOrigins,
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
@@ -55,7 +73,7 @@ const io = new Server(server, {
     methods: ['GET', 'POST'],
   },
   // CORS alone does not protect WebSocket upgrades.
-  allowRequest: (req, callback) => callback(null, originAllowed(req.headers.origin)),
+  allowRequest: (req, callback) => callback(null, originAllowed(req.headers.origin, req)),
   transports: ['websocket', 'polling'],
 });
 
@@ -66,7 +84,7 @@ setupSocketIO(io);
 app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }));
 
 app.use((req, res, next) => {
-  if (!originAllowed(req.headers.origin)) {
+  if (!originAllowed(req.headers.origin, req)) {
     return res.status(403).json({ success: false, error: { code: 'ORIGIN_NOT_ALLOWED', message: 'Origin is not allowed' } });
   }
   next();
