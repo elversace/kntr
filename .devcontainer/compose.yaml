@@ -16,7 +16,7 @@ services:
       DB_USER: kntr
       DB_SSL: disable
       UPLOAD_PATH: /workspaces/kntr/.runtime/uploads
-      ALLOWED_ORIGINS: capacitor://localhost,http://localhost,https://localhost,http://localhost:3000,http://127.0.0.1:3000
+      ALLOWED_ORIGINS: capacitor://localhost,http://localhost,https://localhost,http://localhost:3000,http://127.0.0.1:3000,https://supreme-palm-tree-69wxxwr95qvhx6q5-3000.app.github.dev
     volumes:
       - ..:/workspaces/kntr:cached
     depends_on:
