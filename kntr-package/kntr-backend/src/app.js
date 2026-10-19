@@ -29,9 +29,20 @@ const app = express();
 const server = http.createServer(app);
 app.set('trust proxy', runtime.trustProxy);
 
-const originAllowed = origin => !origin || runtime.wildcardOrigins || runtime.allowedOrigins.includes(origin);
+// The Codespaces hostname is supplied by the platform at runtime.  Keep it in
+// the server's allow-list as well as the startup script so a process started by
+// an editor/task still accepts the page it serves through the forwarded port.
+const forwardedCodespaceOrigin = (() => {
+  const name = process.env.CODESPACE_NAME;
+  const domain = process.env.GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN;
+  if (!name || !domain || !/^[a-zA-Z0-9-]+$/.test(name) || !/^[a-zA-Z0-9.-]+$/.test(domain)) return null;
+  return `https://${name}-3000.${domain}`;
+})();
+const allowedOrigins = new Set(runtime.allowedOrigins);
+if (forwardedCodespaceOrigin) allowedOrigins.add(forwardedCodespaceOrigin);
+const originAllowed = origin => !origin || runtime.wildcardOrigins || allowedOrigins.has(origin);
 const corsOptions = {
-  origin: runtime.wildcardOrigins ? '*' : runtime.allowedOrigins,
+  origin: runtime.wildcardOrigins ? '*' : [...allowedOrigins],
   credentials: !runtime.wildcardOrigins,
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
